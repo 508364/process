@@ -82,6 +82,7 @@ def main():
     try:
         all_proxies = []
         raw_text_for_subconverter = ""
+        reality_fixed_count = 0
 
         print("步骤 1: 智能下载与解析订阅源...")
         for url in ALL_URLS:
@@ -149,7 +150,7 @@ def main():
         for p in all_proxies:
             if not isinstance(p, dict): continue
             
-            # 防护 2: 严格的字段校验，丢弃缺少核心字段的真正废节点
+            # 防护 2: 严格的字段校验，丢弃真正缺少核心字段的废节点
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
@@ -178,17 +179,24 @@ def main():
             
             # 防护 3: 智能修复 REALITY 节点的 short-id，保留优质节点并防止 mihomo 崩溃
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
-                # 强制转换为字符串，防止 YAML 将 '00123' 错误解析为整数 123
                 short_id_raw = p['reality-opts'].get('short-id', '')
-                short_id_str = str(short_id_raw).strip()
                 
-                # 校验是否为合法的十六进制字符串 (0-16位)
-                if re.match(r'^[0-9a-fA-F]{0,16}$', short_id_str):
+                # 处理 YAML 将 '0123' 错误解析为整数 123 的情况
+                if short_id_raw is None:
+                    short_id_str = ""
+                else:
+                    short_id_str = str(short_id_raw).strip()
+                
+                # 严格校验：必须是空字符串，或者 2-16 位的【偶数长度】十六进制字符串
+                is_valid = (short_id_str == "") or (re.match(r'^[0-9a-fA-F]+$', short_id_str) and len(short_id_str) % 2 == 0 and 2 <= len(short_id_str) <= 16)
+                
+                if is_valid:
                     p['reality-opts']['short-id'] = short_id_str
                 else:
-                    # 如果包含非法字符，将其重置为空字符串 ""。
-                    # Xray/mihomo 规范允许 short-id 为空，表示不校验 short-id，节点依然可用且不会崩溃。
+                    # 终极兜底：如果 short-id 损坏，降级为空字符串 ""。
+                    # 在 Xray/mihomo 规范中，"" 表示不校验 short-id，节点依然可以尝试连接，且 100% 不会导致 fatal 崩溃。
                     p['reality-opts']['short-id'] = ""
+                    reality_fixed_count += 1
 
             key = f"{name}|{server}|{port}|{ptype}"
             
@@ -198,6 +206,7 @@ def main():
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
         print(f"  已丢弃真正缺失字段的废节点: {invalid_count} 个")
+        print(f"  已智能修复损坏的 REALITY short-id: {reality_fixed_count} 个 (降级为不校验，防止崩溃)")
         print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
@@ -310,7 +319,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v14', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v15', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
