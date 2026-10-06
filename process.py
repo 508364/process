@@ -1,3 +1,9 @@
+import sys
+# ============== 关键修复:强制无缓冲输出,防止崩溃时日志丢失 ==============
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+# =====================================================================
+
 import yaml
 import requests
 import re
@@ -26,12 +32,8 @@ UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
 BATCH_SIZE = 150
 CONTROLLER_PORT = 9090
-
-# 关键修复 1: 换 Cloudflare 测速 URL
 HEALTH_CHECK_URL = 'http://cp.cloudflare.com/generate_204'
-# 关键修复 2: 增加超时
 HEALTH_CHECK_TIMEOUT = 8000
-# 关键修复 4: 阈值与新超时一致
 DELAY_THRESHOLD = 8000
 
 SUPPORTED_PROXY_TYPES = {
@@ -256,13 +258,17 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
         return {}
     
     temp_file = f'temp_batch_{batch_id}.yaml'
+    log_file = f'mihomo_batch_{batch_id}.log'
     write_mihomo_yaml(proxies, temp_file)
     
-    process = subprocess.Popen(
-        ['./mihomo', '-d', '.', '-f', temp_file],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-        preexec_fn=os.setsid
-    )
+    # ============== 关键修复:输出到文件而非 PIPE,避免管道缓冲死锁 ==============
+    with open(log_file, 'w') as logf:
+        process = subprocess.Popen(
+            ['./mihomo', '-d', '.', '-f', temp_file],
+            stdout=logf, stderr=subprocess.STDOUT,
+            preexec_fn=os.setsid
+        )
+    # =====================================================================
     
     ready = False
     for _ in range(120):
@@ -278,12 +284,15 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
         time.sleep(0.5)
     
     if process.poll() is not None:
-        stdout, stderr = process.communicate()
         print(f"    {label} mihomo 提前退出 (返回码: {process.returncode})")
-        if stdout.strip():
-            last_lines = stdout.strip().split('\n')[-3:]
-            for line in last_lines:
-                print(f"      {line[:220]}")
+        # 从日志文件读取最后几行
+        try:
+            with open(log_file, 'r') as lf:
+                lines = lf.readlines()
+            for line in lines[-5:]:
+                print(f"      {line.rstrip()[:220]}")
+        except Exception:
+            pass
         try:
             os.rename(temp_file, f'failed_batch_{batch_id}.yaml')
         except Exception:
@@ -312,7 +321,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     except Exception as e:
         print(f"    {label} 测速请求异常: {str(e)[:100]}")
     
-    # 收集结果 + 诊断统计
     delay_map = {}
     stat = {'有效': 0, '失败': 0, '超时': 0, '无数据': 0}
     try:
@@ -347,6 +355,8 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     try:
         if os.path.exists(temp_file):
             os.remove(temp_file)
+        if os.path.exists(log_file):
+            os.remove(log_file)
     except Exception:
         pass
     
@@ -447,7 +457,7 @@ def main():
 
         if not all_proxies:
             print("\n未找到任何有效节点,退出。")
-            exit(1)
+            sys.exit(1)
 
         print(f"\n合并后节点总数: {len(all_proxies)}")
 
@@ -526,7 +536,7 @@ def main():
 
         if not unique_proxies:
             print("过滤后无有效节点,退出。")
-            exit(1)
+            sys.exit(1)
 
         print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行,TCP协议极速Ping)...")
         alive_proxies = []
@@ -594,7 +604,7 @@ def main():
 
         if not available_proxies:
             print("\n未测出任何可用节点,不生成输出文件。")
-            exit(1)
+            sys.exit(1)
 
         all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
@@ -637,7 +647,7 @@ def main():
         print("脚本执行失败!详细错误信息如下:")
         traceback.print_exc()
         print("="*50)
-        exit(1)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
