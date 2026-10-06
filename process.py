@@ -8,17 +8,12 @@ import traceback
 import os
 from datetime import datetime, timezone
 
-# 1. 已经是标准 Clash YAML 的链接，直接用 Python 解析，速度极快且稳定
-CLASH_YAML_URLS = [
+ALL_URLS = [
     "https://raw.githubusercontent.com/dongchengjie/airport/main/subs/merged/tested_within.yaml",
     "https://sunmiao4458.github.io/free-proxy-airport/clash.yaml",
     "https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/clash.yaml",
     "https://raw.githubusercontent.com/a2470982985/getNode/main/clash.yaml",
-    "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/master/dist/clash_config.yaml"
-]
-
-# 2. 需要格式转换的链接 (Base64 / 纯文本 URI)
-NEEDS_CONVERSION_URLS = [
+    "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/master/dist/clash_config.yaml",
     "https://raw.githubusercontent.com/ninjastrikers/Nexus-nodes/main/configs/all.txt"
 ]
 
@@ -27,6 +22,7 @@ MAX_IP_API_CALLS = 40
 
 def clean_name(name):
     if not name: return "Unknown_Node"
+    # 严格白名单：只保留字母、数字、中文、基本标点
     name = re.sub(r'[^\w\s\u4e00-\u9fa5\-_\.\[\]\(\)\/]', '', str(name))
     return name.strip()[:50]
 
@@ -72,67 +68,59 @@ def get_country_via_ip_api(server):
 def main():
     try:
         all_proxies = []
+        raw_text_for_subconverter = ""
 
-        # ==========================================
-        # 步骤 1A: 直接解析已知的 Clash YAML 链接
-        # ==========================================
-        print("步骤 1A: 直接解析标准 Clash YAML 订阅...")
-        for url in CLASH_YAML_URLS:
+        print("步骤 1: 智能下载与解析订阅源...")
+        for url in ALL_URLS:
             try:
                 print(f"  获取: {url}")
                 resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
                 resp.raise_for_status()
+                text = resp.text
                 
-                data = yaml.safe_load(resp.text)
-                if isinstance(data, dict) and 'proxies' in data and isinstance(data['proxies'], list):
-                    all_proxies.extend(data['proxies'])
-                    print(f"  成功提取 {len(data['proxies'])} 个节点")
-                else:
-                    print(f"  格式异常，未找到 'proxies' 列表")
-            except Exception as e:
-                print(f"  获取或解析失败: {e}")
-
-        # ==========================================
-        # 步骤 1B: 使用 subconverter 转换非标准链接
-        # ==========================================
-        if NEEDS_CONVERSION_URLS:
-            print("\n步骤 1B: 启动 subconverter 转换非标准订阅...")
-            sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            time.sleep(3) # 等待服务启动
-
-            for url in NEEDS_CONVERSION_URLS:
+                # 尝试直接用 Python 解析
                 try:
-                    print(f"  获取待转换内容: {url}")
-                    resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
-                    resp.raise_for_status()
-                    
-                    # 写入本地临时文件
-                    with open('temp_raw_subscription.txt', 'w', encoding='utf-8') as f:
-                        f.write(resp.text)
-                    
-                    # 使用 file:// 协议让 subconverter 读取本地文件，彻底避免 URL 长度限制
-                    file_url = urllib.parse.quote(f"file://{os.path.abspath('temp_raw_subscription.txt')}")
-                    api_url = f"http://127.0.0.1:25500/sub?target=clash&url={file_url}&insert=false&emoji=false&sort=false&scv=true"
-                    
-                    print(f"  正在请求 subconverter 转换...")
-                    conv_resp = requests.get(api_url, timeout=60)
-                    conv_resp.raise_for_status()
-                    
-                    converted_data = yaml.safe_load(conv_resp.text)
-                    if isinstance(converted_data, dict) and 'proxies' in converted_data and isinstance(converted_data['proxies'], list):
-                        all_proxies.extend(converted_data['proxies'])
-                        print(f"  subconverter 成功转换并提取 {len(converted_data['proxies'])} 个节点")
-                        
-                except Exception as e:
-                    print(f"  转换失败: {e}")
-                finally:
-                    # 清理临时文件
-                    if os.path.exists('temp_raw_subscription.txt'):
-                        os.remove('temp_raw_subscription.txt')
+                    data = yaml.safe_load(text)
+                    if isinstance(data, dict) and 'proxies' in data and isinstance(data['proxies'], list):
+                        all_proxies.extend(data['proxies'])
+                        print(f"  Python 成功提取 {len(data['proxies'])} 个节点")
+                        continue # 解析成功，跳过后续处理
+                except yaml.YAMLError as e:
+                    print(f"  Python 解析失败 (可能含特殊字符): {str(e)[:50]}...")
+                
+                # 如果 Python 解析失败，或者没有 proxies 字段，将其原始文本保存，稍后交给 subconverter
+                print(f"  标记为待 subconverter 转换...")
+                raw_text_for_subconverter += text + "\n---\n"
+                
+            except Exception as e:
+                print(f"  获取失败: {e}")
 
-            # 停止 subconverter
-            sub_process.terminate()
-            sub_process.wait()
+        # 如果有需要转换的原始文本，启动 subconverter
+        if raw_text_for_subconverter.strip():
+            print("\n启动 subconverter 清洗并转换脏数据/非标准格式...")
+            sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(3)
+            
+            with open('temp_raw.txt', 'w', encoding='utf-8') as f:
+                f.write(raw_text_for_subconverter)
+            
+            file_url = urllib.parse.quote(f"file://{os.path.abspath('temp_raw.txt')}")
+            api_url = f"http://127.0.0.1:25500/sub?target=clash&url={file_url}&insert=false&emoji=false&sort=false&scv=true"
+            
+            try:
+                conv_resp = requests.get(api_url, timeout=120)
+                conv_resp.raise_for_status()
+                converted_data = yaml.safe_load(conv_resp.text)
+                if isinstance(converted_data, dict) and 'proxies' in converted_data:
+                    all_proxies.extend(converted_data['proxies'])
+                    print(f"  subconverter 成功清洗并提取 {len(converted_data['proxies'])} 个节点")
+            except Exception as e:
+                print(f"  subconverter 转换失败: {e}")
+            finally:
+                if os.path.exists('temp_raw.txt'):
+                    os.remove('temp_raw.txt')
+                sub_process.terminate()
+                sub_process.wait()
 
         if not all_proxies:
             print("\n未找到任何有效节点，退出。")
@@ -189,7 +177,7 @@ def main():
             exit(1)
 
         # ==========================================
-        # 步骤 3: mihomo 多线程并发测速
+        # 步骤 3: mihomo 多线程并发测速 (增强错误捕获)
         # ==========================================
         print("\n步骤 3: 启动 mihomo 进行多线程并发测速...")
         temp_config = {
@@ -200,10 +188,26 @@ def main():
         with open('temp.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False)
 
-        process = subprocess.Popen(['./mihomo', '-d', '.', '-f', 'temp.yaml'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(6) 
+        # 捕获 stderr 以便在 mihomo 崩溃时知道原因
+        process = subprocess.Popen(
+            ['./mihomo', '-d', '.', '-f', 'temp.yaml'], 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # 增加等待时间，确保 2000+ 节点加载完毕
+        time.sleep(10) 
+
+        # 检查 mihomo 是否意外退出
+        if process.poll() is not None:
+            stdout, stderr = process.communicate()
+            print(f"mihomo 进程意外退出！错误日志:\n{stderr}")
+            print("提示：通常是因为 temp.yaml 中存在 mihomo 无法识别的非法配置项。")
+            exit(1)
 
         try:
+            print("  正在发送多线程测速指令 (Timeout: 5000ms)...")
             requests.get('http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204', timeout=120)
         except Exception as e:
             print(f"  测速请求异常: {e}")
@@ -251,7 +255,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v8', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v9', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
