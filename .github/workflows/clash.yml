@@ -49,7 +49,7 @@ jobs:
         run: |
           git add clash.yaml
           if git diff --staged --quiet; then
-            echo "✅ 节点无更新，跳过提交"
+            echo "节点无更新，跳过提交"
           else
             git commit -m "chore: auto-update clash.yaml $(date '+%Y-%m-%d %H:%M:%S')"
             git push
