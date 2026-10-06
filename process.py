@@ -7,6 +7,7 @@ import urllib.parse
 import traceback
 import os
 import socket
+import signal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
@@ -23,10 +24,9 @@ IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
 UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
-# 每批 mihomo 测速的最大节点数(防止 OOM)
 BATCH_SIZE = 300
+CONTROLLER_PORT = 9090
 
-# 每种协议必需的字段(缺失则视为废节点,直接丢弃,防止 mihomo 崩溃)
 REQUIRED_FIELDS = {
     'vmess': ['uuid'],
     'vless': ['uuid'],
@@ -96,7 +96,6 @@ def sanitize_yaml_text(text):
     return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
 
 def validate_proxy_fields(p):
-    """按协议类型校验必需字段,防止字段缺失的废节点进入 mihomo"""
     ptype = str(p.get('type', '')).lower()
     required = REQUIRED_FIELDS.get(ptype, [])
     for field in required:
@@ -106,9 +105,7 @@ def validate_proxy_fields(p):
     return True
 
 def normalize_proxy_types(p):
-    """规范化关键字段类型,防止 YAML 类型推断导致的 mihomo 崩溃"""
     ptype = str(p.get('type', '')).lower()
-    
     try:
         p['port'] = int(p['port'])
         if not (1 <= p['port'] <= 65535):
@@ -129,51 +126,74 @@ def normalize_proxy_types(p):
     
     return True
 
+def wait_port_free(port, timeout=30):
+    """等待端口释放,返回 True 表示端口已可用"""
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind(('127.0.0.1', port))
+            s.close()
+            return True
+        except OSError:
+            time.sleep(0.5)
+    return False
+
 def kill_residual_mihomo():
-    """清理可能残留的 mihomo 进程,防止端口冲突"""
+    """用 SIGKILL 强制清理残留的 mihomo 进程"""
     try:
-        subprocess.run(['pkill', '-9', '-f', 'mihomo'],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                       timeout=5)
-        time.sleep(1)
+        subprocess.run(
+            ['pkill', '-9', '-f', './mihomo'],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5
+        )
     except Exception:
         pass
+    time.sleep(1)
 
 def test_batch(proxies, batch_id, total_batches):
     """单批次 mihomo 测速,返回 {name: delay} 字典"""
     print(f"  批次 {batch_id}/{total_batches}: {len(proxies)} 个节点")
     
+    # 前置:强力清理 + 等待端口释放
+    kill_residual_mihomo()
+    if not wait_port_free(CONTROLLER_PORT, timeout=30):
+        print(f"    警告: 端口 {CONTROLLER_PORT} 30 秒未释放,跳过本批")
+        return {}
+    
+    temp_file = f'temp_batch_{batch_id}.yaml'
     temp_config = {
-        'mixed-port': 7890, 
-        'allow-lan': True, 
+        'mixed-port': 7890,
+        'allow-lan': True,
         'log-level': 'warning',
-        'external-controller': '127.0.0.1:9090',
+        'external-controller': f'127.0.0.1:{CONTROLLER_PORT}',
         'profile': {'store-selected': False, 'store-fake-ip': False},
         'proxies': proxies,
         'proxy-groups': [{
-            'name': 'TEST-GROUP', 
-            'type': 'url-test', 
-            'proxies': [p['name'] for p in proxies], 
-            'url': 'http://www.gstatic.com/generate_204', 
+            'name': 'TEST-GROUP',
+            'type': 'url-test',
+            'proxies': [p['name'] for p in proxies],
+            'url': 'http://www.gstatic.com/generate_204',
             'interval': 300
         }]
     }
     
-    with open('temp.yaml', 'w', encoding='utf-8') as f:
+    with open(temp_file, 'w', encoding='utf-8') as f:
         yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
     
     process = subprocess.Popen(
-        ['./mihomo', '-d', '.', '-f', 'temp.yaml'],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ['./mihomo', '-d', '.', '-f', temp_file],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        preexec_fn=os.setsid  # 独立进程组,便于整组 kill
     )
     
-    # 轮询等待 API 就绪,最多 30 秒(每 0.5 秒检查一次)
+    # 轮询等待 API 就绪,最多 60 秒
     ready = False
-    for _ in range(60):
+    for _ in range(120):
         if process.poll() is not None:
             break
         try:
-            r = requests.get('http://127.0.0.1:9090/version', timeout=1)
+            r = requests.get(f'http://127.0.0.1:{CONTROLLER_PORT}/version', timeout=1)
             if r.status_code == 200:
                 ready = True
                 break
@@ -181,91 +201,111 @@ def test_batch(proxies, batch_id, total_batches):
             pass
         time.sleep(0.5)
     
-    # 检查 mihomo 是否提前退出
+    # 提前退出诊断
     if process.poll() is not None:
         stdout, stderr = process.communicate()
-        print(f"    批次 {batch_id} mihomo 提前退出")
+        print(f"    批次 {batch_id} mihomo 提前退出 (返回码: {process.returncode})")
         if stderr.strip():
-            print(f"    stderr: {stderr[:500]}")
-        # 保留失败批次的 temp.yaml 供诊断
+            print(f"    stderr: {stderr[:800]}")
+        if stdout.strip():
+            # 打印最后几行 stdout 帮助诊断
+            last_lines = stdout.strip().split('\n')[-5:]
+            print(f"    stdout 最后 5 行:")
+            for line in last_lines:
+                print(f"      {line[:200]}")
         try:
-            os.rename('temp.yaml', f'failed_batch_{batch_id}.yaml')
+            os.rename(temp_file, f'failed_batch_{batch_id}.yaml')
             print(f"    已保留失败配置: failed_batch_{batch_id}.yaml")
         except Exception:
             pass
         return {}
     
     if not ready:
-        print(f"    批次 {batch_id} mihomo 30 秒未就绪,强制终止")
-        process.terminate()
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            process.kill()
+        print(f"    批次 {batch_id} mihomo 60 秒未就绪,强制终止")
+        _force_kill_process_group(process)
         return {}
     
     # 触发测速
     try:
         requests.get(
-            'http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204',
-            timeout=120
+            f'http://127.0.0.1:{CONTROLLER_PORT}/proxies/TEST-GROUP/delay'
+            f'?timeout=5000&url=http://www.gstatic.com/generate_204',
+            timeout=180
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"    批次 {batch_id} 测速请求异常: {str(e)[:100]}")
     
-    # 收集结果
+    # 收集结果(关键修复)
     delay_map = {}
     try:
-        res = requests.get('http://127.0.0.1:9090/proxies', timeout=10).json()
-        test_group = res['proxies'].get('TEST-GROUP', {})
-        for proxy in test_group.get('all', []):
-            name = proxy['name']
-            history = proxy.get('history', [])
-            delay_map[name] = history[-1]['delay'] if history else 99999
+        res = requests.get(f'http://127.0.0.1:{CONTROLLER_PORT}/proxies', timeout=15).json()
+        all_proxies_data = res.get('proxies', {})
+        test_group = all_proxies_data.get('TEST-GROUP', {})
+        # TEST-GROUP.all 是字符串数组(节点名),需要再查 proxies[name]
+        for proxy_name in test_group.get('all', []):
+            proxy_obj = all_proxies_data.get(proxy_name, {})
+            history = proxy_obj.get('history', [])
+            if history:
+                delay_map[proxy_name] = history[-1].get('delay', 99999)
+            else:
+                delay_map[proxy_name] = 99999
+        print(f"    批次 {batch_id} 成功获取 {len(delay_map)} 个测速结果")
     except Exception as e:
-        print(f"    批次 {batch_id} 获取结果失败: {e}")
+        print(f"    批次 {batch_id} 获取结果失败: {str(e)[:100]}")
         for p in proxies:
             delay_map[p['name']] = 99999
     
-    # 终止并等待完全退出
-    process.terminate()
-    try:
-        process.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        process.kill()
-        process.wait()
+    # 强力终止(含子进程组)
+    _force_kill_process_group(process)
     
-    # 让端口释放
-    time.sleep(1)
+    # 清理临时文件
+    try:
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+    except Exception:
+        pass
+    
+    # 等待端口释放
+    if not wait_port_free(CONTROLLER_PORT, timeout=20):
+        print(f"    警告: 批次 {batch_id} 结束后端口仍未释放")
     
     return delay_map
 
+def _force_kill_process_group(process):
+    """强制杀死进程及其整个进程组,确保端口释放"""
+    try:
+        os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+    except Exception:
+        try:
+            process.kill()
+        except Exception:
+            pass
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        pass
+    time.sleep(1)
+
 def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
-    """通用策略组构建函数"""
     pool_names = sorted(list(country_pools.keys()))
     groups = []
     
     groups.append({
-        'name': 'AUTO-FAST',
-        'type': 'url-test',
+        'name': 'AUTO-FAST', 'type': 'url-test',
         'proxies': [p['name'] for p in active_proxies],
-        'url': 'http://www.gstatic.com/generate_204',
-        'interval': 120
+        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
     })
     
     for pool_name in pool_names:
         groups.append({
-            'name': pool_name,
-            'type': 'url-test',
+            'name': pool_name, 'type': 'url-test',
             'proxies': country_pools[pool_name],
-            'url': 'http://www.gstatic.com/generate_204',
-            'interval': 120
+            'url': 'http://www.gstatic.com/generate_204', 'interval': 120
         })
         
     if untested_proxies:
         groups.append({
-            'name': 'UNTESTED',
-            'type': 'select',
+            'name': 'UNTESTED', 'type': 'select',
             'proxies': [p['name'] for p in untested_proxies]
         })
         
@@ -274,20 +314,16 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
         ai_pool_proxies = [p['name'] for p in active_proxies]
         
     groups.append({
-        'name': 'AI-POOL',
-        'type': 'url-test',
+        'name': 'AI-POOL', 'type': 'url-test',
         'proxies': ai_pool_proxies[:ai_pool_limit],
-        'url': 'http://www.gstatic.com/generate_204',
-        'interval': 120
+        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
     })
     
     fallback_proxies = ['AUTO-FAST'] + pool_names
     groups.append({
-        'name': 'FALLBACK',
-        'type': 'fallback',
+        'name': 'FALLBACK', 'type': 'fallback',
         'proxies': fallback_proxies,
-        'url': 'http://www.gstatic.com/generate_204',
-        'interval': 120
+        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
     })
     
     proxy_proxies = ['AUTO-FAST', 'FALLBACK'] + pool_names
@@ -295,8 +331,7 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
         proxy_proxies.append('UNTESTED')
         
     groups.append({
-        'name': 'PROXY',
-        'type': 'select',
+        'name': 'PROXY', 'type': 'select',
         'proxies': proxy_proxies
     })
     
@@ -412,7 +447,6 @@ def main():
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
             
-            # REALITY short-id 严格校验与隔离分流
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
                 sid_raw = p['reality-opts'].get('short-id', '')
                 sid_str = str(sid_raw).strip() if sid_raw is not None else ""
@@ -456,7 +490,6 @@ def main():
         print(f"  已丢弃字段类型错误的节点: {type_error_count} 个")
         print(f"  已重命名以避免重名的节点: {renamed_count} 个")
         print(f"  已隔离格式异常的 REALITY 节点至 UNTESTED 分类: {untested_count} 个")
-        print(f"  触发 ip-api.com 尝试识别次数: {ip_api_checked_count} 次 (实际请求上限 {MAX_IP_API_CALLS} 次)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
         if not unique_proxies:
@@ -495,10 +528,12 @@ def main():
         total_batches = (len(alive_proxies) + BATCH_SIZE - 1) // BATCH_SIZE
         print(f"\n步骤 3: 分批启动 mihomo 进行真实协议测速 (共 {total_batches} 批,每批最多 {BATCH_SIZE} 个)...")
         
-        # 前置清理,防止端口残留
+        # 前置全局清理
         kill_residual_mihomo()
+        wait_port_free(CONTROLLER_PORT, timeout=20)
         
         delay_map = {}
+        failed_batches = 0
         for batch_idx in range(total_batches):
             start = batch_idx * BATCH_SIZE
             end = min(start + BATCH_SIZE, len(alive_proxies))
@@ -506,8 +541,12 @@ def main():
             
             batch_delays = test_batch(batch, batch_idx + 1, total_batches)
             delay_map.update(batch_delays)
+            
+            if not batch_delays:
+                failed_batches += 1
 
-        print(f"\n  测速完成,共获得 {len([d for d in delay_map.values() if 0 < d < 5000])} 个有效延迟数据")
+        valid_delays = [d for d in delay_map.values() if 0 < d < 5000]
+        print(f"\n  测速完成: 成功批次 {total_batches - failed_batches}/{total_batches}, 有效延迟数据 {len(valid_delays)} 个")
 
         # ==========================================
         # 步骤 4: 收集所有可用节点,并按国家分组排序
@@ -532,6 +571,11 @@ def main():
             print(f"  {country}: 共 {len(items)} 个可用节点 (最低延迟: {items[0][1]}ms)")
 
         print(f"\n总计筛选出 {len(available_proxies)} 个高质量可用节点")
+
+        # 若一个都没测到,退出且不生成空文件
+        if not available_proxies:
+            print("\n未测出任何可用节点,不生成输出文件。请检查上方失败批次的诊断信息。")
+            exit(1)
 
         # ==========================================
         # 步骤 5: 生成 all-clash.yaml
