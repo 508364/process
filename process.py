@@ -75,7 +75,6 @@ def tcp_ping(server, port, timeout=1.5):
         return False
 
 def sanitize_yaml_text(text):
-    """防护 1: 移除导致 Python yaml 解析失败的特殊控制字符 (如 \x009f)"""
     return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
 
 def main():
@@ -137,9 +136,6 @@ def main():
 
         print(f"\n合并后节点总数: {len(all_proxies)}")
 
-        # ==========================================
-        # 步骤 2: 节点清洗、去重、校验与国家识别
-        # ==========================================
         print("\n步骤 2: 执行节点清洗、去重与国家识别...")
         seen = set()
         unique_proxies = []
@@ -150,7 +146,6 @@ def main():
         for p in all_proxies:
             if not isinstance(p, dict): continue
             
-            # 防护 2: 严格的字段校验，丢弃真正缺少核心字段的废节点
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
@@ -177,11 +172,10 @@ def main():
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
             
-            # 防护 3: 智能修复 REALITY 节点的 short-id，保留优质节点并防止 mihomo 崩溃
+            # 终极防护：智能修复 REALITY short-id，防止 mihomo 崩溃
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
                 short_id_raw = p['reality-opts'].get('short-id', '')
                 
-                # 处理 YAML 将 '0123' 错误解析为整数 123 的情况
                 if short_id_raw is None:
                     short_id_str = ""
                 else:
@@ -193,8 +187,7 @@ def main():
                 if is_valid:
                     p['reality-opts']['short-id'] = short_id_str
                 else:
-                    # 终极兜底：如果 short-id 损坏，降级为空字符串 ""。
-                    # 在 Xray/mihomo 规范中，"" 表示不校验 short-id，节点依然可以尝试连接，且 100% 不会导致 fatal 崩溃。
+                    # 降级为空字符串，Xray 规范允许 "" 表示不校验 short-id
                     p['reality-opts']['short-id'] = ""
                     reality_fixed_count += 1
 
@@ -214,9 +207,6 @@ def main():
             print("过滤后无有效节点，退出。")
             exit(1)
 
-        # ==========================================
-        # 步骤 2.5: 协议感知型智能初筛
-        # ==========================================
         print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行，TCP协议极速Ping)...")
         alive_proxies = []
         
@@ -243,17 +233,23 @@ def main():
 
         print(f"  初筛完成！剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个，剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
 
-        # ==========================================
-        # 步骤 3: mihomo 真实协议测速
-        # ==========================================
         print("\n步骤 3: 启动 mihomo 进行多线程真实协议测速...")
         temp_config = {
             'mixed-port': 7890, 'allow-lan': True, 'log-level': 'warning',
             'external-controller': '127.0.0.1:9090', 'proxies': alive_proxies,
             'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in alive_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
         }
+        
+        # 杀手锏：生成 YAML 文本后，强制给 short-id 加上双引号，防止 mihomo 的 YAML 解析器将其误判为整数
+        yaml_text = yaml.safe_dump(temp_config, allow_unicode=True, sort_keys=False, width=1000)
+        
+        # 1. 强制给没有引号的字母数字 short-id 加上双引号 (例如 short-id: 00 -> short-id: "00")
+        yaml_text = re.sub(r'(short-id:\s*)([a-zA-Z0-9]+)', r'\1"\2"', yaml_text)
+        # 2. 确保空的 short-id 也是明确的字符串
+        yaml_text = re.sub(r'short-id:\s*$', 'short-id: ""', yaml_text, flags=re.MULTILINE)
+        
         with open('temp.yaml', 'w', encoding='utf-8') as f:
-            yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False)
+            f.write(yaml_text)
 
         process = subprocess.Popen(
             ['./mihomo', '-d', '.', '-f', 'temp.yaml'], 
@@ -268,7 +264,11 @@ def main():
             stdout, stderr = process.communicate()
             print(f"\nmihomo 进程意外退出！")
             print(f"错误日志 (stderr):\n{stderr}")
-            print(f"标准输出 (stdout):\n{stdout}")
+            # 打印出 temp.yaml 中包含 short-id 的行，帮助最终定位
+            print("\ntemp.yaml 中的 short-id 配置片段:")
+            for line in yaml_text.split('\n'):
+                if 'short-id' in line:
+                    print(f"   {line}")
             exit(1)
 
         try:
@@ -290,9 +290,6 @@ def main():
         process.wait()
         print("mihomo 核心已停止")
 
-        # ==========================================
-        # 步骤 4: 按国家筛选 Top 20 并生成最终配置
-        # ==========================================
         print("\n步骤 4: 按国家筛选 Top 20 低延迟节点:")
         country_groups = {}
         for p in alive_proxies:
@@ -319,7 +316,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v15', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v16', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
