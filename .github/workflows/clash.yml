@@ -7,49 +7,48 @@ on:
 
 jobs:
   update:
-    # 使用 ubuntu-latest，原生工具链会自动适配最新版本 (24.04/26.04)
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      # 1. 原生 Git Checkout (彻底绕过 Node.js Action 的 version 限制)
       - name: Native Git Checkout
         run: |
           git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      # 2. 下载 Subconverter (处理 Base64/URI 转换)
       - name: Download Subconverter
         run: |
+          echo "⬇️ 下载 subconverter..."
           wget -qO- https://github.com/tindy2013/subconverter/releases/download/v0.7.2/subconverter_linux64.tar.gz | tar xz
           chmod +x subconverter/subconverter
           mv subconverter/subconverter .
           rm -rf subconverter
+          echo "✅ subconverter 准备就绪"
 
-      # 3. 下载 Mihomo (Clash.Meta 多线程测速核心)
       - name: Download Mihomo
         run: |
+          echo "⬇️ 下载 mihomo..."
           wget -qO- https://github.com/MetaCubeX/mihomo/releases/download/v1.18.8/mihomo-linux-amd64-compatible-v1.18.8.gz | gunzip > mihomo
           chmod +x mihomo
+          echo "✅ mihomo 准备就绪"
 
-      # 4. 安装 Python 依赖 (使用 Ubuntu 原生自带的 python3 和 pip3)
-      - name: Install Python dependencies
+      - name: Install Python dependencies (使用 apt 绕过 PEP 668 限制)
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pyyaml requests
+          echo "⬇️ 安装 Python 依赖..."
+          sudo apt-get update -y
+          sudo apt-get install -y python3-yaml python3-requests
+          echo "✅ Python 依赖安装完成"
 
-      # 5. 执行核心处理脚本
       - name: Run processing script
         run: python3 process.py
 
-      # 6. 提交并推送更改
       - name: Commit and push changes
         run: |
           git add clash.yaml
           if git diff --staged --quiet; then
-            echo "节点无更新，跳过提交"
+            echo "✅ 节点无更新，跳过提交"
           else
             git commit -m "chore: auto-update clash.yaml $(date '+%Y-%m-%d %H:%M:%S')"
             git push
