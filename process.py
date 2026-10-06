@@ -23,6 +23,9 @@ IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
 UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
+# 每批 mihomo 测速的最大节点数(防止 OOM)
+BATCH_SIZE = 300
+
 # 每种协议必需的字段(缺失则视为废节点,直接丢弃,防止 mihomo 崩溃)
 REQUIRED_FIELDS = {
     'vmess': ['uuid'],
@@ -106,7 +109,6 @@ def normalize_proxy_types(p):
     """规范化关键字段类型,防止 YAML 类型推断导致的 mihomo 崩溃"""
     ptype = str(p.get('type', '')).lower()
     
-    # port 必须是整数
     try:
         p['port'] = int(p['port'])
         if not (1 <= p['port'] <= 65535):
@@ -114,13 +116,11 @@ def normalize_proxy_types(p):
     except (ValueError, TypeError):
         return False
     
-    # server 必须是纯字符串,不能是 IP 或域名以外的东西
     server = str(p.get('server', '')).strip()
     if not server or ' ' in server:
         return False
     p['server'] = server
     
-    # vmess 的 alterId 必须是整数
     if ptype == 'vmess':
         try:
             p['alterId'] = int(p.get('alterId', 0))
@@ -129,8 +129,119 @@ def normalize_proxy_types(p):
     
     return True
 
+def kill_residual_mihomo():
+    """清理可能残留的 mihomo 进程,防止端口冲突"""
+    try:
+        subprocess.run(['pkill', '-9', '-f', 'mihomo'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       timeout=5)
+        time.sleep(1)
+    except Exception:
+        pass
+
+def test_batch(proxies, batch_id, total_batches):
+    """单批次 mihomo 测速,返回 {name: delay} 字典"""
+    print(f"  批次 {batch_id}/{total_batches}: {len(proxies)} 个节点")
+    
+    temp_config = {
+        'mixed-port': 7890, 
+        'allow-lan': True, 
+        'log-level': 'warning',
+        'external-controller': '127.0.0.1:9090',
+        'profile': {'store-selected': False, 'store-fake-ip': False},
+        'proxies': proxies,
+        'proxy-groups': [{
+            'name': 'TEST-GROUP', 
+            'type': 'url-test', 
+            'proxies': [p['name'] for p in proxies], 
+            'url': 'http://www.gstatic.com/generate_204', 
+            'interval': 300
+        }]
+    }
+    
+    with open('temp.yaml', 'w', encoding='utf-8') as f:
+        yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
+    
+    process = subprocess.Popen(
+        ['./mihomo', '-d', '.', '-f', 'temp.yaml'],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    
+    # 轮询等待 API 就绪,最多 30 秒(每 0.5 秒检查一次)
+    ready = False
+    for _ in range(60):
+        if process.poll() is not None:
+            break
+        try:
+            r = requests.get('http://127.0.0.1:9090/version', timeout=1)
+            if r.status_code == 200:
+                ready = True
+                break
+        except Exception:
+            pass
+        time.sleep(0.5)
+    
+    # 检查 mihomo 是否提前退出
+    if process.poll() is not None:
+        stdout, stderr = process.communicate()
+        print(f"    批次 {batch_id} mihomo 提前退出")
+        if stderr.strip():
+            print(f"    stderr: {stderr[:500]}")
+        # 保留失败批次的 temp.yaml 供诊断
+        try:
+            os.rename('temp.yaml', f'failed_batch_{batch_id}.yaml')
+            print(f"    已保留失败配置: failed_batch_{batch_id}.yaml")
+        except Exception:
+            pass
+        return {}
+    
+    if not ready:
+        print(f"    批次 {batch_id} mihomo 30 秒未就绪,强制终止")
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+        return {}
+    
+    # 触发测速
+    try:
+        requests.get(
+            'http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204',
+            timeout=120
+        )
+    except Exception:
+        pass
+    
+    # 收集结果
+    delay_map = {}
+    try:
+        res = requests.get('http://127.0.0.1:9090/proxies', timeout=10).json()
+        test_group = res['proxies'].get('TEST-GROUP', {})
+        for proxy in test_group.get('all', []):
+            name = proxy['name']
+            history = proxy.get('history', [])
+            delay_map[name] = history[-1]['delay'] if history else 99999
+    except Exception as e:
+        print(f"    批次 {batch_id} 获取结果失败: {e}")
+        for p in proxies:
+            delay_map[p['name']] = 99999
+    
+    # 终止并等待完全退出
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+    
+    # 让端口释放
+    time.sleep(1)
+    
+    return delay_map
+
 def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
-    """通用策略组构建函数,确保 all-clash.yaml 和 clash.yaml 结构完全一致"""
+    """通用策略组构建函数"""
     pool_names = sorted(list(country_pools.keys()))
     groups = []
     
@@ -250,8 +361,8 @@ def main():
         print(f"\n合并后节点总数: {len(all_proxies)}")
 
         print("\n步骤 2: 执行节点清洗、去重、类型规范化与国家识别...")
-        seen_keys = set()        # 去重:server|port|type
-        seen_names = set()       # 保证 name 唯一(mihomo 不接受重名)
+        seen_keys = set()
+        seen_names = set()
         unique_proxies = []
         untested_proxies = []
         excluded_count = 0
@@ -267,17 +378,14 @@ def main():
                 invalid_count += 1
                 continue
             
-            # 1. 基础字段校验
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
             
-            # 2. 类型规范化(port 转 int,alterId 转 int 等)
             if not normalize_proxy_types(p):
                 type_error_count += 1
                 continue
             
-            # 3. 按协议校验必需字段
             if not validate_proxy_fields(p):
                 invalid_field_count += 1
                 continue
@@ -304,7 +412,7 @@ def main():
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
             
-            # 4. REALITY short-id 严格校验与隔离分流
+            # REALITY short-id 严格校验与隔离分流
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
                 sid_raw = p['reality-opts'].get('short-id', '')
                 sid_str = str(sid_raw).strip() if sid_raw is not None else ""
@@ -312,7 +420,6 @@ def main():
                 is_valid = (sid_str == "") or (re.match(r'^[0-9a-fA-F]+$', sid_str) and len(sid_str) % 2 == 0 and 2 <= len(sid_str) <= 16)
                 
                 if not is_valid:
-                    # 唯一化 name
                     base = f"UNTESTED-{name}"
                     final = base
                     counter = 1
@@ -325,13 +432,11 @@ def main():
                     untested_count += 1
                     continue
 
-            # 5. 去重(按 server|port|type)
             dedup_key = f"{server}|{port}|{ptype}"
             if dedup_key in seen_keys:
                 continue
             seen_keys.add(dedup_key)
             
-            # 6. name 唯一化(mihomo 拒绝重名)
             base = name
             final = base
             counter = 1
@@ -384,53 +489,25 @@ def main():
 
         print(f"  初筛完成!剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个,剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
 
-        print("\n步骤 3: 启动 mihomo 进行多线程真实协议测速...")
-        temp_config = {
-            'mixed-port': 7890, 'allow-lan': True, 'log-level': 'warning',
-            'external-controller': '127.0.0.1:9090', 'proxies': alive_proxies,
-            'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in alive_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
-        }
+        # ==========================================
+        # 步骤 3: 分批进行 mihomo 真实协议测速
+        # ==========================================
+        total_batches = (len(alive_proxies) + BATCH_SIZE - 1) // BATCH_SIZE
+        print(f"\n步骤 3: 分批启动 mihomo 进行真实协议测速 (共 {total_batches} 批,每批最多 {BATCH_SIZE} 个)...")
         
-        with open('temp.yaml', 'w', encoding='utf-8') as f:
-            yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
-
-        # 用 PIPE 捕获 stderr,崩溃时打印诊断
-        process = subprocess.Popen(
-            ['./mihomo', '-d', '.', '-f', 'temp.yaml'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        time.sleep(5) 
-
-        if process.poll() is not None:
-            stdout, stderr = process.communicate()
-            print(f"\nmihomo 进程意外退出!")
-            print(f"错误日志 (stderr):\n{stderr[:3000]}")
-            print(f"标准输出 (stdout):\n{stdout[:1000]}")
-            print("\n诊断建议:")
-            print("  - 检查是否有未知协议类型(如 'wireguard'、'ssh' 等未被 REQUIRED_FIELDS 覆盖)")
-            print("  - 检查是否有特殊字符未转义(如 ss 密码含空格)")
-            print("  - 检查 temp.yaml 中的 proxies 段是否格式正确")
-            exit(1)
-
-        try:
-            requests.get('http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204', timeout=60)
-        except Exception:
-            pass
-
+        # 前置清理,防止端口残留
+        kill_residual_mihomo()
+        
         delay_map = {}
-        try:
-            res = requests.get('http://127.0.0.1:9090/proxies', timeout=10).json()
-            test_group = res['proxies'].get('TEST-GROUP', {})
-            for proxy in test_group.get('all', []):
-                delay_map[proxy['name']] = proxy.get('history', [])[-1]['delay'] if proxy.get('history') else 99999
-        except Exception:
-            delay_map = {p['name']: 99999 for p in alive_proxies}
+        for batch_idx in range(total_batches):
+            start = batch_idx * BATCH_SIZE
+            end = min(start + BATCH_SIZE, len(alive_proxies))
+            batch = alive_proxies[start:end]
+            
+            batch_delays = test_batch(batch, batch_idx + 1, total_batches)
+            delay_map.update(batch_delays)
 
-        process.terminate()
-        process.wait()
-        print("mihomo 核心已停止")
+        print(f"\n  测速完成,共获得 {len([d for d in delay_map.values() if 0 < d < 5000])} 个有效延迟数据")
 
         # ==========================================
         # 步骤 4: 收集所有可用节点,并按国家分组排序
