@@ -27,15 +27,12 @@ UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 BATCH_SIZE = 300
 CONTROLLER_PORT = 9090
 
-# 协议白名单:只保留 mihomo 明确支持的协议,其余直接丢弃
-# 特别排除: anytls(mihomo 部分版本不支持)、wireguard(字段复杂易崩)
 SUPPORTED_PROXY_TYPES = {
     'ss', 'ssr', 'vmess', 'vless', 'trojan', 'snell',
     'http', 'socks5',
     'hysteria', 'hysteria2', 'tuic',
 }
 
-# 每种协议必需字段
 REQUIRED_FIELDS = {
     'vmess': ['uuid'],
     'vless': ['uuid'],
@@ -49,6 +46,19 @@ REQUIRED_FIELDS = {
     'http': [],
     'socks5': [],
 }
+
+# ============================================================
+# 关键修复:用 QuotedStr 强制 YAML 双引号输出
+# ============================================================
+class QuotedStr(str):
+    """一种特殊的字符串,序列化时强制使用双引号,防止 YAML 类型推断"""
+    pass
+
+def _quoted_str_representer(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', str(data), style='"')
+
+yaml.SafeDumper.add_representer(QuotedStr, _quoted_str_representer)
+yaml.SafeDumper.add_representer(str, yaml.SafeDumper.yaml_representers[str])  # 保留默认 str 行为
 
 def clean_name(name):
     if not name: return "Unknown_Node"
@@ -106,33 +116,31 @@ def sanitize_yaml_text(text):
 
 def fix_short_id(raw):
     """
-    强制规范化 REALITY short-id:
-    - 非空时必须为偶数长度纯 hex
-    - 长度 0 或 2-16
-    - 无法修复则返回空字符串 ""
+    强制规范化 REALITY short-id,返回 QuotedStr 保证 YAML 中带双引号。
+    - int 0 → ""(大概率来自 '0000' 被吃零)
+    - 非空必须偶数长度纯 hex,2-16 位
+    - 无法修复 → ""
     """
     if raw is None:
-        return ""
+        return QuotedStr("")
     
-    # int 类型:转成 hex 字符串(可能原始是 '0000' 被 YAML 吃掉前导零)
     if isinstance(raw, int):
         if raw == 0:
-            return ""  # 0 大概率来自 '0000' 被吃零,直接置空最安全
+            return QuotedStr("")
         s = format(raw, 'x')
         if len(s) % 2 != 0:
             s = '0' + s
         if 2 <= len(s) <= 16:
-            return s
-        return ""
+            return QuotedStr(s.lower())
+        return QuotedStr("")
     
     s = str(raw).strip().strip('\'"')
     if s == "":
-        return ""
+        return QuotedStr("")
     
-    # 只保留 hex 字符
     clean = re.sub(r'[^0-9a-fA-F]', '', s)
     if clean == "":
-        return ""
+        return QuotedStr("")
     
     if len(clean) % 2 != 0:
         clean = '0' + clean
@@ -140,12 +148,11 @@ def fix_short_id(raw):
     clean = clean[:16]
     
     if len(clean) < 2:
-        return ""
+        return QuotedStr("")
     
-    return clean.lower()
+    return QuotedStr(clean.lower())
 
 def normalize_proxy_types(p):
-    """规范化字段类型"""
     ptype = str(p.get('type', '')).lower()
     p['type'] = ptype
     
@@ -181,24 +188,19 @@ def validate_proxy_fields(p):
     return True
 
 def sanitize_reality_opts(p):
-    """强制规范化 REALITY 相关字段,确保 mihomo 能识别"""
     ptype = str(p.get('type', '')).lower()
     if ptype != 'vless':
         return
-    
     if 'reality-opts' not in p or not isinstance(p['reality-opts'], dict):
         return
     
     opts = p['reality-opts']
     
-    # 强制 short-id 为合法字符串
     if 'short-id' in opts:
         opts['short-id'] = fix_short_id(opts['short-id'])
     else:
-        # 如果没有 short-id,补一个空字符串
-        opts['short-id'] = ""
+        opts['short-id'] = QuotedStr("")
     
-    # public-key 也强制字符串化(虽然一般不会出问题)
     if 'public-key' in opts:
         opts['public-key'] = str(opts['public-key']).strip()
 
@@ -240,7 +242,11 @@ def _force_kill_process_group(process):
     time.sleep(1)
 
 def write_mihomo_yaml(proxies, filename):
-    """输出 mihomo 兼容的 YAML,short-id 强制加引号"""
+    """
+    输出 mihomo 兼容的 YAML。
+    使用 QuotedStr 强制 short-id 加双引号(已在 sanitize_reality_opts 中处理),
+    不再做文本层正则替换。
+    """
     config = {
         'mixed-port': 7890,
         'allow-lan': True,
@@ -257,23 +263,10 @@ def write_mihomo_yaml(proxies, filename):
         }]
     }
     
-    yaml_text = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=1000)
-    
-    # 强制 short-id 加双引号(防止 YAML 类型推断)
-    yaml_text = re.sub(
-        r'(short-id:\s*)([0-9a-fA-F]*)',
-        lambda m: f'{m.group(1)}"{m.group(2)}"',
-        yaml_text
-    )
-    
     with open(filename, 'w', encoding='utf-8') as f:
-        f.write(yaml_text)
+        yaml.safe_dump(config, f, allow_unicode=True, sort_keys=False, width=1000)
 
 def test_batch(proxies, batch_id, total_batches, allow_split=True):
-    """
-    单批次测速。若 mihomo 崩溃且 allow_split=True,自动二分拆批重试。
-    返回 {name: delay}
-    """
     if not proxies:
         return {}
     
@@ -307,7 +300,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
             pass
         time.sleep(0.5)
     
-    # mihomo 提前退出
     if process.poll() is not None:
         stdout, stderr = process.communicate()
         print(f"    {label} mihomo 提前退出 (返回码: {process.returncode})")
@@ -322,7 +314,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
             pass
         _force_kill_process_group(process)
         
-        # 二分拆批重试
         if allow_split and len(proxies) > 1:
             mid = len(proxies) // 2
             print(f"    {label} 二分拆批重试: {mid} + {len(proxies) - mid}")
@@ -330,7 +321,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
             r2 = test_batch(proxies[mid:], f"{batch_id}b", total_batches, allow_split=False)
             return {**r1, **r2}
         else:
-            # 单个节点也失败,说明无法定位,丢弃
             return {}
     
     if not ready:
@@ -338,7 +328,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
         _force_kill_process_group(process)
         return {}
     
-    # 触发测速
     try:
         requests.get(
             f'http://127.0.0.1:{CONTROLLER_PORT}/proxies/TEST-GROUP/delay'
@@ -348,7 +337,6 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     except Exception as e:
         print(f"    {label} 测速请求异常: {str(e)[:100]}")
     
-    # 收集结果
     delay_map = {}
     try:
         res = requests.get(f'http://127.0.0.1:{CONTROLLER_PORT}/proxies', timeout=15).json()
@@ -513,7 +501,6 @@ def main():
                 type_error_count += 1
                 continue
             
-            # 协议白名单
             if not validate_proxy_fields(p):
                 ptype = str(p.get('type', '')).lower()
                 if ptype not in SUPPORTED_PROXY_TYPES:
@@ -522,7 +509,6 @@ def main():
                     invalid_field_count += 1
                 continue
             
-            # 规范化 REALITY short-id
             sanitize_reality_opts(p)
                 
             name = clean_name(p.get('name', ''))
@@ -604,9 +590,6 @@ def main():
 
         print(f"  初筛完成!剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个,剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
 
-        # ==========================================
-        # 步骤 3: 分批进行 mihomo 真实协议测速
-        # ==========================================
         total_batches = (len(alive_proxies) + BATCH_SIZE - 1) // BATCH_SIZE
         print(f"\n步骤 3: 分批启动 mihomo 进行真实协议测速 (共 {total_batches} 批,每批最多 {BATCH_SIZE} 个)...")
         
@@ -625,9 +608,6 @@ def main():
         valid_delays = [d for d in delay_map.values() if 0 < d < 5000]
         print(f"\n  测速完成: 有效延迟数据 {len(valid_delays)} 个")
 
-        # ==========================================
-        # 步骤 4: 收集所有可用节点,并按国家分组排序
-        # ==========================================
         print("\n步骤 4: 整理可用节点并生成双配置文件...")
         available_proxies = []
         available_country_groups = {}
@@ -653,9 +633,6 @@ def main():
             print("\n未测出任何可用节点,不生成输出文件。")
             exit(1)
 
-        # ==========================================
-        # 步骤 5: 生成 all-clash.yaml
-        # ==========================================
         all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
@@ -667,20 +644,10 @@ def main():
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
 
-        # 最终文件也强制 short-id 加引号
-        yaml_text = yaml.safe_dump(all_config, allow_unicode=True, sort_keys=False, width=1000)
-        yaml_text = re.sub(
-            r'(short-id:\s*)([0-9a-fA-F]*)',
-            lambda m: f'{m.group(1)}"{m.group(2)}"',
-            yaml_text
-        )
         with open('all-clash.yaml', 'w', encoding='utf-8') as f:
-            f.write(yaml_text)
+            yaml.safe_dump(all_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 all-clash.yaml (包含所有可用节点)")
 
-        # ==========================================
-        # 步骤 6: 生成 clash.yaml (每个国家仅保留 Top 20)
-        # ==========================================
         top_20_proxies = []
         top_20_country_pools = {}
         for country, items in available_country_groups.items():
@@ -700,14 +667,8 @@ def main():
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
 
-        yaml_text = yaml.safe_dump(top_20_config, allow_unicode=True, sort_keys=False, width=1000)
-        yaml_text = re.sub(
-            r'(short-id:\s*)([0-9a-fA-F]*)',
-            lambda m: f'{m.group(1)}"{m.group(2)}"',
-            yaml_text
-        )
         with open('clash.yaml', 'w', encoding='utf-8') as f:
-            f.write(yaml_text)
+            yaml.safe_dump(top_20_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 clash.yaml (每个国家仅保留 Top 20)")
 
     except Exception as e:
