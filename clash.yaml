@@ -1,0 +1,40 @@
+mixed-port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: true
+unified-delay: true
+tcp-concurrent: true
+global-client-fingerprint: chrome
+generated-by: github-actions-auto-merge-v8
+generated-at: '2026-10-06T14:44:14.077361+00:00'
+proxies: []
+proxy-groups:
+- name: AUTO-FAST
+  type: url-test
+  proxies: []
+  url: http://www.gstatic.com/generate_204
+  interval: 120
+- name: AI-POOL
+  type: url-test
+  proxies: []
+  url: http://www.gstatic.com/generate_204
+  interval: 120
+- name: FALLBACK
+  type: fallback
+  proxies:
+  - AUTO-FAST
+  url: http://www.gstatic.com/generate_204
+  interval: 120
+- name: PROXY
+  type: select
+  proxies:
+  - AUTO-FAST
+  - FALLBACK
+rules:
+- DOMAIN-SUFFIX,openai.com,AI-POOL
+- DOMAIN-SUFFIX,chatgpt.com,AI-POOL
+- DOMAIN-SUFFIX,claude.ai,AI-POOL
+- DOMAIN-SUFFIX,anthropic.com,AI-POOL
+- GEOIP,CN,DIRECT
+- MATCH,PROXY
