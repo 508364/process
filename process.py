@@ -81,7 +81,6 @@ def main():
     try:
         all_proxies = []
         raw_text_for_subconverter = ""
-        reality_fixed_count = 0
 
         print("步骤 1: 智能下载与解析订阅源...")
         for url in ALL_URLS:
@@ -139,13 +138,16 @@ def main():
         print("\n步骤 2: 执行节点清洗、去重与国家识别...")
         seen = set()
         unique_proxies = []
+        untested_proxies = []  # 专门用于存放格式异常的节点
         excluded_count = 0
         invalid_count = 0
         ip_api_checked_count = 0
+        untested_count = 0
         
         for p in all_proxies:
             if not isinstance(p, dict): continue
             
+            # 1. 基础字段校验
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
@@ -172,34 +174,30 @@ def main():
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
             
-            # 终极防护：智能修复 REALITY short-id，防止 mihomo 崩溃
+            # 2. REALITY short-id 严格校验与隔离分流
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
-                short_id_raw = p['reality-opts'].get('short-id', '')
+                sid_raw = p['reality-opts'].get('short-id', '')
+                sid_str = str(sid_raw).strip() if sid_raw is not None else ""
                 
-                if short_id_raw is None:
-                    short_id_str = ""
-                else:
-                    short_id_str = str(short_id_raw).strip()
+                # 校验规则：必须是空字符串，或者 2-16 位的偶数长度纯十六进制字符串
+                is_valid = (sid_str == "") or (re.match(r'^[0-9a-fA-F]+$', sid_str) and len(sid_str) % 2 == 0 and 2 <= len(sid_str) <= 16)
                 
-                # 严格校验：必须是空字符串，或者 2-16 位的【偶数长度】十六进制字符串
-                is_valid = (short_id_str == "") or (re.match(r'^[0-9a-fA-F]+$', short_id_str) and len(short_id_str) % 2 == 0 and 2 <= len(short_id_str) <= 16)
-                
-                if is_valid:
-                    p['reality-opts']['short-id'] = short_id_str
-                else:
-                    # 降级为空字符串，Xray 规范允许 "" 表示不校验 short-id
-                    p['reality-opts']['short-id'] = ""
-                    reality_fixed_count += 1
+                if not is_valid:
+                    # 格式异常，隔离到未测试列表，不进入 mihomo 测速队列
+                    p['name'] = f"[未测试-格式异常] {name}"
+                    untested_proxies.append(p)
+                    untested_count += 1
+                    continue # 跳过后续的正常入库逻辑
 
+            # 3. 正常节点入库
             key = f"{name}|{server}|{port}|{ptype}"
-            
             if key not in seen:
                 seen.add(key)
                 unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
         print(f"  已丢弃真正缺失字段的废节点: {invalid_count} 个")
-        print(f"  已智能修复损坏的 REALITY short-id: {reality_fixed_count} 个 (降级为不校验，防止崩溃)")
+        print(f"  已隔离格式异常的 REALITY 节点至 [未测试] 分类: {untested_count} 个")
         print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
@@ -240,16 +238,8 @@ def main():
             'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in alive_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
         }
         
-        # 杀手锏：生成 YAML 文本后，强制给 short-id 加上双引号，防止 mihomo 的 YAML 解析器将其误判为整数
-        yaml_text = yaml.safe_dump(temp_config, allow_unicode=True, sort_keys=False, width=1000)
-        
-        # 1. 强制给没有引号的字母数字 short-id 加上双引号 (例如 short-id: 00 -> short-id: "00")
-        yaml_text = re.sub(r'(short-id:\s*)([a-zA-Z0-9]+)', r'\1"\2"', yaml_text)
-        # 2. 确保空的 short-id 也是明确的字符串
-        yaml_text = re.sub(r'short-id:\s*$', 'short-id: ""', yaml_text, flags=re.MULTILINE)
-        
         with open('temp.yaml', 'w', encoding='utf-8') as f:
-            f.write(yaml_text)
+            yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
 
         process = subprocess.Popen(
             ['./mihomo', '-d', '.', '-f', 'temp.yaml'], 
@@ -264,11 +254,6 @@ def main():
             stdout, stderr = process.communicate()
             print(f"\nmihomo 进程意外退出！")
             print(f"错误日志 (stderr):\n{stderr}")
-            # 打印出 temp.yaml 中包含 short-id 的行，帮助最终定位
-            print("\ntemp.yaml 中的 short-id 配置片段:")
-            for line in yaml_text.split('\n'):
-                if 'short-id' in line:
-                    print(f"   {line}")
             exit(1)
 
         try:
@@ -310,23 +295,40 @@ def main():
 
         print(f"\n最终筛选出 {len(final_proxies)} 个高质量节点")
 
+        # ==========================================
+        # 步骤 5: 构建最终配置 (包含未测试节点)
+        # ==========================================
         pool_names = sorted(list(country_pools.keys()))
         ai_pool_proxies = [p['name'] for p in final_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)] or [p['name'] for p in final_proxies]
+
+        # 将测速合格的节点与未测试节点合并，确保客户端能看到所有节点
+        final_proxies_for_yaml = final_proxies + untested_proxies
 
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v16', 'generated-at': datetime.now(timezone.utc).isoformat(),
-            'proxies': final_proxies,
+            'generated-by': 'github-actions-auto-merge-v18', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'proxies': final_proxies_for_yaml,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
+        
         for pool_name in pool_names:
             final_config['proxy-groups'].append({'name': pool_name, 'type': 'url-test', 'proxies': country_pools[pool_name], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120})
+            
+        # 如果有未测试节点，创建独立的 UNTESTED 分组
+        if untested_proxies:
+            untested_names = [p['name'] for p in untested_proxies]
+            final_config['proxy-groups'].append({
+                'name': 'UNTESTED (格式异常)',
+                'type': 'select',
+                'proxies': untested_names
+            })
+
         final_config['proxy-groups'].extend([
             {'name': 'AI-POOL', 'type': 'url-test', 'proxies': ai_pool_proxies[:50], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
             {'name': 'FALLBACK', 'type': 'fallback', 'proxies': ['AUTO-FAST'] + pool_names, 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
-            {'name': 'PROXY', 'type': 'select', 'proxies': ['AUTO-FAST', 'FALLBACK'] + pool_names}
+            {'name': 'PROXY', 'type': 'select', 'proxies': ['AUTO-FAST', 'FALLBACK'] + pool_names + (['UNTESTED (格式异常)'] if untested_proxies else [])}
         ])
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
