@@ -5,14 +5,20 @@ import subprocess
 import time
 import urllib.parse
 import traceback
+import os
 from datetime import datetime, timezone
 
-URLS = [
+# 1. 已经是标准 Clash YAML 的链接，直接用 Python 解析，速度极快且稳定
+CLASH_YAML_URLS = [
     "https://raw.githubusercontent.com/dongchengjie/airport/main/subs/merged/tested_within.yaml",
     "https://sunmiao4458.github.io/free-proxy-airport/clash.yaml",
     "https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/clash.yaml",
     "https://raw.githubusercontent.com/a2470982985/getNode/main/clash.yaml",
-    "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/master/dist/clash_config.yaml",
+    "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/master/dist/clash_config.yaml"
+]
+
+# 2. 需要格式转换的链接 (Base64 / 纯文本 URI)
+NEEDS_CONVERSION_URLS = [
     "https://raw.githubusercontent.com/ninjastrikers/Nexus-nodes/main/configs/all.txt"
 ]
 
@@ -65,29 +71,78 @@ def get_country_via_ip_api(server):
 
 def main():
     try:
-        print("步骤 1: 启动 subconverter 统一转换所有订阅格式...")
-        sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(3)
+        all_proxies = []
 
-        combined_url = '|'.join(URLS)
-        encoded_url = urllib.parse.quote(combined_url)
-        api_url = f"http://127.0.0.1:25500/sub?target=clash&url={encoded_url}&insert=false&emoji=false&sort=false&scv=true"
-        
-        print("  正在请求转换接口...")
-        resp = requests.get(api_url, timeout=60)
-        resp.raise_for_status()
-        
-        unified_data = yaml.safe_load(resp.text)
-        all_proxies = unified_data.get('proxies', [])
-        print(f"  subconverter 成功提取 {len(all_proxies)} 个节点")
-        
-        sub_process.terminate()
-        sub_process.wait()
+        # ==========================================
+        # 步骤 1A: 直接解析已知的 Clash YAML 链接
+        # ==========================================
+        print("步骤 1A: 直接解析标准 Clash YAML 订阅...")
+        for url in CLASH_YAML_URLS:
+            try:
+                print(f"  获取: {url}")
+                resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
+                resp.raise_for_status()
+                
+                data = yaml.safe_load(resp.text)
+                if isinstance(data, dict) and 'proxies' in data and isinstance(data['proxies'], list):
+                    all_proxies.extend(data['proxies'])
+                    print(f"  成功提取 {len(data['proxies'])} 个节点")
+                else:
+                    print(f"  格式异常，未找到 'proxies' 列表")
+            except Exception as e:
+                print(f"  获取或解析失败: {e}")
+
+        # ==========================================
+        # 步骤 1B: 使用 subconverter 转换非标准链接
+        # ==========================================
+        if NEEDS_CONVERSION_URLS:
+            print("\n步骤 1B: 启动 subconverter 转换非标准订阅...")
+            sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(3) # 等待服务启动
+
+            for url in NEEDS_CONVERSION_URLS:
+                try:
+                    print(f"  获取待转换内容: {url}")
+                    resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
+                    resp.raise_for_status()
+                    
+                    # 写入本地临时文件
+                    with open('temp_raw_subscription.txt', 'w', encoding='utf-8') as f:
+                        f.write(resp.text)
+                    
+                    # 使用 file:// 协议让 subconverter 读取本地文件，彻底避免 URL 长度限制
+                    file_url = urllib.parse.quote(f"file://{os.path.abspath('temp_raw_subscription.txt')}")
+                    api_url = f"http://127.0.0.1:25500/sub?target=clash&url={file_url}&insert=false&emoji=false&sort=false&scv=true"
+                    
+                    print(f"  正在请求 subconverter 转换...")
+                    conv_resp = requests.get(api_url, timeout=60)
+                    conv_resp.raise_for_status()
+                    
+                    converted_data = yaml.safe_load(conv_resp.text)
+                    if isinstance(converted_data, dict) and 'proxies' in converted_data and isinstance(converted_data['proxies'], list):
+                        all_proxies.extend(converted_data['proxies'])
+                        print(f"  subconverter 成功转换并提取 {len(converted_data['proxies'])} 个节点")
+                        
+                except Exception as e:
+                    print(f"  转换失败: {e}")
+                finally:
+                    # 清理临时文件
+                    if os.path.exists('temp_raw_subscription.txt'):
+                        os.remove('temp_raw_subscription.txt')
+
+            # 停止 subconverter
+            sub_process.terminate()
+            sub_process.wait()
 
         if not all_proxies:
-            print("未找到任何有效节点，退出。")
+            print("\n未找到任何有效节点，退出。")
             exit(1)
+            
+        print(f"\n合并后节点总数: {len(all_proxies)}")
 
+        # ==========================================
+        # 步骤 2: 节点清洗、去重与国家识别
+        # ==========================================
         print("\n步骤 2: 执行节点清洗、去重与国家识别...")
         seen = set()
         unique_proxies = []
@@ -133,6 +188,9 @@ def main():
             print("过滤后无有效节点，退出。")
             exit(1)
 
+        # ==========================================
+        # 步骤 3: mihomo 多线程并发测速
+        # ==========================================
         print("\n步骤 3: 启动 mihomo 进行多线程并发测速...")
         temp_config = {
             'mixed-port': 7890, 'allow-lan': True, 'log-level': 'warning',
@@ -164,6 +222,9 @@ def main():
         process.wait()
         print("mihomo 核心已停止")
 
+        # ==========================================
+        # 步骤 4: 按国家筛选 Top 20 并生成最终配置
+        # ==========================================
         print("\n步骤 4: 按国家筛选 Top 20 低延迟节点:")
         country_groups = {}
         for p in unique_proxies:
@@ -190,7 +251,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v5', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v8', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
