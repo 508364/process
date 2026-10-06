@@ -23,7 +23,11 @@ ALL_URLS = [
     "https://raw.githubusercontent.com/Ruk1ng001/freeSub/main/clash.yaml",
     "https://raw.githubusercontent.com/a2470982985/getNode/main/clash.yaml",
     "https://raw.githubusercontent.com/SnapdragonLee/SystemProxy/master/dist/clash_config.yaml",
-    "https://raw.githubusercontent.com/ninjastrikers/Nexus-nodes/main/configs/all.txt"
+    "https://raw.githubusercontent.com/ninjastrikers/Nexus-nodes/main/configs/all.txt",
+    "https://thordata.github.io/awesome-free-proxy-list/data/clash/all.yaml",
+    "https://raw.githubusercontent.com/linzjian666/chromego_extractor/main/outputs/clash_meta.yaml",
+    "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+    "https://raw.githubusercontent.com/Leo-Leejianzhao/RSS/refs/heads/main/subscribe/clash.yml"
 ]
 
 IP_API_CALLS = 0
