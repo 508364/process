@@ -7,23 +7,61 @@ unified-delay: true
 tcp-concurrent: true
 global-client-fingerprint: chrome
 generated-by: github-actions-auto-merge-all
-generated-at: '2026-10-06T16:36:54.661718+00:00'
-proxies: []
+generated-at: '2026-10-06T16:41:15.083631+00:00'
+proxies:
+- name: 未知-ED24FFFD
+  type: trojan
+  server: 104.16.71.213
+  port: 443
+  network: ws
+  password: humanity
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
+- name: 未知-BBDB37ED
+  type: trojan
+  server: 104.17.121.9
+  port: 443
+  alpn:
+  - http/1.1
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
+  skip-cert-verify: true
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
 proxy-groups:
 - name: AUTO-FAST
   type: url-test
-  proxies: []
+  proxies:
+  - 未知-ED24FFFD
+  - 未知-BBDB37ED
+  url: http://www.gstatic.com/generate_204
+  interval: 120
+- name: OTHER-POOL
+  type: url-test
+  proxies:
+  - 未知-ED24FFFD
+  - 未知-BBDB37ED
   url: http://www.gstatic.com/generate_204
   interval: 120
 - name: AI-POOL
   type: url-test
-  proxies: []
+  proxies:
+  - 未知-ED24FFFD
+  - 未知-BBDB37ED
   url: http://www.gstatic.com/generate_204
   interval: 120
 - name: FALLBACK
   type: fallback
   proxies:
   - AUTO-FAST
+  - OTHER-POOL
   url: http://www.gstatic.com/generate_204
   interval: 120
 - name: PROXY
@@ -31,6 +69,7 @@ proxy-groups:
   proxies:
   - AUTO-FAST
   - FALLBACK
+  - OTHER-POOL
 rules:
 - DOMAIN-SUFFIX,openai.com,AI-POOL
 - DOMAIN-SUFFIX,chatgpt.com,AI-POOL
