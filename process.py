@@ -77,16 +77,73 @@ def tcp_ping(server, port, timeout=1.5):
 def sanitize_yaml_text(text):
     return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
 
-def fix_short_id_in_yaml(match):
-    """终极文本级修复：强制规范化 short-id 格式，防止 mihomo 崩溃"""
-    prefix = match.group(1)
-    raw_val = match.group(2)
-    clean_val = raw_val.strip().strip('\'"')
-    clean_val = re.sub(r'[^0-9a-fA-F]', '', clean_val)
-    if len(clean_val) % 2 != 0:
-        clean_val = '0' + clean_val
-    clean_val = clean_val[:16]
-    return f'{prefix}"{clean_val}"'
+def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
+    """通用策略组构建函数，确保 all-clash.yaml 和 clash.yaml 结构完全一致"""
+    pool_names = sorted(list(country_pools.keys()))
+    groups = []
+    
+    # 1. AUTO-FAST (仅包含通过测速的活跃节点)
+    groups.append({
+        'name': 'AUTO-FAST',
+        'type': 'url-test',
+        'proxies': [p['name'] for p in active_proxies],
+        'url': 'http://www.gstatic.com/generate_204',
+        'interval': 120
+    })
+    
+    # 2. 各个国家 POOL
+    for pool_name in pool_names:
+        groups.append({
+            'name': pool_name,
+            'type': 'url-test',
+            'proxies': country_pools[pool_name],
+            'url': 'http://www.gstatic.com/generate_204',
+            'interval': 120
+        })
+        
+    # 3. UNTESTED (格式异常) - 如果有，则单独分组
+    if untested_proxies:
+        groups.append({
+            'name': 'UNTESTED (格式异常)',
+            'type': 'select',
+            'proxies': [p['name'] for p in untested_proxies]
+        })
+        
+    # 4. AI-POOL (优先美/新/加)
+    ai_pool_proxies = [p['name'] for p in active_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)]
+    if not ai_pool_proxies:
+        ai_pool_proxies = [p['name'] for p in active_proxies]
+        
+    groups.append({
+        'name': 'AI-POOL',
+        'type': 'url-test',
+        'proxies': ai_pool_proxies[:ai_pool_limit],
+        'url': 'http://www.gstatic.com/generate_204',
+        'interval': 120
+    })
+    
+    # 5. FALLBACK
+    fallback_proxies = ['AUTO-FAST'] + pool_names
+    groups.append({
+        'name': 'FALLBACK',
+        'type': 'fallback',
+        'proxies': fallback_proxies,
+        'url': 'http://www.gstatic.com/generate_204',
+        'interval': 120
+    })
+    
+    # 6. PROXY (手动选择)
+    proxy_proxies = ['AUTO-FAST', 'FALLBACK'] + pool_names
+    if untested_proxies:
+        proxy_proxies.append('UNTESTED (格式异常)')
+        
+    groups.append({
+        'name': 'PROXY',
+        'type': 'select',
+        'proxies': proxy_proxies
+    })
+    
+    return groups
 
 def main():
     try:
@@ -149,12 +206,16 @@ def main():
         print("\n步骤 2: 执行节点清洗、去重与国家识别...")
         seen = set()
         unique_proxies = []
+        untested_proxies = []  # 专门用于存放格式异常的节点
         excluded_count = 0
         invalid_count = 0
         ip_api_checked_count = 0
+        untested_count = 0
         
         for p in all_proxies:
             if not isinstance(p, dict): continue
+            
+            # 1. 基础字段校验
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
@@ -180,14 +241,31 @@ def main():
             server = str(p.get('server', ''))
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
-            key = f"{name}|{server}|{port}|{ptype}"
             
+            # 2. REALITY short-id 严格校验与隔离分流
+            if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
+                sid_raw = p['reality-opts'].get('short-id', '')
+                sid_str = str(sid_raw).strip() if sid_raw is not None else ""
+                
+                # 校验规则：必须是空字符串，或者 2-16 位的偶数长度纯十六进制字符串
+                is_valid = (sid_str == "") or (re.match(r'^[0-9a-fA-F]+$', sid_str) and len(sid_str) % 2 == 0 and 2 <= len(sid_str) <= 16)
+                
+                if not is_valid:
+                    # 格式异常，隔离到未测试列表，绝不进入 mihomo 测速队列
+                    p['name'] = f"[未测试-格式异常] {name}"
+                    untested_proxies.append(p)
+                    untested_count += 1
+                    continue # 跳过后续的正常入库逻辑
+
+            # 3. 正常节点入库
+            key = f"{name}|{server}|{port}|{ptype}"
             if key not in seen:
                 seen.add(key)
                 unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
         print(f"  已丢弃真正缺失字段的废节点: {invalid_count} 个")
+        print(f"  已隔离格式异常的 REALITY 节点至 [未测试] 分类: {untested_count} 个")
         print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
@@ -202,8 +280,11 @@ def main():
             ptype = str(p.get('type', '')).lower()
             server = p.get('server', '')
             port = p.get('port', 80)
-            if ptype in UDP_ONLY_PROTOCOLS: return True
-            if not server or server in ['127.0.0.1', 'localhost', '0.0.0.0']: return False
+            
+            if ptype in UDP_ONLY_PROTOCOLS:
+                return True
+            if not server or server in ['127.0.0.1', 'localhost', '0.0.0.0']:
+                return False
             try:
                 return tcp_ping(server, port, timeout=1.5)
             except Exception:
@@ -225,11 +306,8 @@ def main():
             'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in alive_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
         }
         
-        yaml_text = yaml.safe_dump(temp_config, allow_unicode=True, sort_keys=False, width=1000)
-        yaml_text = re.sub(r'(short-id:\s*)(.*)', fix_short_id_in_yaml, yaml_text, flags=re.MULTILINE)
-        
         with open('temp.yaml', 'w', encoding='utf-8') as f:
-            f.write(yaml_text)
+            yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
 
         process = subprocess.Popen(['./mihomo', '-d', '.', '-f', 'temp.yaml'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(5) 
@@ -259,7 +337,7 @@ def main():
         # ==========================================
         # 步骤 4: 收集所有可用节点，并按国家分组排序
         # ==========================================
-        print("\n步骤 4: 整理可用节点并生成配置文件...")
+        print("\n步骤 4: 整理可用节点并生成双配置文件...")
         available_proxies = []
         available_country_groups = {}
         
@@ -280,56 +358,45 @@ def main():
 
         print(f"\n总计筛选出 {len(available_proxies)} 个高质量可用节点")
 
-        # --- 生成 all-clash.yaml (包含所有可用节点) ---
-        available_pool_names = sorted(list(available_country_pools.keys()))
-        available_ai_pool = [p['name'] for p in available_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)] or [p['name'] for p in available_proxies]
-
+        # ==========================================
+        # 步骤 5: 生成 all-clash.yaml (包含所有可用节点 + 未测试节点)
+        # ==========================================
+        all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-all', 'generated-at': datetime.now(timezone.utc).isoformat(),
-            'proxies': available_proxies,
-            'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in available_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
+            'generated-by': 'github-actions-auto-merge-all', 
+            'generated-at': datetime.now(timezone.utc).isoformat(),
+            'proxies': all_proxies_for_yaml,
+            'proxy-groups': build_proxy_groups(available_country_pools, available_proxies, untested_proxies, ai_pool_limit=100),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
-        for pool_name in available_pool_names:
-            all_config['proxy-groups'].append({'name': pool_name, 'type': 'url-test', 'proxies': available_country_pools[pool_name], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120})
-        all_config['proxy-groups'].extend([
-            {'name': 'AI-POOL', 'type': 'url-test', 'proxies': available_ai_pool[:100], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
-            {'name': 'FALLBACK', 'type': 'fallback', 'proxies': ['AUTO-FAST'] + available_pool_names, 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
-            {'name': 'PROXY', 'type': 'select', 'proxies': ['AUTO-FAST', 'FALLBACK'] + available_pool_names}
-        ])
 
         with open('all-clash.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(all_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 all-clash.yaml (包含所有可用节点)")
 
-        # --- 生成 clash.yaml (仅包含每个国家 Top 20) ---
+        # ==========================================
+        # 步骤 6: 生成 clash.yaml (每个国家仅保留 Top 20 + 未测试节点)
+        # ==========================================
         top_20_proxies = []
         top_20_country_pools = {}
         for country, items in available_country_groups.items():
             top_20 = items[:20]
-            for p, delay in top_20: top_20_proxies.append(p)
+            for p, delay in top_20: 
+                top_20_proxies.append(p)
             top_20_country_pools[f"{country}-POOL"] = [p['name'] for p, _ in top_20]
 
-        top_20_pool_names = sorted(list(top_20_country_pools.keys()))
-        top_20_ai_pool = [p['name'] for p in top_20_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)] or [p['name'] for p in top_20_proxies]
-
+        top_20_proxies_for_yaml = top_20_proxies + untested_proxies
         top_20_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-top20', 'generated-at': datetime.now(timezone.utc).isoformat(),
-            'proxies': top_20_proxies,
-            'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in top_20_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
+            'generated-by': 'github-actions-auto-merge-top20', 
+            'generated-at': datetime.now(timezone.utc).isoformat(),
+            'proxies': top_20_proxies_for_yaml,
+            'proxy-groups': build_proxy_groups(top_20_country_pools, top_20_proxies, untested_proxies, ai_pool_limit=50),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
-        for pool_name in top_20_pool_names:
-            top_20_config['proxy-groups'].append({'name': pool_name, 'type': 'url-test', 'proxies': top_20_country_pools[pool_name], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120})
-        top_20_config['proxy-groups'].extend([
-            {'name': 'AI-POOL', 'type': 'url-test', 'proxies': top_20_ai_pool[:50], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
-            {'name': 'FALLBACK', 'type': 'fallback', 'proxies': ['AUTO-FAST'] + top_20_pool_names, 'url': 'http://www.gstatic.com/generate_204', 'interval': 120},
-            {'name': 'PROXY', 'type': 'select', 'proxies': ['AUTO-FAST', 'FALLBACK'] + top_20_pool_names}
-        ])
 
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(top_20_config, f, allow_unicode=True, sort_keys=False, width=1000)
