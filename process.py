@@ -90,7 +90,6 @@ def main():
                 resp.raise_for_status()
                 text = resp.text
                 
-                # 先清理控制字符，再尝试解析
                 clean_text = sanitize_yaml_text(text)
                 try:
                     data = yaml.safe_load(clean_text)
@@ -101,12 +100,10 @@ def main():
                 except yaml.YAMLError as e:
                     print(f"  Python 解析失败: {str(e)[:60]}... 将交由 subconverter 处理")
                 
-                # 如果 Python 解析失败，将清理后的文本交给 subconverter
                 raw_text_for_subconverter += clean_text + "\n---\n"
             except Exception as e:
                 print(f"  获取失败: {url.split('/')[-1]} - {e}")
 
-        # 处理需要 subconverter 转换的内容
         if raw_text_for_subconverter.strip():
             print("\n启动 subconverter 清洗并转换非标准格式...")
             sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -121,14 +118,11 @@ def main():
                 conv_resp = requests.get(api_url, timeout=120)
                 if conv_resp.status_code != 200:
                     print(f"  subconverter 返回错误状态码: {conv_resp.status_code}")
-                    print(f"  响应内容: {conv_resp.text[:200]}")
                 else:
                     converted_data = yaml.safe_load(conv_resp.text)
                     if isinstance(converted_data, dict) and 'proxies' in converted_data and isinstance(converted_data['proxies'], list):
                         all_proxies.extend(converted_data['proxies'])
                         print(f"  subconverter 成功提取 {len(converted_data['proxies'])} 个节点")
-                    else:
-                        print(f"  subconverter 返回的数据格式异常，未找到 'proxies' 列表")
             except Exception as e:
                 print(f"  subconverter 请求异常: {e}")
             finally:
@@ -155,7 +149,7 @@ def main():
         for p in all_proxies:
             if not isinstance(p, dict): continue
             
-            # 防护 2: 严格的字段校验，丢弃缺少核心字段的畸形节点，防止 mihomo 崩溃
+            # 防护 2: 严格的字段校验，丢弃缺少核心字段的真正废节点
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
@@ -181,6 +175,21 @@ def main():
             server = str(p.get('server', ''))
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
+            
+            # 防护 3: 智能修复 REALITY 节点的 short-id，保留优质节点并防止 mihomo 崩溃
+            if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
+                # 强制转换为字符串，防止 YAML 将 '00123' 错误解析为整数 123
+                short_id_raw = p['reality-opts'].get('short-id', '')
+                short_id_str = str(short_id_raw).strip()
+                
+                # 校验是否为合法的十六进制字符串 (0-16位)
+                if re.match(r'^[0-9a-fA-F]{0,16}$', short_id_str):
+                    p['reality-opts']['short-id'] = short_id_str
+                else:
+                    # 如果包含非法字符，将其重置为空字符串 ""。
+                    # Xray/mihomo 规范允许 short-id 为空，表示不校验 short-id，节点依然可用且不会崩溃。
+                    p['reality-opts']['short-id'] = ""
+
             key = f"{name}|{server}|{port}|{ptype}"
             
             if key not in seen:
@@ -188,7 +197,7 @@ def main():
                 unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
-        print(f"  已丢弃畸形/缺失字段节点: {invalid_count} 个")
+        print(f"  已丢弃真正缺失字段的废节点: {invalid_count} 个")
         print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
@@ -226,7 +235,7 @@ def main():
         print(f"  初筛完成！剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个，剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
 
         # ==========================================
-        # 步骤 3: mihomo 真实协议测速 (增强崩溃诊断)
+        # 步骤 3: mihomo 真实协议测速
         # ==========================================
         print("\n步骤 3: 启动 mihomo 进行多线程真实协议测速...")
         temp_config = {
@@ -237,7 +246,6 @@ def main():
         with open('temp.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False)
 
-        # 防护 3: 完整捕获 stdout 和 stderr，诊断 mihomo 崩溃
         process = subprocess.Popen(
             ['./mihomo', '-d', '.', '-f', 'temp.yaml'], 
             stdout=subprocess.PIPE, 
@@ -252,7 +260,6 @@ def main():
             print(f"\nmihomo 进程意外退出！")
             print(f"错误日志 (stderr):\n{stderr}")
             print(f"标准输出 (stdout):\n{stdout}")
-            print("提示：已开启严格字段校验，若仍崩溃，请检查上方日志中的具体字段错误。")
             exit(1)
 
         try:
@@ -303,7 +310,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v12', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v14', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
