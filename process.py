@@ -6,6 +6,8 @@ import time
 import urllib.parse
 import traceback
 import os
+import socket
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
 ALL_URLS = [
@@ -19,10 +21,10 @@ ALL_URLS = [
 
 IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
+UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
 def clean_name(name):
     if not name: return "Unknown_Node"
-    # 严格白名单：只保留字母、数字、中文、基本标点
     name = re.sub(r'[^\w\s\u4e00-\u9fa5\-_\.\[\]\(\)\/]', '', str(name))
     return name.strip()[:50]
 
@@ -65,6 +67,17 @@ def get_country_via_ip_api(server):
         time.sleep(1.5)
     return 'OTHER'
 
+def tcp_ping(server, port, timeout=1.5):
+    try:
+        with socket.create_connection((server, int(port)), timeout=timeout):
+            return True
+    except Exception:
+        return False
+
+def sanitize_yaml_text(text):
+    """防护 1: 移除导致 Python yaml 解析失败的特殊控制字符 (如 \x009f)"""
+    return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
+
 def main():
     try:
         all_proxies = []
@@ -73,34 +86,31 @@ def main():
         print("步骤 1: 智能下载与解析订阅源...")
         for url in ALL_URLS:
             try:
-                print(f"  获取: {url}")
                 resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
                 resp.raise_for_status()
                 text = resp.text
                 
-                # 尝试直接用 Python 解析
+                # 先清理控制字符，再尝试解析
+                clean_text = sanitize_yaml_text(text)
                 try:
-                    data = yaml.safe_load(text)
+                    data = yaml.safe_load(clean_text)
                     if isinstance(data, dict) and 'proxies' in data and isinstance(data['proxies'], list):
                         all_proxies.extend(data['proxies'])
-                        print(f"  Python 成功提取 {len(data['proxies'])} 个节点")
-                        continue # 解析成功，跳过后续处理
+                        print(f"  Python 成功提取 {len(data['proxies'])} 个节点: {url.split('/')[-1]}")
+                        continue 
                 except yaml.YAMLError as e:
-                    print(f"  Python 解析失败 (可能含特殊字符): {str(e)[:50]}...")
+                    print(f"  Python 解析失败: {str(e)[:60]}... 将交由 subconverter 处理")
                 
-                # 如果 Python 解析失败，或者没有 proxies 字段，将其原始文本保存，稍后交给 subconverter
-                print(f"  标记为待 subconverter 转换...")
-                raw_text_for_subconverter += text + "\n---\n"
-                
+                # 如果 Python 解析失败，将清理后的文本交给 subconverter
+                raw_text_for_subconverter += clean_text + "\n---\n"
             except Exception as e:
-                print(f"  获取失败: {e}")
+                print(f"  获取失败: {url.split('/')[-1]} - {e}")
 
-        # 如果有需要转换的原始文本，启动 subconverter
+        # 处理需要 subconverter 转换的内容
         if raw_text_for_subconverter.strip():
-            print("\n启动 subconverter 清洗并转换脏数据/非标准格式...")
+            print("\n启动 subconverter 清洗并转换非标准格式...")
             sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             time.sleep(3)
-            
             with open('temp_raw.txt', 'w', encoding='utf-8') as f:
                 f.write(raw_text_for_subconverter)
             
@@ -109,37 +119,47 @@ def main():
             
             try:
                 conv_resp = requests.get(api_url, timeout=120)
-                conv_resp.raise_for_status()
-                converted_data = yaml.safe_load(conv_resp.text)
-                if isinstance(converted_data, dict) and 'proxies' in converted_data:
-                    all_proxies.extend(converted_data['proxies'])
-                    print(f"  subconverter 成功清洗并提取 {len(converted_data['proxies'])} 个节点")
+                if conv_resp.status_code != 200:
+                    print(f"  subconverter 返回错误状态码: {conv_resp.status_code}")
+                    print(f"  响应内容: {conv_resp.text[:200]}")
+                else:
+                    converted_data = yaml.safe_load(conv_resp.text)
+                    if isinstance(converted_data, dict) and 'proxies' in converted_data and isinstance(converted_data['proxies'], list):
+                        all_proxies.extend(converted_data['proxies'])
+                        print(f"  subconverter 成功提取 {len(converted_data['proxies'])} 个节点")
+                    else:
+                        print(f"  subconverter 返回的数据格式异常，未找到 'proxies' 列表")
             except Exception as e:
-                print(f"  subconverter 转换失败: {e}")
+                print(f"  subconverter 请求异常: {e}")
             finally:
-                if os.path.exists('temp_raw.txt'):
-                    os.remove('temp_raw.txt')
+                if os.path.exists('temp_raw.txt'): os.remove('temp_raw.txt')
                 sub_process.terminate()
                 sub_process.wait()
 
         if not all_proxies:
             print("\n未找到任何有效节点，退出。")
             exit(1)
-            
+
         print(f"\n合并后节点总数: {len(all_proxies)}")
 
         # ==========================================
-        # 步骤 2: 节点清洗、去重与国家识别
+        # 步骤 2: 节点清洗、去重、校验与国家识别
         # ==========================================
         print("\n步骤 2: 执行节点清洗、去重与国家识别...")
         seen = set()
         unique_proxies = []
         excluded_count = 0
+        invalid_count = 0
         ip_api_checked_count = 0
         
         for p in all_proxies:
             if not isinstance(p, dict): continue
             
+            # 防护 2: 严格的字段校验，丢弃缺少核心字段的畸形节点，防止 mihomo 崩溃
+            if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
+                invalid_count += 1
+                continue
+                
             name = clean_name(p.get('name', ''))
             p['name'] = name
             
@@ -155,13 +175,12 @@ def main():
             if country == 'EXCLUDED':
                 excluded_count += 1
                 continue
-                
             if country is None or country == 'OTHER':
                 country = 'OTHER'
 
             server = str(p.get('server', ''))
             port = str(p.get('port', ''))
-            ptype = str(p.get('type', ''))
+            ptype = str(p.get('type', '')).lower()
             key = f"{name}|{server}|{port}|{ptype}"
             
             if key not in seen:
@@ -169,26 +188,56 @@ def main():
                 unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
-        print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次")
-        print(f"  最终有效节点总数: {len(unique_proxies)}")
+        print(f"  已丢弃畸形/缺失字段节点: {invalid_count} 个")
+        print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
+        print(f"  待测速节点总数: {len(unique_proxies)}")
 
         if not unique_proxies:
             print("过滤后无有效节点，退出。")
             exit(1)
 
         # ==========================================
-        # 步骤 3: mihomo 多线程并发测速 (增强错误捕获)
+        # 步骤 2.5: 协议感知型智能初筛
         # ==========================================
-        print("\n步骤 3: 启动 mihomo 进行多线程并发测速...")
+        print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行，TCP协议极速Ping)...")
+        alive_proxies = []
+        
+        def check_proxy(p):
+            ptype = str(p.get('type', '')).lower()
+            server = p.get('server', '')
+            port = p.get('port', 80)
+            
+            if ptype in UDP_ONLY_PROTOCOLS:
+                return True
+            if not server or server in ['127.0.0.1', 'localhost', '0.0.0.0']:
+                return False
+            try:
+                return tcp_ping(server, port, timeout=1.5)
+            except Exception:
+                return False
+
+        with ThreadPoolExecutor(max_workers=100) as executor:
+            future_to_proxy = {executor.submit(check_proxy, p): p for p in unique_proxies}
+            for future in as_completed(future_to_proxy):
+                p = future_to_proxy[future]
+                if future.result():
+                    alive_proxies.append(p)
+
+        print(f"  初筛完成！剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个，剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
+
+        # ==========================================
+        # 步骤 3: mihomo 真实协议测速 (增强崩溃诊断)
+        # ==========================================
+        print("\n步骤 3: 启动 mihomo 进行多线程真实协议测速...")
         temp_config = {
             'mixed-port': 7890, 'allow-lan': True, 'log-level': 'warning',
-            'external-controller': '127.0.0.1:9090', 'proxies': unique_proxies,
-            'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in unique_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
+            'external-controller': '127.0.0.1:9090', 'proxies': alive_proxies,
+            'proxy-groups': [{'name': 'TEST-GROUP', 'type': 'url-test', 'proxies': [p['name'] for p in alive_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 300}]
         }
         with open('temp.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False)
 
-        # 捕获 stderr 以便在 mihomo 崩溃时知道原因
+        # 防护 3: 完整捕获 stdout 和 stderr，诊断 mihomo 崩溃
         process = subprocess.Popen(
             ['./mihomo', '-d', '.', '-f', 'temp.yaml'], 
             stdout=subprocess.PIPE, 
@@ -196,19 +245,18 @@ def main():
             text=True
         )
         
-        # 增加等待时间，确保 2000+ 节点加载完毕
-        time.sleep(10) 
+        time.sleep(5) 
 
-        # 检查 mihomo 是否意外退出
         if process.poll() is not None:
             stdout, stderr = process.communicate()
-            print(f"mihomo 进程意外退出！错误日志:\n{stderr}")
-            print("提示：通常是因为 temp.yaml 中存在 mihomo 无法识别的非法配置项。")
+            print(f"\nmihomo 进程意外退出！")
+            print(f"错误日志 (stderr):\n{stderr}")
+            print(f"标准输出 (stdout):\n{stdout}")
+            print("提示：已开启严格字段校验，若仍崩溃，请检查上方日志中的具体字段错误。")
             exit(1)
 
         try:
-            print("  正在发送多线程测速指令 (Timeout: 5000ms)...")
-            requests.get('http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204', timeout=120)
+            requests.get('http://127.0.0.1:9090/proxies/TEST-GROUP/delay?timeout=5000&url=http://www.gstatic.com/generate_204', timeout=60)
         except Exception as e:
             print(f"  测速请求异常: {e}")
 
@@ -220,7 +268,7 @@ def main():
                 delay_map[proxy['name']] = proxy.get('history', [])[-1]['delay'] if proxy.get('history') else 99999
         except Exception as e:
             print(f"  获取测速结果失败: {e}")
-            delay_map = {p['name']: 99999 for p in unique_proxies}
+            delay_map = {p['name']: 99999 for p in alive_proxies}
 
         process.terminate()
         process.wait()
@@ -231,7 +279,7 @@ def main():
         # ==========================================
         print("\n步骤 4: 按国家筛选 Top 20 低延迟节点:")
         country_groups = {}
-        for p in unique_proxies:
+        for p in alive_proxies:
             delay = delay_map.get(p['name'], 99999)
             if delay == 0 or delay >= 5000: continue
             country = get_country_from_name(p['name']) or 'OTHER'
@@ -255,7 +303,7 @@ def main():
         final_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
             'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True, 'global-client-fingerprint': 'chrome',
-            'generated-by': 'github-actions-auto-merge-v9', 'generated-at': datetime.now(timezone.utc).isoformat(),
+            'generated-by': 'github-actions-auto-merge-v12', 'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': final_proxies,
             'proxy-groups': [{'name': 'AUTO-FAST', 'type': 'url-test', 'proxies': [p['name'] for p in final_proxies], 'url': 'http://www.gstatic.com/generate_204', 'interval': 120}],
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
