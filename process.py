@@ -66,7 +66,7 @@ def get_country_via_ip_api(server):
 def main():
     try:
         print("步骤 1: 启动 subconverter 统一转换所有订阅格式...")
-        sub_process = subprocess.Popen(['./subconverter', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        sub_process = subprocess.Popen(['./subconverter_exec', '-d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(3)
 
         combined_url = '|'.join(URLS)
