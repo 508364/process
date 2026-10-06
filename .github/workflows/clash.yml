@@ -21,20 +21,25 @@ jobs:
       - name: Download Subconverter
         run: |
           echo "⬇️ 下载 subconverter..."
+          # 强制清理可能存在的残留文件或目录，防止 mv 冲突
+          rm -rf subconverter subconverter_exec
           wget -qO- https://github.com/tindy2013/subconverter/releases/download/v0.7.2/subconverter_linux64.tar.gz | tar xz
           chmod +x subconverter/subconverter
-          mv subconverter/subconverter .
+          # 重命名可执行文件，避免与目录同名
+          mv subconverter/subconverter ./subconverter_exec
           rm -rf subconverter
           echo "✅ subconverter 准备就绪"
 
       - name: Download Mihomo
         run: |
           echo "⬇️ 下载 mihomo..."
+          # 强制清理残留
+          rm -f mihomo
           wget -qO- https://github.com/MetaCubeX/mihomo/releases/download/v1.18.8/mihomo-linux-amd64-compatible-v1.18.8.gz | gunzip > mihomo
           chmod +x mihomo
           echo "✅ mihomo 准备就绪"
 
-      - name: Install Python dependencies (使用 apt 绕过 PEP 668 限制)
+      - name: Install Python dependencies
         run: |
           echo "⬇️ 安装 Python 依赖..."
           sudo apt-get update -y
