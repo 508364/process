@@ -23,6 +23,21 @@ IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
 UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
+# 每种协议必需的字段(缺失则视为废节点,直接丢弃,防止 mihomo 崩溃)
+REQUIRED_FIELDS = {
+    'vmess': ['uuid'],
+    'vless': ['uuid'],
+    'trojan': ['password'],
+    'ss': ['cipher', 'password'],
+    'ssr': ['cipher', 'password', 'protocol', 'obfs'],
+    'snell': ['psk'],
+    'hysteria': ['auth-str'],
+    'hysteria2': ['password'],
+    'tuic': [],
+    'http': [],
+    'socks5': [],
+}
+
 def clean_name(name):
     if not name: return "Unknown_Node"
     name = re.sub(r'[^\w\s\u4e00-\u9fa5\-_\.\[\]\(\)\/]', '', str(name))
@@ -77,12 +92,48 @@ def tcp_ping(server, port, timeout=1.5):
 def sanitize_yaml_text(text):
     return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
 
+def validate_proxy_fields(p):
+    """按协议类型校验必需字段,防止字段缺失的废节点进入 mihomo"""
+    ptype = str(p.get('type', '')).lower()
+    required = REQUIRED_FIELDS.get(ptype, [])
+    for field in required:
+        val = p.get(field)
+        if val is None or str(val).strip() == '':
+            return False
+    return True
+
+def normalize_proxy_types(p):
+    """规范化关键字段类型,防止 YAML 类型推断导致的 mihomo 崩溃"""
+    ptype = str(p.get('type', '')).lower()
+    
+    # port 必须是整数
+    try:
+        p['port'] = int(p['port'])
+        if not (1 <= p['port'] <= 65535):
+            return False
+    except (ValueError, TypeError):
+        return False
+    
+    # server 必须是纯字符串,不能是 IP 或域名以外的东西
+    server = str(p.get('server', '')).strip()
+    if not server or ' ' in server:
+        return False
+    p['server'] = server
+    
+    # vmess 的 alterId 必须是整数
+    if ptype == 'vmess':
+        try:
+            p['alterId'] = int(p.get('alterId', 0))
+        except (ValueError, TypeError):
+            p['alterId'] = 0
+    
+    return True
+
 def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
-    """通用策略组构建函数，确保 all-clash.yaml 和 clash.yaml 结构完全一致"""
+    """通用策略组构建函数,确保 all-clash.yaml 和 clash.yaml 结构完全一致"""
     pool_names = sorted(list(country_pools.keys()))
     groups = []
     
-    # 1. AUTO-FAST (仅包含通过测速的活跃节点)
     groups.append({
         'name': 'AUTO-FAST',
         'type': 'url-test',
@@ -91,7 +142,6 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
         'interval': 120
     })
     
-    # 2. 各个国家 POOL
     for pool_name in pool_names:
         groups.append({
             'name': pool_name,
@@ -101,15 +151,13 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
             'interval': 120
         })
         
-    # 3. UNTESTED (格式异常) - 如果有，则单独分组
     if untested_proxies:
         groups.append({
-            'name': 'UNTESTED (格式异常)',
+            'name': 'UNTESTED',
             'type': 'select',
             'proxies': [p['name'] for p in untested_proxies]
         })
         
-    # 4. AI-POOL (优先美/新/加)
     ai_pool_proxies = [p['name'] for p in active_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)]
     if not ai_pool_proxies:
         ai_pool_proxies = [p['name'] for p in active_proxies]
@@ -122,7 +170,6 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
         'interval': 120
     })
     
-    # 5. FALLBACK
     fallback_proxies = ['AUTO-FAST'] + pool_names
     groups.append({
         'name': 'FALLBACK',
@@ -132,10 +179,9 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
         'interval': 120
     })
     
-    # 6. PROXY (手动选择)
     proxy_proxies = ['AUTO-FAST', 'FALLBACK'] + pool_names
     if untested_proxies:
-        proxy_proxies.append('UNTESTED (格式异常)')
+        proxy_proxies.append('UNTESTED')
         
     groups.append({
         'name': 'PROXY',
@@ -198,26 +244,42 @@ def main():
                 sub_process.wait()
 
         if not all_proxies:
-            print("\n未找到任何有效节点，退出。")
+            print("\n未找到任何有效节点,退出。")
             exit(1)
 
         print(f"\n合并后节点总数: {len(all_proxies)}")
 
-        print("\n步骤 2: 执行节点清洗、去重与国家识别...")
-        seen = set()
+        print("\n步骤 2: 执行节点清洗、去重、类型规范化与国家识别...")
+        seen_keys = set()        # 去重:server|port|type
+        seen_names = set()       # 保证 name 唯一(mihomo 不接受重名)
         unique_proxies = []
-        untested_proxies = []  # 专门用于存放格式异常的节点
+        untested_proxies = []
         excluded_count = 0
         invalid_count = 0
+        invalid_field_count = 0
+        type_error_count = 0
+        renamed_count = 0
         ip_api_checked_count = 0
         untested_count = 0
         
         for p in all_proxies:
-            if not isinstance(p, dict): continue
+            if not isinstance(p, dict): 
+                invalid_count += 1
+                continue
             
             # 1. 基础字段校验
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
+                continue
+            
+            # 2. 类型规范化(port 转 int,alterId 转 int 等)
+            if not normalize_proxy_types(p):
+                type_error_count += 1
+                continue
+            
+            # 3. 按协议校验必需字段
+            if not validate_proxy_fields(p):
+                invalid_field_count += 1
                 continue
                 
             name = clean_name(p.get('name', ''))
@@ -242,38 +304,61 @@ def main():
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
             
-            # 2. REALITY short-id 严格校验与隔离分流
+            # 4. REALITY short-id 严格校验与隔离分流
             if ptype == 'vless' and 'reality-opts' in p and isinstance(p['reality-opts'], dict):
                 sid_raw = p['reality-opts'].get('short-id', '')
                 sid_str = str(sid_raw).strip() if sid_raw is not None else ""
                 
-                # 校验规则：必须是空字符串，或者 2-16 位的偶数长度纯十六进制字符串
                 is_valid = (sid_str == "") or (re.match(r'^[0-9a-fA-F]+$', sid_str) and len(sid_str) % 2 == 0 and 2 <= len(sid_str) <= 16)
                 
                 if not is_valid:
-                    # 格式异常，隔离到未测试列表，绝不进入 mihomo 测速队列
-                    p['name'] = f"[未测试-格式异常] {name}"
+                    # 唯一化 name
+                    base = f"UNTESTED-{name}"
+                    final = base
+                    counter = 1
+                    while final in seen_names:
+                        counter += 1
+                        final = f"{base}-{counter}"
+                    seen_names.add(final)
+                    p['name'] = final
                     untested_proxies.append(p)
                     untested_count += 1
-                    continue # 跳过后续的正常入库逻辑
+                    continue
 
-            # 3. 正常节点入库
-            key = f"{name}|{server}|{port}|{ptype}"
-            if key not in seen:
-                seen.add(key)
-                unique_proxies.append(p)
+            # 5. 去重(按 server|port|type)
+            dedup_key = f"{server}|{port}|{ptype}"
+            if dedup_key in seen_keys:
+                continue
+            seen_keys.add(dedup_key)
+            
+            # 6. name 唯一化(mihomo 拒绝重名)
+            base = name
+            final = base
+            counter = 1
+            while final in seen_names:
+                counter += 1
+                final = f"{base}-{counter}"
+            if final != base:
+                renamed_count += 1
+            seen_names.add(final)
+            p['name'] = final
+            
+            unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
         print(f"  已丢弃真正缺失字段的废节点: {invalid_count} 个")
-        print(f"  已隔离格式异常的 REALITY 节点至 [未测试] 分类: {untested_count} 个")
-        print(f"  触发 ip-api.com 检测次数: {ip_api_checked_count} 次 (已限速保护)")
+        print(f"  已丢弃协议必需字段缺失的节点: {invalid_field_count} 个")
+        print(f"  已丢弃字段类型错误的节点: {type_error_count} 个")
+        print(f"  已重命名以避免重名的节点: {renamed_count} 个")
+        print(f"  已隔离格式异常的 REALITY 节点至 UNTESTED 分类: {untested_count} 个")
+        print(f"  触发 ip-api.com 尝试识别次数: {ip_api_checked_count} 次 (实际请求上限 {MAX_IP_API_CALLS} 次)")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
         if not unique_proxies:
-            print("过滤后无有效节点，退出。")
+            print("过滤后无有效节点,退出。")
             exit(1)
 
-        print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行，TCP协议极速Ping)...")
+        print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行,TCP协议极速Ping)...")
         alive_proxies = []
         
         def check_proxy(p):
@@ -297,7 +382,7 @@ def main():
                 if future.result():
                     alive_proxies.append(p)
 
-        print(f"  初筛完成！剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个，剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
+        print(f"  初筛完成!剔除死节点 {len(unique_proxies) - len(alive_proxies)} 个,剩余 {len(alive_proxies)} 个节点进入 mihomo 真实测速。")
 
         print("\n步骤 3: 启动 mihomo 进行多线程真实协议测速...")
         temp_config = {
@@ -309,11 +394,24 @@ def main():
         with open('temp.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(temp_config, f, allow_unicode=True, sort_keys=False, width=1000)
 
-        process = subprocess.Popen(['./mihomo', '-d', '.', '-f', 'temp.yaml'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # 用 PIPE 捕获 stderr,崩溃时打印诊断
+        process = subprocess.Popen(
+            ['./mihomo', '-d', '.', '-f', 'temp.yaml'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
         time.sleep(5) 
 
         if process.poll() is not None:
-            print(f"\nmihomo 进程意外退出！请检查 temp.yaml 格式。")
+            stdout, stderr = process.communicate()
+            print(f"\nmihomo 进程意外退出!")
+            print(f"错误日志 (stderr):\n{stderr[:3000]}")
+            print(f"标准输出 (stdout):\n{stdout[:1000]}")
+            print("\n诊断建议:")
+            print("  - 检查是否有未知协议类型(如 'wireguard'、'ssh' 等未被 REQUIRED_FIELDS 覆盖)")
+            print("  - 检查是否有特殊字符未转义(如 ss 密码含空格)")
+            print("  - 检查 temp.yaml 中的 proxies 段是否格式正确")
             exit(1)
 
         try:
@@ -335,7 +433,7 @@ def main():
         print("mihomo 核心已停止")
 
         # ==========================================
-        # 步骤 4: 收集所有可用节点，并按国家分组排序
+        # 步骤 4: 收集所有可用节点,并按国家分组排序
         # ==========================================
         print("\n步骤 4: 整理可用节点并生成双配置文件...")
         available_proxies = []
@@ -352,14 +450,14 @@ def main():
 
         available_country_pools = {}
         for country, items in available_country_groups.items():
-            items.sort(key=lambda x: x[1]) # 按延迟升序排序
+            items.sort(key=lambda x: x[1])
             available_country_pools[f"{country}-POOL"] = [p['name'] for p, _ in items]
             print(f"  {country}: 共 {len(items)} 个可用节点 (最低延迟: {items[0][1]}ms)")
 
         print(f"\n总计筛选出 {len(available_proxies)} 个高质量可用节点")
 
         # ==========================================
-        # 步骤 5: 生成 all-clash.yaml (包含所有可用节点 + 未测试节点)
+        # 步骤 5: 生成 all-clash.yaml
         # ==========================================
         all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
@@ -377,7 +475,7 @@ def main():
         print("成功生成 all-clash.yaml (包含所有可用节点)")
 
         # ==========================================
-        # 步骤 6: 生成 clash.yaml (每个国家仅保留 Top 20 + 未测试节点)
+        # 步骤 6: 生成 clash.yaml (每个国家仅保留 Top 20)
         # ==========================================
         top_20_proxies = []
         top_20_country_pools = {}
@@ -404,7 +502,7 @@ def main():
 
     except Exception as e:
         print("\n" + "="*50)
-        print("脚本执行失败！详细错误信息如下：")
+        print("脚本执行失败!详细错误信息如下:")
         traceback.print_exc()
         print("="*50)
         exit(1)
