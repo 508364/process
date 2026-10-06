@@ -24,8 +24,15 @@ IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
 UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
-BATCH_SIZE = 300
+BATCH_SIZE = 150
 CONTROLLER_PORT = 9090
+
+# 关键修复 1: 换 Cloudflare 测速 URL
+HEALTH_CHECK_URL = 'http://cp.cloudflare.com/generate_204'
+# 关键修复 2: 增加超时
+HEALTH_CHECK_TIMEOUT = 8000
+# 关键修复 4: 阈值与新超时一致
+DELAY_THRESHOLD = 8000
 
 SUPPORTED_PROXY_TYPES = {
     'ss', 'ssr', 'vmess', 'vless', 'trojan', 'snell',
@@ -47,18 +54,14 @@ REQUIRED_FIELDS = {
     'socks5': [],
 }
 
-# ============================================================
-# 关键修复:用 QuotedStr 强制 YAML 双引号输出
-# ============================================================
 class QuotedStr(str):
-    """一种特殊的字符串,序列化时强制使用双引号,防止 YAML 类型推断"""
     pass
 
 def _quoted_str_representer(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', str(data), style='"')
 
 yaml.SafeDumper.add_representer(QuotedStr, _quoted_str_representer)
-yaml.SafeDumper.add_representer(str, yaml.SafeDumper.yaml_representers[str])  # 保留默认 str 行为
+yaml.SafeDumper.add_representer(str, yaml.SafeDumper.yaml_representers[str])
 
 def clean_name(name):
     if not name: return "Unknown_Node"
@@ -115,15 +118,8 @@ def sanitize_yaml_text(text):
     return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', text)
 
 def fix_short_id(raw):
-    """
-    强制规范化 REALITY short-id,返回 QuotedStr 保证 YAML 中带双引号。
-    - int 0 → ""(大概率来自 '0000' 被吃零)
-    - 非空必须偶数长度纯 hex,2-16 位
-    - 无法修复 → ""
-    """
     if raw is None:
         return QuotedStr("")
-    
     if isinstance(raw, int):
         if raw == 0:
             return QuotedStr("")
@@ -133,47 +129,37 @@ def fix_short_id(raw):
         if 2 <= len(s) <= 16:
             return QuotedStr(s.lower())
         return QuotedStr("")
-    
     s = str(raw).strip().strip('\'"')
     if s == "":
         return QuotedStr("")
-    
     clean = re.sub(r'[^0-9a-fA-F]', '', s)
     if clean == "":
         return QuotedStr("")
-    
     if len(clean) % 2 != 0:
         clean = '0' + clean
-    
     clean = clean[:16]
-    
     if len(clean) < 2:
         return QuotedStr("")
-    
     return QuotedStr(clean.lower())
 
 def normalize_proxy_types(p):
     ptype = str(p.get('type', '')).lower()
     p['type'] = ptype
-    
     try:
         p['port'] = int(p['port'])
         if not (1 <= p['port'] <= 65535):
             return False
     except (ValueError, TypeError):
         return False
-    
     server = str(p.get('server', '')).strip()
     if not server or ' ' in server:
         return False
     p['server'] = server
-    
     if ptype == 'vmess':
         try:
             p['alterId'] = int(p.get('alterId', 0))
         except (ValueError, TypeError):
             p['alterId'] = 0
-    
     return True
 
 def validate_proxy_fields(p):
@@ -193,14 +179,11 @@ def sanitize_reality_opts(p):
         return
     if 'reality-opts' not in p or not isinstance(p['reality-opts'], dict):
         return
-    
     opts = p['reality-opts']
-    
     if 'short-id' in opts:
         opts['short-id'] = fix_short_id(opts['short-id'])
     else:
         opts['short-id'] = QuotedStr("")
-    
     if 'public-key' in opts:
         opts['public-key'] = str(opts['public-key']).strip()
 
@@ -242,11 +225,6 @@ def _force_kill_process_group(process):
     time.sleep(1)
 
 def write_mihomo_yaml(proxies, filename):
-    """
-    输出 mihomo 兼容的 YAML。
-    使用 QuotedStr 强制 short-id 加双引号(已在 sanitize_reality_opts 中处理),
-    不再做文本层正则替换。
-    """
     config = {
         'mixed-port': 7890,
         'allow-lan': True,
@@ -258,11 +236,10 @@ def write_mihomo_yaml(proxies, filename):
             'name': 'TEST-GROUP',
             'type': 'url-test',
             'proxies': [p['name'] for p in proxies],
-            'url': 'http://www.gstatic.com/generate_204',
+            'url': HEALTH_CHECK_URL,
             'interval': 300
         }]
     }
-    
     with open(filename, 'w', encoding='utf-8') as f:
         yaml.safe_dump(config, f, allow_unicode=True, sort_keys=False, width=1000)
 
@@ -307,13 +284,11 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
             last_lines = stdout.strip().split('\n')[-3:]
             for line in last_lines:
                 print(f"      {line[:220]}")
-        
         try:
             os.rename(temp_file, f'failed_batch_{batch_id}.yaml')
         except Exception:
             pass
         _force_kill_process_group(process)
-        
         if allow_split and len(proxies) > 1:
             mid = len(proxies) // 2
             print(f"    {label} 二分拆批重试: {mid} + {len(proxies) - mid}")
@@ -331,13 +306,15 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     try:
         requests.get(
             f'http://127.0.0.1:{CONTROLLER_PORT}/proxies/TEST-GROUP/delay'
-            f'?timeout=5000&url=http://www.gstatic.com/generate_204',
-            timeout=180
+            f'?timeout={HEALTH_CHECK_TIMEOUT}&url={HEALTH_CHECK_URL}',
+            timeout=300
         )
     except Exception as e:
         print(f"    {label} 测速请求异常: {str(e)[:100]}")
     
+    # 收集结果 + 诊断统计
     delay_map = {}
+    stat = {'有效': 0, '失败': 0, '超时': 0, '无数据': 0}
     try:
         res = requests.get(f'http://127.0.0.1:{CONTROLLER_PORT}/proxies', timeout=15).json()
         all_data = res.get('proxies', {})
@@ -345,8 +322,21 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
         for proxy_name in test_group.get('all', []):
             proxy_obj = all_data.get(proxy_name, {})
             history = proxy_obj.get('history', [])
-            delay_map[proxy_name] = history[-1].get('delay', 99999) if history else 99999
-        print(f"    {label} 成功获取 {len(delay_map)} 个测速结果")
+            if not history:
+                delay_map[proxy_name] = 99999
+                stat['无数据'] += 1
+            else:
+                d = history[-1].get('delay', 99999)
+                delay_map[proxy_name] = d
+                if d == 0:
+                    stat['失败'] += 1
+                elif d >= HEALTH_CHECK_TIMEOUT:
+                    stat['超时'] += 1
+                elif d < DELAY_THRESHOLD:
+                    stat['有效'] += 1
+                else:
+                    stat['无数据'] += 1
+        print(f"    {label} 测速统计: 有效={stat['有效']} 失败={stat['失败']} 超时={stat['超时']} 无数据={stat['无数据']}")
     except Exception as e:
         print(f"    {label} 获取结果失败: {str(e)[:100]}")
         for p in proxies:
@@ -368,52 +358,43 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
 def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
     pool_names = sorted(list(country_pools.keys()))
     groups = []
-    
     groups.append({
         'name': 'AUTO-FAST', 'type': 'url-test',
         'proxies': [p['name'] for p in active_proxies],
-        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
+        'url': HEALTH_CHECK_URL, 'interval': 120
     })
-    
     for pool_name in pool_names:
         groups.append({
             'name': pool_name, 'type': 'url-test',
             'proxies': country_pools[pool_name],
-            'url': 'http://www.gstatic.com/generate_204', 'interval': 120
+            'url': HEALTH_CHECK_URL, 'interval': 120
         })
-        
     if untested_proxies:
         groups.append({
             'name': 'UNTESTED', 'type': 'select',
             'proxies': [p['name'] for p in untested_proxies]
         })
-        
     ai_pool_proxies = [p['name'] for p in active_proxies if re.search(r'\bUS\b|\bSG\b|\bCA\b|AI', p['name'], re.I)]
     if not ai_pool_proxies:
         ai_pool_proxies = [p['name'] for p in active_proxies]
-        
     groups.append({
         'name': 'AI-POOL', 'type': 'url-test',
         'proxies': ai_pool_proxies[:ai_pool_limit],
-        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
+        'url': HEALTH_CHECK_URL, 'interval': 120
     })
-    
     fallback_proxies = ['AUTO-FAST'] + pool_names
     groups.append({
         'name': 'FALLBACK', 'type': 'fallback',
         'proxies': fallback_proxies,
-        'url': 'http://www.gstatic.com/generate_204', 'interval': 120
+        'url': HEALTH_CHECK_URL, 'interval': 120
     })
-    
     proxy_proxies = ['AUTO-FAST', 'FALLBACK'] + pool_names
     if untested_proxies:
         proxy_proxies.append('UNTESTED')
-        
     groups.append({
         'name': 'PROXY', 'type': 'select',
         'proxies': proxy_proxies
     })
-    
     return groups
 
 def main():
@@ -427,7 +408,6 @@ def main():
                 resp = requests.get(url, timeout=15, headers={'User-Agent': 'ClashMeta/1.18.8'})
                 resp.raise_for_status()
                 text = resp.text
-                
                 clean_text = sanitize_yaml_text(text)
                 try:
                     data = yaml.safe_load(clean_text)
@@ -437,7 +417,6 @@ def main():
                         continue 
                 except yaml.YAMLError as e:
                     print(f"  Python 解析失败: {str(e)[:60]}... 将交由 subconverter 处理")
-                
                 raw_text_for_subconverter += clean_text + "\n---\n"
             except Exception as e:
                 print(f"  获取失败: {url.split('/')[-1]} - {e}")
@@ -448,10 +427,8 @@ def main():
             time.sleep(3)
             with open('temp_raw.txt', 'w', encoding='utf-8') as f:
                 f.write(raw_text_for_subconverter)
-            
             file_url = urllib.parse.quote(f"file://{os.path.abspath('temp_raw.txt')}")
             api_url = f"http://127.0.0.1:25500/sub?target=clash&url={file_url}&insert=false&emoji=false&sort=false&scv=true"
-            
             try:
                 conv_resp = requests.get(api_url, timeout=120)
                 if conv_resp.status_code != 200:
@@ -492,15 +469,12 @@ def main():
             if not isinstance(p, dict): 
                 invalid_count += 1
                 continue
-            
             if not all(k in p and p[k] for k in ['name', 'server', 'port', 'type']):
                 invalid_count += 1
                 continue
-            
             if not normalize_proxy_types(p):
                 type_error_count += 1
                 continue
-            
             if not validate_proxy_fields(p):
                 ptype = str(p.get('type', '')).lower()
                 if ptype not in SUPPORTED_PROXY_TYPES:
@@ -508,36 +482,28 @@ def main():
                 else:
                     invalid_field_count += 1
                 continue
-            
             sanitize_reality_opts(p)
-                
             name = clean_name(p.get('name', ''))
             p['name'] = name
-            
             if is_excluded_by_name(name):
                 excluded_count += 1
                 continue
-                
             country = get_country_from_name(name)
             if country is None:
                 ip_api_checked_count += 1
                 country = get_country_via_ip_api(p.get('server', ''))
-                
             if country == 'EXCLUDED':
                 excluded_count += 1
                 continue
             if country is None or country == 'OTHER':
                 country = 'OTHER'
-
             server = str(p.get('server', ''))
             port = str(p.get('port', ''))
             ptype = str(p.get('type', '')).lower()
-            
             dedup_key = f"{server}|{port}|{ptype}"
             if dedup_key in seen_keys:
                 continue
             seen_keys.add(dedup_key)
-            
             base = name
             final = base
             counter = 1
@@ -548,7 +514,6 @@ def main():
                 renamed_count += 1
             seen_names.add(final)
             p['name'] = final
-            
             unique_proxies.append(p)
 
         print(f"  已排除 (中国/韩国) 节点: {excluded_count} 个")
@@ -557,7 +522,6 @@ def main():
         print(f"  已丢弃 mihomo 不支持的协议: {unsupported_type_count} 个")
         print(f"  已丢弃字段类型错误的节点: {type_error_count} 个")
         print(f"  已重命名以避免重名的节点: {renamed_count} 个")
-        print(f"  已隔离格式异常的 REALITY 节点至 UNTESTED 分类: {untested_count} 个")
         print(f"  待测速节点总数: {len(unique_proxies)}")
 
         if not unique_proxies:
@@ -566,12 +530,10 @@ def main():
 
         print("\n步骤 2.5: 启动智能初筛 (UDP协议直接放行,TCP协议极速Ping)...")
         alive_proxies = []
-        
         def check_proxy(p):
             ptype = str(p.get('type', '')).lower()
             server = p.get('server', '')
             port = p.get('port', 80)
-            
             if ptype in UDP_ONLY_PROTOCOLS:
                 return True
             if not server or server in ['127.0.0.1', 'localhost', '0.0.0.0']:
@@ -592,6 +554,8 @@ def main():
 
         total_batches = (len(alive_proxies) + BATCH_SIZE - 1) // BATCH_SIZE
         print(f"\n步骤 3: 分批启动 mihomo 进行真实协议测速 (共 {total_batches} 批,每批最多 {BATCH_SIZE} 个)...")
+        print(f"  测速 URL: {HEALTH_CHECK_URL}")
+        print(f"  单节点超时: {HEALTH_CHECK_TIMEOUT}ms")
         
         kill_residual_mihomo()
         wait_port_free(CONTROLLER_PORT, timeout=20)
@@ -601,12 +565,11 @@ def main():
             start = batch_idx * BATCH_SIZE
             end = min(start + BATCH_SIZE, len(alive_proxies))
             batch = alive_proxies[start:end]
-            
             batch_delays = test_batch(batch, batch_idx + 1, total_batches)
             delay_map.update(batch_delays)
 
-        valid_delays = [d for d in delay_map.values() if 0 < d < 5000]
-        print(f"\n  测速完成: 有效延迟数据 {len(valid_delays)} 个")
+        valid_delays = [d for d in delay_map.values() if 0 < d < DELAY_THRESHOLD]
+        print(f"\n  测速完成: 有效延迟数据 {len(valid_delays)} 个 / 总节点 {len(alive_proxies)} 个 (存活率 {100*len(valid_delays)//max(1,len(alive_proxies))}%)")
 
         print("\n步骤 4: 整理可用节点并生成双配置文件...")
         available_proxies = []
@@ -614,7 +577,7 @@ def main():
         
         for p in alive_proxies:
             delay = delay_map.get(p['name'], 99999)
-            if delay > 0 and delay < 5000:
+            if 0 < delay < DELAY_THRESHOLD:
                 available_proxies.append(p)
                 country = get_country_from_name(p['name']) or 'OTHER'
                 if country not in available_country_groups:
@@ -643,7 +606,6 @@ def main():
             'proxy-groups': build_proxy_groups(available_country_pools, available_proxies, untested_proxies, ai_pool_limit=100),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
-
         with open('all-clash.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(all_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 all-clash.yaml (包含所有可用节点)")
@@ -666,7 +628,6 @@ def main():
             'proxy-groups': build_proxy_groups(top_20_country_pools, top_20_proxies, untested_proxies, ai_pool_limit=50),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
-
         with open('clash.yaml', 'w', encoding='utf-8') as f:
             yaml.safe_dump(top_20_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 clash.yaml (每个国家仅保留 Top 20)")
