@@ -36,10 +36,12 @@ UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
 BATCH_SIZE = 100
 CONTROLLER_PORT = 9090
-HEALTH_CHECK_URLS = [ 
-    'http://cp.cloudflare.com/generate_204',
-    'http://www.gstatic.com/generate_204',
-    'http://www.qualcomm.cn/generate_204' ]
+HEALTH_CHECK_URLS = [
+    'http://connect.rom.miui.com/generate_204',
+    'http://connectivitycheck.platform.hicloud.com/generate_204',
+    'http://wifi.vivo.com.cn/generate_204',
+    'http://www.qualcomm.cn/generate_204',
+]
 
 HEALTH_CHECK_TIMEOUT = 8000
 DELAY_THRESHOLD = 8000
