@@ -34,9 +34,13 @@ IP_API_CALLS = 0
 MAX_IP_API_CALLS = 40
 UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
-BATCH_SIZE = 150
+BATCH_SIZE = 100
 CONTROLLER_PORT = 9090
-HEALTH_CHECK_URL = 'http://cp.cloudflare.com/generate_204'
+HEALTH_CHECK_URL = [ 
+    'http://cp.cloudflare.com/generate_204',
+    'http://www.gstatic.com/generate_204',
+    'http://www.qualcomm.cn/generate_204' ]
+
 HEALTH_CHECK_TIMEOUT = 8000
 DELAY_THRESHOLD = 8000
 
@@ -230,7 +234,18 @@ def _force_kill_process_group(process):
         pass
     time.sleep(1)
 
-def write_mihomo_yaml(proxies, filename):
+def pick_health_check_url():
+    """多测速URL降级：选第一个可用的"""
+    for url in HEALTH_CHECK_URLS:
+        try:
+            r = requests.head(url, timeout=5)
+            if r.status_code in (200, 204):
+                return url
+        except Exception:
+            continue
+    return HEALTH_CHECK_URLS[0]
+
+def write_mihomo_yaml(proxies, filename, health_url):
     config = {
         'mixed-port': 7890,
         'allow-lan': True,
@@ -242,14 +257,14 @@ def write_mihomo_yaml(proxies, filename):
             'name': 'TEST-GROUP',
             'type': 'url-test',
             'proxies': [p['name'] for p in proxies],
-            'url': HEALTH_CHECK_URL,
+            'url': health_url,
             'interval': 300
         }]
     }
     with open(filename, 'w', encoding='utf-8') as f:
         yaml.safe_dump(config, f, allow_unicode=True, sort_keys=False, width=1000)
 
-def test_batch(proxies, batch_id, total_batches, allow_split=True):
+def test_batch(proxies, batch_id, total_batches, health_url, allow_split=True):
     if not proxies:
         return {}
     
@@ -263,7 +278,7 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     
     temp_file = f'temp_batch_{batch_id}.yaml'
     log_file = f'mihomo_batch_{batch_id}.log'
-    write_mihomo_yaml(proxies, temp_file)
+    write_mihomo_yaml(proxies, temp_file, health_url)
     
     # ============== 关键修复:输出到文件而非 PIPE,避免管道缓冲死锁 ==============
     with open(log_file, 'w') as logf:
@@ -305,8 +320,8 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
         if allow_split and len(proxies) > 1:
             mid = len(proxies) // 2
             print(f"    {label} 二分拆批重试: {mid} + {len(proxies) - mid}")
-            r1 = test_batch(proxies[:mid], f"{batch_id}a", total_batches, allow_split=False)
-            r2 = test_batch(proxies[mid:], f"{batch_id}b", total_batches, allow_split=False)
+            r1 = test_batch(proxies[:mid], f"{batch_id}a", total_batches, health_url, allow_split=False)
+            r2 = test_batch(proxies[mid:], f"{batch_id}b", total_batches, health_url, allow_split=False)
             return {**r1, **r2}
         else:
             return {}
@@ -319,11 +334,28 @@ def test_batch(proxies, batch_id, total_batches, allow_split=True):
     try:
         requests.get(
             f'http://127.0.0.1:{CONTROLLER_PORT}/proxies/TEST-GROUP/delay'
-            f'?timeout={HEALTH_CHECK_TIMEOUT}&url={HEALTH_CHECK_URL}',
-            timeout=300
+            f'?timeout={HEALTH_CHECK_TIMEOUT}&url={health_url}',
+            timeout=60
         )
     except Exception as e:
-        print(f"    {label} 测速请求异常: {str(e)[:100]}")
+        print(f"    {label} 触发测速异常: {str(e)[:100]}")
+    
+    # 轮询等待95%节点产生history
+    start_wait = time.time()
+    target_count = max(1, int(len(proxies) * 0.95))
+    print(f"    {label} 等待测速完成 (目标 {target_count}/{len(proxies)})...")
+    while time.time() - start_wait < 400:
+        try:
+            r = requests.get(f'http://127.0.0.1:{CONTROLLER_PORT}/proxies', timeout=10).json()
+            all_data = r.get('proxies', {})
+            tg = all_data.get('TEST-GROUP', {})
+            done = sum(1 for n in tg.get('all', []) 
+                       if all_data.get(n, {}).get('history'))
+            if done >= target_count:
+                break
+        except Exception:
+            pass
+        time.sleep(3)
     
     delay_map = {}
     stat = {'有效': 0, '失败': 0, '超时': 0, '无数据': 0}
@@ -375,13 +407,13 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
     groups.append({
         'name': 'AUTO-FAST', 'type': 'url-test',
         'proxies': [p['name'] for p in active_proxies],
-        'url': HEALTH_CHECK_URL, 'interval': 120
+        'url': health_url, 'interval': 120
     })
     for pool_name in pool_names:
         groups.append({
             'name': pool_name, 'type': 'url-test',
             'proxies': country_pools[pool_name],
-            'url': HEALTH_CHECK_URL, 'interval': 120
+            'url': health_url, 'interval': 120
         })
     if untested_proxies:
         groups.append({
@@ -394,13 +426,13 @@ def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_
     groups.append({
         'name': 'AI-POOL', 'type': 'url-test',
         'proxies': ai_pool_proxies[:ai_pool_limit],
-        'url': HEALTH_CHECK_URL, 'interval': 120
+        'url': health_url, 'interval': 120
     })
     fallback_proxies = ['AUTO-FAST'] + pool_names
     groups.append({
         'name': 'FALLBACK', 'type': 'fallback',
         'proxies': fallback_proxies,
-        'url': HEALTH_CHECK_URL, 'interval': 120
+        'url': health_url, 'interval': 120
     })
     proxy_proxies = ['AUTO-FAST', 'FALLBACK'] + pool_names
     if untested_proxies:
@@ -574,12 +606,15 @@ def main():
         kill_residual_mihomo()
         wait_port_free(CONTROLLER_PORT, timeout=20)
         
+        health_url = pick_health_check_url()
+        print(f"  选用测速 URL: {health_url}")
+        
         delay_map = {}
         for batch_idx in range(total_batches):
             start = batch_idx * BATCH_SIZE
             end = min(start + BATCH_SIZE, len(alive_proxies))
             batch = alive_proxies[start:end]
-            batch_delays = test_batch(batch, batch_idx + 1, total_batches)
+            batch_delays = test_batch(batch, batch_idx + 1, total_batches, health_url)
             delay_map.update(batch_delays)
 
         valid_delays = [d for d in delay_map.values() if 0 < d < DELAY_THRESHOLD]
