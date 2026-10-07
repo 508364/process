@@ -599,7 +599,7 @@ def main():
 
         total_batches = (len(alive_proxies) + BATCH_SIZE - 1) // BATCH_SIZE
         print(f"\n步骤 3: 分批启动 mihomo 进行真实协议测速 (共 {total_batches} 批,每批最多 {BATCH_SIZE} 个)...")
-        print(f"  测速 URL: {HEALTH_CHECK_URL}")
+        print(f"  测速 URL: {HEALTH_CHECK_URLS}")
         print(f"  单节点超时: {HEALTH_CHECK_TIMEOUT}ms")
         
         kill_residual_mihomo()
