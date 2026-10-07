@@ -36,7 +36,7 @@ UDP_ONLY_PROTOCOLS = {'hysteria', 'hysteria2', 'tuic', 'snell'}
 
 BATCH_SIZE = 100
 CONTROLLER_PORT = 9090
-HEALTH_CHECK_URL = [ 
+HEALTH_CHECK_URLS = [ 
     'http://cp.cloudflare.com/generate_204',
     'http://www.gstatic.com/generate_204',
     'http://www.qualcomm.cn/generate_204' ]
