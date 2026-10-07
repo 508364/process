@@ -651,7 +651,7 @@ def main():
             'generated-by': 'github-actions-auto-merge-all', 
             'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': all_proxies_for_yaml,
-            'proxy-groups': build_proxy_groups(available_country_pools, available_proxies, untested_proxies, ai_pool_limit=100),
+            'proxy-groups': build_proxy_groups(available_country_pools, available_proxies, untested_proxies, ai_pool_limit=100, health_url=health_url),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
         with open('all-clash.yaml', 'w', encoding='utf-8') as f:
@@ -673,7 +673,7 @@ def main():
             'generated-by': 'github-actions-auto-merge-top20', 
             'generated-at': datetime.now(timezone.utc).isoformat(),
             'proxies': top_20_proxies_for_yaml,
-            'proxy-groups': build_proxy_groups(top_20_country_pools, top_20_proxies, untested_proxies, ai_pool_limit=50),
+            'proxy-groups': build_proxy_groups(top_20_country_pools, top_20_proxies, untested_proxies, ai_pool_limit=50, health_url=health_url),
             'rules': ['DOMAIN-SUFFIX,openai.com,AI-POOL', 'DOMAIN-SUFFIX,chatgpt.com,AI-POOL', 'DOMAIN-SUFFIX,claude.ai,AI-POOL', 'DOMAIN-SUFFIX,anthropic.com,AI-POOL', 'GEOIP,CN,DIRECT', 'MATCH,PROXY']
         }
         with open('clash.yaml', 'w', encoding='utf-8') as f:
