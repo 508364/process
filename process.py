@@ -400,7 +400,7 @@ def test_batch(proxies, batch_id, total_batches, health_url, allow_split=True):
     
     return delay_map
 
-def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit):
+def build_proxy_groups(country_pools, active_proxies, untested_proxies, ai_pool_limit, health_url):
     pool_names = sorted(list(country_pools.keys()))
     groups = []
     groups.append({
