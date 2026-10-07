@@ -46,7 +46,6 @@ DELAY_THRESHOLD = 8000
 
 SUPPORTED_PROXY_TYPES = {
     'ss', 'ssr', 'vmess', 'vless', 'trojan', 'snell',
-    'http', 'socks5',
     'hysteria', 'hysteria2', 'tuic',
 }
 
