@@ -7,81 +7,40 @@ unified-delay: true
 tcp-concurrent: true
 global-client-fingerprint: chrome
 generated-by: github-actions-auto-merge-all
-generated-at: '2026-10-06T22:35:55.508374+00:00'
+generated-at: '2026-10-07T05:32:25.629887+00:00'
 proxies:
-- name: 未知-06EBF020
-  type: trojan
-  server: 45.130.125.75
+- name: 香港-C6E7A7E9
+  type: hysteria2
+  server: 202.146.222.174
   port: 443
-  network: ws
-  password: humanity
-  sni: www.calmlunch.com
-  ws-opts:
-    headers:
-      Host: www.calmlunch.com
-    path: /assignment
-- name: 未知-25F9DE91
-  type: trojan
-  server: 104.17.121.43
-  port: 443
-  network: ws
-  password: humanity
+  password: H7mP2xY9kJ4nQ8wR5tF6vB3z
+  skip-cert-verify: true
+  sni: https://t.me/WangCai2🇨🇳
+  tfo: false
+- name: 美国-2844BECE
+  type: hysteria2
+  server: hy2.123266.xyz
+  port: 33333
+  password: bce6c821-200d-421f-bf3d-7159e5246ea0
+  skip-cert-verify: true
+  sni: hy2.123266.xyz
+  tfo: false
+- name: 未知-53418137
+  type: ss
+  server: 108.181.0.177
+  port: 8388
+  cipher: chacha20-ietf-poly1305
+  password: G5p6ww4o67HB
   skip-cert-verify: false
-  sni: www.calmlunch.com
-  ws-opts:
-    headers:
-      Host: www.calmlunch.com
-    path: /assignment
-- name: 加拿大-3F5FB581
-  type: trojan
-  server: 104.18.9.83
-  port: 443
-  network: ws
-  password: humanity
-  sni: www.calmlunch.com
-  ws-opts:
-    headers:
-      Host: www.calmlunch.com
-    path: /assignment
-- name: 未知-67CFFED2
-  type: trojan
-  server: 104.25.109.237
-  port: 443
-  alpn:
-  - h2
-  - http/1.1
-  client-fingerprint: chrome
-  network: ws
-  password: humanity
-  sni: www.calmlunch.com
-  ws-opts:
-    headers:
-      Host: www.calmlunch.com
-    path: /assignment
-- name: 未知-75DBC95C
-  type: trojan
-  server: 45.130.125.112
-  port: 443
-  client-fingerprint: chrome
-  network: ws
-  password: humanity
-  sni: www.calmlunch.com
-  ws-opts:
-    path: /assignment
-- name: 未知-F1463FD6
-  type: trojan
-  server: 45.130.125.76
-  port: 443
-  alpn:
-  - http/1.1
-  network: ws
-  password: humanity
+  udp: false
+- name: 未知-6A8A70AE
+  type: ss
+  server: 108.181.118.10
+  port: 8388
+  cipher: chacha20-ietf-poly1305
+  password: G5p6ww4o67HB
   skip-cert-verify: false
-  sni: www.calmlunch.com
-  ws-opts:
-    headers:
-      Host: www.calmlunch.com
-    path: /assignment
+  udp: false
 - name: 美国-2EC114C5
   type: vmess
   server: 129.146.77.248
@@ -94,9 +53,9 @@ proxies:
   ws-opts:
     headers: {}
     path: /cctv13.m3u8
-- name: 未知-5591547D
+- name: 未知-B44F8E82
   type: ss
-  server: 156.146.38.169
+  server: 149.22.95.183
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
@@ -108,6 +67,20 @@ proxies:
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
+- name: 未知-5591547D
+  type: ss
+  server: 156.146.38.169
+  port: 443
+  cipher: aes-128-gcm
+  password: shadowsocks
+  skip-cert-verify: false
+  udp: false
+- name: 美国-C7466887
+  type: ss
+  server: 156.146.38.167
+  port: 443
+  cipher: aes-128-gcm
+  password: shadowsocks
 - name: 未知-D45BC914
   type: ss
   server: 37.19.198.244
@@ -116,51 +89,6 @@ proxies:
   password: shadowsocks
   skip-cert-verify: false
   udp: false
-- name: 未知-DF922B23
-  type: ss
-  server: 37.19.198.160
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
-  skip-cert-verify: false
-  udp: false
-- name: 美国-2DD9A906
-  type: ss
-  server: 37.19.198.236
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
-  udp: true
-- name: 美国-781DC8A9
-  type: ss
-  server: 37.19.198.243
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
-- name: 未知-892BE4A4
-  type: vmess
-  server: 67.220.85.46
-  port: 18000
-  alterId: 0
-  cipher: aes-128-gcm
-  network: tcp
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: 美国-D0E0EABF
-  type: ss
-  server: 156.146.38.170
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
-- name: 美国-20488C4F
-  type: vmess
-  server: 67.220.95.3
-  port: 18000
-  alterId: 0
-  cipher: aes-128-gcm
-  network: tcp
-  tls: false
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
 - name: 加拿大-8DAFEF46
   type: vmess
   server: 23.162.200.198
@@ -170,125 +98,131 @@ proxies:
   network: tcp
   tls: false
   uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: 未知-AF16F820
-  type: vmess
-  server: 134.195.196.211
-  port: 18000
-  alterId: 0
-  cipher: auto
-  network: tcp
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: 美国-98668394
-  type: vmess
-  server: 38.91.107.49
-  port: 18000
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: 未知-B504CBC6
+- name: 未知-688F3685
   type: ss
-  server: 198.98.53.130
-  port: 443
-  cipher: chacha20-ietf-poly1305
-  password: eDfN7SODQceIOmIAbtJJtK
-  skip-cert-verify: false
-  udp: false
-- name: 加拿大-093F7F75
-  type: ss
-  server: 137.184.174.93
-  port: 8080
-  cipher: rc4-md5
-  password: 14fFPrbezE3HDZzsMOr6
-  skip-cert-verify: false
-  udp: false
-- name: 未知-535DDB12
-  type: http
-  server: 154.26.192.123
-  port: 10988
-  password: gs4BXwT6SW
-  tls: false
-  username: fQ67Dpe5dU
-- name: 未知-1E4E8879
-  type: vmess
-  server: 165.154.195.38
-  port: 35034
-  alterId: 0
-  cipher: auto
-  client-fingerprint: ''
-  network: tcp
-  tls: false
-  uuid: 959a8caf-4cea-43d0-a548-3628e7ddfafc
-- name: 未知-F80EE80C
-  type: ss
-  server: 82.38.31.180
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  network: tcp
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  skip-cert-verify: false
-  udp: false
-- name: 未知-01E5A486
-  type: vmess
-  server: 141.95.65.9
-  port: 1234
-  alterId: 0
-  cipher: aes-128-gcm
-  client-fingerprint: chrome
-  network: tcp
-  servername: supervpn.super.com
-  skip-cert-verify: true
-  tls: true
-  udp: true
-  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
-- name: 西班牙-C2D79A90
-  type: ss
-  server: 108.181.121.226
-  port: 8388
-  cipher: chacha20-ietf-poly1305
-  password: WSyL4XTwNsdv
-  skip-cert-verify: false
-  udp: false
-- name: 未知-B5EE8E89
-  type: ss
-  server: 82.38.31.181
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  skip-cert-verify: false
-  udp: false
-- name: 英国-19EA134B
-  type: ss
-  server: 82.38.31.7
+  server: 193.29.139.204
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: oZIoA69Q8yhcQV8ka3Pa3A
   skip-cert-verify: false
   udp: false
-- name: 德国-2565DE59
-  type: vless
-  server: 57.129.41.216
-  port: 80
-  network: ws
+- name: 荷兰-E7B00D01
+  type: ss
+  server: 82.38.31.2
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   skip-cert-verify: false
-  uuid: 7d74eae4-8a06-4306-a923-ad686f30bf26
-  ws-opts:
-    path: /vless/
-- name: 未知-0AC37245
-  type: vless
-  server: 152.228.162.19
-  port: 80
-  encryption: none
-  network: ws
+  udp: false
+- name: 荷兰-9657BB20
+  type: ss
+  server: 82.38.31.149
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  country: 🇬🇧GB
+  delay: 479
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+- name: 未知-2368B7BD
+  type: ss
+  server: 193.29.139.235
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+- name: 英国-045C7267
+  type: ss
+  server: 82.38.31.214
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
-  tls: false
-  uuid: 5ce84688-f535-46ad-a512-37b17becf6ea
-  ws-opts:
-    headers:
-      Host: akamaized.net
-    path: /vless/
+  udp: false
+- name: 未知-94FA843E
+  type: ss
+  server: 82.38.31.212
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  network: tcp
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-75636F57
+  type: ss
+  server: 82.38.31.208
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-1B6D48DD
+  type: ss
+  server: 82.38.31.191
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-CB42B351
+  type: ss
+  server: 82.38.31.200
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 以色列-B3D4568A
+  type: ss
+  server: 82.38.31.204
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-A84723A5
+  type: ss
+  server: 82.38.31.206
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-0DA5B829
+  type: ss
+  server: 82.38.31.193
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 荷兰-36FA140B
+  type: ss
+  server: 82.38.31.184
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 英国-920EDAD3
+  type: ss
+  server: 82.38.31.202
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
+- name: 未知-6B469CBF
+  type: ss
+  server: 82.38.31.17
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  skip-cert-verify: false
+  udp: false
+- name: 澳大利亚-43311E6E
+  type: http
+  server: 103.62.50.130
+  port: 443
+  skip-cert-verify: true
+  tls: true
 - name: 未知-24BBDC61
   type: ss
   server: 82.38.31.213
@@ -297,29 +231,59 @@ proxies:
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: 意大利-5BEA361C
-  type: vless
-  server: 204.216.216.23
-  port: 1114
-  client-fingerprint: chrome
-  encryption: none
-  flow: xtls-rprx-vision
-  network: tcp
-  packet-encoding: xudp
-  reality-opts:
-    public-key: WfkCF0eEuIoO0MyJsKOddU89QrTzCZ4y2dzCJbH99CQ
-    short-id: "79a1e14b"
-  servername: yahoo.com
-  skip-cert-verify: false
-  tls: true
-  udp: true
-  uuid: 6ba2eac6-0ec9-44ca-a42b-a8e23aafb530
-- name: 罗马尼亚-31AA0468
-  type: http
-  server: 193.176.84.39
+- name: Dhos[]_dokng.com_92f43b70
+  password: None
   port: 9002
+  server: 138.199.35.216
   skip-cert-verify: true
   tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_02619dd0
+  password: None
+  port: 9002
+  server: 138.199.35.201
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_1c3c73a3
+  port: 443
+  server: purecambogiasl.live
+  skip-cert-verify: true
+  sni: purecambogiasl.live
+  tls: true
+  type: http
+- name: Chos[]_dokng.com_f024136d
+  password: None
+  port: 443
+  server: 149.36.50.1
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_209eaff6
+  password: null
+  port: 9002
+  server: 138.199.35.210
+  skip-cert-verify: true
+  tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_b3f4e70a
+  port: 9002
+  server: 138.199.35.200
+  skip-cert-verify: true
+  tls: true
+  type: http
+  udp: true
+- name: Dhos[]_dokng.com_e3642aa7
+  port: 443
+  server: 103.82.101.44
+  skip-cert-verify: true
+  sni: f3a61d8406d537345747f99f8a281007-3f754ed5da1bba09.apache-iv.com
+  tls: true
+  type: http
 - name: Dhos[]_dokng.com_082ea2c9
   password: null
   port: 9002
@@ -328,125 +292,177 @@ proxies:
   tls: true
   type: http
   username: null
-- name: Dhos[]_dokng.com_a1a03795
-  port: 9443
-  server: 149.88.27.46
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_3dfb009e
+- name: Dhos[]_dokng.com_0b3b46c7
+  password: 'null'
   port: 443
-  server: 94.177.163.156
-  skip-cert-verify: true
+  server: carolinafreigh.fun
   tls: true
   type: http
-- name: Bbiz[]_dokng.com_1519a3a0
-  port: 443
-  server: 12.202.180.10
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_bb8fcb90
-  port: 443
-  server: 159.69.94.125
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_c65e2206
+  username: 'null'
+- name: Dhos[]_dokng.com_6e9418e8
+  password: 'null'
   port: 9002
-  server: 84.17.47.125
+  server: 138.199.35.205
   skip-cert-verify: true
+  tls: true
+  type: http
+  username: 'null'
+- name: Dhos[]_dokng.com_c886aaa1
+  password: 'null'
+  port: 443
+  server: crosscards.site
+  sni: crosscards.site
+  tls: true
+  type: http
+  username: 'null'
+- name: Dhos[]_dokng.com_5e03a401
+  password: None
+  port: 443
+  server: tzoa.fun
+  skip-cert-verify: false
+  tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_59f060e6
+  password: None
+  port: 443
+  server: berniesbodybla.fun
+  skip-cert-verify: false
+  tls: true
+  type: http
+  username: null
+- name: Dhos[]_dokng.com_94a57b91
+  port: 443
+  server: 137.175.22.52
+  skip-cert-verify: true
+  tls: true
+  type: http
+- name: Dhos[]_dokng.com_54341e9d
+  port: 443
+  server: 104.233.178.179
+  skip-cert-verify: true
+  tls: true
+  type: http
+- name: Dhos[]_dokng.com_895a114b
+  password: None
+  port: 443
+  server: 146.70.176.242
+  skip-cert-verify: true
+  sub_tag: R002-260618
   tls: true
   type: http
   udp: true
-- name: Dhos[]_dokng.com_045fb906
-  port: 9443
-  server: 37.120.233.34
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_f2b76d2c
-  port: 443
-  server: 149.88.96.12
-  skip-cert-verify: true
-  tls: true
-  type: http
 - name: Ares[]_dokng.com_c2a21b53
   port: 443
   server: 206.223.183.16
   skip-cert-verify: true
   tls: true
   type: http
-- name: Ares[]_dokng.com_1647a2a3
+- name: Dhos[]_dokng.com_ad2e47da
+  password: null
   port: 443
-  server: 206.223.183.21
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_8859f2e5
-  password: None
-  port: 443
-  server: 185.216.35.66
+  server: 146.70.244.18
   skip-cert-verify: true
   tls: true
   type: http
   username: null
-- name: Dhos[]_dokng.com_09922a37
-  port: 9002
-  server: 84.17.47.126
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_9742de7b
-  password: None
-  port: 9002
-  server: 193.176.84.22
-  skip-cert-verify: true
-  tls: true
-  type: http
-  username: null
-- name: Ares[]_dokng.com_59881239
+- name: Dhos[]_dokng.com_6c7ec50c
   port: 443
-  server: 95.229.15.89
+  server: 146.70.242.146
   skip-cert-verify: true
   tls: true
   type: http
-- name: Dhos[]_dokng.com_37a111a9
-  port: 443
-  server: 66.64.100.66
-  skip-cert-verify: true
-  tls: true
-  type: http
-- name: Dhos[]_dokng.com_340f87cf
-  port: 44499
-  server: 45.61.188.134
-  type: socks5
-- name: Dhos[]_dokng.com_a9220c62
+- name: Dhos[]_dokng.com_045fb906
   port: 9443
-  server: 95.153.31.66
+  server: 37.120.233.34
   skip-cert-verify: true
   tls: true
   type: http
-- name: Amob_dokng.com_c8a1e2bf
-  port: 1080
-  server: 81.195.131.20
-  type: socks5
-- name: Dhos[]_dokng.com_312604eb
-  port: 8090
-  server: 217.181.201.254
+- name: Ares[]_dokng.com_f8627c4f
+  port: 8080
+  server: 75.148.159.121
+  type: http
+- name: Dhos[]_dokng.com_96145cba
+  port: 443
+  server: 152.53.107.196
   skip-cert-verify: true
   tls: true
+  type: http
+- name: Dhos[]_dokng.com_3bcb64c0
+  port: 443
+  server: 162.244.227.36
+  skip-cert-verify: true
+  tls: true
+  type: http
+- alterId: 0
+  cipher: auto
+  client-fingerprint: safari
+  name: Uukn_dokng.com_9fff1298
+  network: ws
+  port: 443
+  server: www.shopify.com
+  servername: guanwang.awsno.com
+  skip-cert-verify: true
+  tls: true
+  type: vmess
+  uuid: 6a89a215-22bf-4bd7-9642-b95b2e09583a
+  ws-opts:
+    headers:
+      Host: guanwang.awsno.com
+    path: /hls/cctv5phd.m3u8
+- name: Ares[]_dokng.com_99231848
+  port: 999
+  server: 187.201.225.188
+  type: http
+- name: Dhos[]_dokng.com_06909cc3
+  port: 9443
+  server: 146.70.170.210
+  skip-cert-verify: true
+  tls: true
+  type: http
+- name: Ares[]_dokng.com_173d4af3
+  port: 999
+  server: 45.191.235.53
   type: http
 - name: ðºð HTTP 162.214.159.943128 F
   type: http
   server: 162.214.159.94
   port: 3128
   udp: false
-- name: ððª HTTP 103.237.102.19111111 F
-  type: http
-  server: 103.237.102.191
-  port: 11111
-  udp: false
+- name: 138.197.141.58PXGbmY1F
+  type: ss
+  server: 138.197.141.58
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: 82.38.31.170Ry2jDexP
+  type: ss
+  server: 82.38.31.170
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: 82.38.31.216Q7fGHVnz
+  type: ss
+  server: 82.38.31.216
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: 185.177.229.129NVxzcO5h
+  type: vmess
+  server: 185.177.229.129
+  port: 22324
+  uuid: 04621bae-ab36-11ec-b909-0242ac120002
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: ''
+  ws-headers:
+    Host: ''
+  tls: false
 - name: 216.152.152.187xD8SQC3M
   type: vmess
   server: 216.152.152.187
@@ -460,53 +476,99 @@ proxies:
   ws-headers:
     Host: ''
   tls: false
-- name: 82.38.31.3afKVkdZR
+- name: 82.38.31.186q5pM6cRF
   type: ss
-  server: 82.38.31.3
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 82.38.31.26a5OcWvfY
-  type: ss
-  server: 82.38.31.26
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 82.38.31.46IZlbJvG5
-  type: ss
-  server: 82.38.31.46
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 82.38.31.175xJTV091X
-  type: ss
-  server: 82.38.31.175
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 82.38.31.187evsW74wN
-  type: ss
-  server: 82.38.31.187
+  server: 82.38.31.186
   port: 8080
   password: k1dBOmOB4oqi7Ump37a1bQ
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: 82.38.31.1799lY8vTt2
+- name: 169.197.143.116RlEbYVNh
+  type: vmess
+  server: 169.197.143.116
+  port: 22324
+  uuid: 04621bae-ab36-11ec-b909-0242ac120002
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: ''
+  ws-headers:
+    Host: ''
+  tls: false
+- name: 195.238.126.20ceuVh1Ma
   type: ss
-  server: 82.38.31.179
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  server: 195.238.126.20
+  port: 9045
+  password: Lp27rqyJq72bZsqX
   alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 82.38.31.180DFJgrHU
+  cipher: aes-256-cfb
+- name: 67.220.72.2370X2j9FcM
+  type: vmess
+  server: 67.220.72.237
+  port: 22324
+  uuid: 04621bae-ab36-11ec-b909-0242ac120002
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: /
+  ws-headers:
+    Host: ''
+  tls: false
+- name: 169.197.142.226NAWwpE0
+  type: vmess
+  server: 169.197.142.22
+  port: 18000
+  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: /
+  ws-headers:
+    Host: ''
+  tls: false
+- name: 146.70.61.18Zp4URaE0
   type: ss
-  server: 82.38.31.18
+  server: 146.70.61.18
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: 82.38.31.69N7FVZmrM
+  type: ss
+  server: 82.38.31.69
   port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: 82.38.31.1562NDFLvZj
+  type: ss
+  server: 82.38.31.156
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: 195.238.126.207i5RHAVQ
+  type: ss
+  server: 195.238.126.20
+  port: 9012
+  password: xaupMUvhptwxdDUg
+  alterId: 2
+  cipher: aes-256-cfb
+- name: 213.183.63.60xlQLHJrG
+  type: ss
+  server: 213.183.63.60
+  port: 9066
+  password: 2KUaE2a8NWTvuCZ3
+  alterId: 2
+  cipher: aes-256-cfb
+- name: bogging-eyeteeth-fly.freesocks.workwdbrCPoQ
+  type: ss
+  server: bogging-eyeteeth-fly.freesocks.work
+  port: 443
+  password: QFWzCw2uX9B9i6qAYeFBIE
   alterId: 2
   cipher: chacha20-ietf-poly1305
 - name: 185.103.110.68ZjGbIPH1
@@ -516,269 +578,284 @@ proxies:
   password: f9300a9bf39ae0347c3a3bfbc4dd7754
   alterId: 2
   cipher: aes-128-gcm
-- name: 193.29.139.198GaexCH57
+- name: 158.173.20.171OZPJUxVN
   type: ss
-  server: 193.29.139.198
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  server: 158.173.20.171
+  port: 443
+  password: shadowsocks
+  alterId: 2
+  cipher: aes-128-gcm
+- name: 82.38.31.149ohi1q5Sw
+  type: ss
+  server: 82.38.31.149
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: 108.181.57.93MDm0xt6E
-  type: ss
-  server: 108.181.57.93
-  port: 8388
-  password: RSo52SbxW40r
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: 141.164.45.187nJltj6pA
-  type: ss
-  server: 141.164.45.187
-  port: 2376
-  password: faBAoD54k87UJG7
-  alterId: 2
-  cipher: aes-256-gcm
-- name: 91.201.65.122Bg3YCb5F
-  type: ss
-  server: 91.201.65.122
-  port: 9039
-  password: qYEN5HX4JKeVCdEC
-  alterId: 2
-  cipher: aes-256-cfb
 proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - 未知-06EBF020
-  - 未知-25F9DE91
-  - 加拿大-3F5FB581
-  - 未知-67CFFED2
-  - 未知-75DBC95C
-  - 未知-F1463FD6
+  - 香港-C6E7A7E9
+  - 美国-2844BECE
+  - 未知-53418137
+  - 未知-6A8A70AE
   - 美国-2EC114C5
-  - 未知-5591547D
+  - 未知-B44F8E82
   - 美国-4A5CF585
+  - 未知-5591547D
+  - 美国-C7466887
   - 未知-D45BC914
-  - 未知-DF922B23
-  - 美国-2DD9A906
-  - 美国-781DC8A9
-  - 未知-892BE4A4
-  - 美国-D0E0EABF
-  - 美国-20488C4F
   - 加拿大-8DAFEF46
-  - 未知-AF16F820
-  - 美国-98668394
-  - 未知-B504CBC6
-  - 加拿大-093F7F75
-  - 未知-535DDB12
-  - 未知-1E4E8879
-  - 未知-F80EE80C
-  - 未知-01E5A486
-  - 西班牙-C2D79A90
-  - 未知-B5EE8E89
-  - 英国-19EA134B
-  - 德国-2565DE59
-  - 未知-0AC37245
+  - 未知-688F3685
+  - 荷兰-E7B00D01
+  - 荷兰-9657BB20
+  - 未知-2368B7BD
+  - 英国-045C7267
+  - 未知-94FA843E
+  - 未知-75636F57
+  - 未知-1B6D48DD
+  - 未知-CB42B351
+  - 以色列-B3D4568A
+  - 未知-A84723A5
+  - 未知-0DA5B829
+  - 荷兰-36FA140B
+  - 英国-920EDAD3
+  - 未知-6B469CBF
+  - 澳大利亚-43311E6E
   - 未知-24BBDC61
-  - 意大利-5BEA361C
-  - 罗马尼亚-31AA0468
+  - Dhos[]_dokng.com_92f43b70
+  - Dhos[]_dokng.com_02619dd0
+  - Dhos[]_dokng.com_1c3c73a3
+  - Chos[]_dokng.com_f024136d
+  - Dhos[]_dokng.com_209eaff6
+  - Dhos[]_dokng.com_b3f4e70a
+  - Dhos[]_dokng.com_e3642aa7
   - Dhos[]_dokng.com_082ea2c9
-  - Dhos[]_dokng.com_a1a03795
-  - Dhos[]_dokng.com_3dfb009e
-  - Bbiz[]_dokng.com_1519a3a0
-  - Dhos[]_dokng.com_bb8fcb90
-  - Dhos[]_dokng.com_c65e2206
-  - Dhos[]_dokng.com_045fb906
-  - Dhos[]_dokng.com_f2b76d2c
+  - Dhos[]_dokng.com_0b3b46c7
+  - Dhos[]_dokng.com_6e9418e8
+  - Dhos[]_dokng.com_c886aaa1
+  - Dhos[]_dokng.com_5e03a401
+  - Dhos[]_dokng.com_59f060e6
+  - Dhos[]_dokng.com_94a57b91
+  - Dhos[]_dokng.com_54341e9d
+  - Dhos[]_dokng.com_895a114b
   - Ares[]_dokng.com_c2a21b53
-  - Ares[]_dokng.com_1647a2a3
-  - Dhos[]_dokng.com_8859f2e5
-  - Dhos[]_dokng.com_09922a37
-  - Dhos[]_dokng.com_9742de7b
-  - Ares[]_dokng.com_59881239
-  - Dhos[]_dokng.com_37a111a9
-  - Dhos[]_dokng.com_340f87cf
-  - Dhos[]_dokng.com_a9220c62
-  - Amob_dokng.com_c8a1e2bf
-  - Dhos[]_dokng.com_312604eb
+  - Dhos[]_dokng.com_ad2e47da
+  - Dhos[]_dokng.com_6c7ec50c
+  - Dhos[]_dokng.com_045fb906
+  - Ares[]_dokng.com_f8627c4f
+  - Dhos[]_dokng.com_96145cba
+  - Dhos[]_dokng.com_3bcb64c0
+  - Uukn_dokng.com_9fff1298
+  - Ares[]_dokng.com_99231848
+  - Dhos[]_dokng.com_06909cc3
+  - Ares[]_dokng.com_173d4af3
   - ðºð HTTP 162.214.159.943128 F
-  - ððª HTTP 103.237.102.19111111 F
+  - 138.197.141.58PXGbmY1F
+  - 82.38.31.170Ry2jDexP
+  - 82.38.31.216Q7fGHVnz
+  - 185.177.229.129NVxzcO5h
   - 216.152.152.187xD8SQC3M
-  - 82.38.31.3afKVkdZR
-  - 82.38.31.26a5OcWvfY
-  - 82.38.31.46IZlbJvG5
-  - 82.38.31.175xJTV091X
-  - 82.38.31.187evsW74wN
-  - 82.38.31.1799lY8vTt2
-  - 82.38.31.180DFJgrHU
+  - 82.38.31.186q5pM6cRF
+  - 169.197.143.116RlEbYVNh
+  - 195.238.126.20ceuVh1Ma
+  - 67.220.72.2370X2j9FcM
+  - 169.197.142.226NAWwpE0
+  - 146.70.61.18Zp4URaE0
+  - 82.38.31.69N7FVZmrM
+  - 82.38.31.1562NDFLvZj
+  - 195.238.126.207i5RHAVQ
+  - 213.183.63.60xlQLHJrG
+  - bogging-eyeteeth-fly.freesocks.workwdbrCPoQ
   - 185.103.110.68ZjGbIPH1
-  - 193.29.139.198GaexCH57
-  - 108.181.57.93MDm0xt6E
-  - 141.164.45.187nJltj6pA
-  - 91.201.65.122Bg3YCb5F
+  - 158.173.20.171OZPJUxVN
+  - 82.38.31.149ohi1q5Sw
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: CA-POOL
   type: url-test
   proxies:
   - 加拿大-8DAFEF46
-  - 加拿大-093F7F75
-  - 加拿大-3F5FB581
   url: http://cp.cloudflare.com/generate_204
   interval: 120
-- name: DE-POOL
+- name: HK-POOL
   type: url-test
   proxies:
-  - 德国-2565DE59
+  - 香港-C6E7A7E9
+  url: http://cp.cloudflare.com/generate_204
+  interval: 120
+- name: NL-POOL
+  type: url-test
+  proxies:
+  - 荷兰-9657BB20
+  - 荷兰-E7B00D01
+  - 荷兰-36FA140B
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: OTHER-POOL
   type: url-test
   proxies:
-  - 未知-D45BC914
-  - 未知-DF922B23
-  - 未知-AF16F820
-  - 未知-892BE4A4
   - 未知-5591547D
-  - 未知-B504CBC6
-  - Ares[]_dokng.com_1647a2a3
-  - Ares[]_dokng.com_c2a21b53
-  - Bbiz[]_dokng.com_1519a3a0
+  - 未知-6A8A70AE
+  - 未知-53418137
   - 216.152.152.187xD8SQC3M
-  - Dhos[]_dokng.com_340f87cf
-  - 108.181.57.93MDm0xt6E
-  - 82.38.31.1799lY8vTt2
-  - 82.38.31.46IZlbJvG5
-  - 82.38.31.26a5OcWvfY
-  - 未知-535DDB12
-  - 193.29.139.198GaexCH57
-  - 未知-24BBDC61
-  - 82.38.31.175xJTV091X
-  - 未知-B5EE8E89
-  - 82.38.31.3afKVkdZR
-  - 82.38.31.187evsW74wN
-  - 未知-F80EE80C
-  - Dhos[]_dokng.com_37a111a9
-  - 185.103.110.68ZjGbIPH1
+  - 169.197.143.116RlEbYVNh
+  - 未知-D45BC914
+  - Dhos[]_dokng.com_02619dd0
+  - Dhos[]_dokng.com_6e9418e8
+  - Dhos[]_dokng.com_209eaff6
   - Dhos[]_dokng.com_082ea2c9
-  - 西班牙-C2D79A90
-  - 未知-F1463FD6
-  - 未知-06EBF020
-  - 未知-0AC37245
-  - 未知-01E5A486
-  - 91.201.65.122Bg3YCb5F
-  - 未知-25F9DE91
-  - ððª HTTP 103.237.102.19111111 F
-  - 未知-67CFFED2
-  - 未知-75DBC95C
-  - Dhos[]_dokng.com_045fb906
-  - Dhos[]_dokng.com_09922a37
-  - Dhos[]_dokng.com_f2b76d2c
-  - 82.38.31.180DFJgrHU
-  - Dhos[]_dokng.com_c65e2206
+  - Dhos[]_dokng.com_92f43b70
+  - Dhos[]_dokng.com_b3f4e70a
+  - 未知-B44F8E82
+  - 138.197.141.58PXGbmY1F
+  - 169.197.142.226NAWwpE0
+  - Dhos[]_dokng.com_54341e9d
+  - Dhos[]_dokng.com_5e03a401
+  - Dhos[]_dokng.com_0b3b46c7
+  - Dhos[]_dokng.com_94a57b91
+  - Ares[]_dokng.com_f8627c4f
+  - Dhos[]_dokng.com_c886aaa1
   - ðºð HTTP 162.214.159.943128 F
-  - Dhos[]_dokng.com_a1a03795
-  - 未知-1E4E8879
-  - Dhos[]_dokng.com_bb8fcb90
-  - Dhos[]_dokng.com_3dfb009e
-  - Dhos[]_dokng.com_a9220c62
-  - 141.164.45.187nJltj6pA
-  - Dhos[]_dokng.com_8859f2e5
-  - 罗马尼亚-31AA0468
-  - Dhos[]_dokng.com_9742de7b
-  - Ares[]_dokng.com_59881239
-  - 意大利-5BEA361C
-  - Amob_dokng.com_c8a1e2bf
-  - Dhos[]_dokng.com_312604eb
+  - Dhos[]_dokng.com_59f060e6
+  - Ares[]_dokng.com_99231848
+  - 67.220.72.2370X2j9FcM
+  - Dhos[]_dokng.com_1c3c73a3
+  - Ares[]_dokng.com_c2a21b53
+  - 158.173.20.171OZPJUxVN
+  - 146.70.61.18Zp4URaE0
+  - 82.38.31.149ohi1q5Sw
+  - 未知-688F3685
+  - 82.38.31.1562NDFLvZj
+  - 以色列-B3D4568A
+  - 185.177.229.129NVxzcO5h
+  - 82.38.31.216Q7fGHVnz
+  - 未知-6B469CBF
+  - 82.38.31.69N7FVZmrM
+  - 未知-2368B7BD
+  - Dhos[]_dokng.com_3bcb64c0
+  - 82.38.31.186q5pM6cRF
+  - 未知-24BBDC61
+  - 未知-CB42B351
+  - 未知-A84723A5
+  - 82.38.31.170Ry2jDexP
+  - 未知-94FA843E
+  - 未知-0DA5B829
+  - 未知-1B6D48DD
+  - Uukn_dokng.com_9fff1298
+  - Ares[]_dokng.com_173d4af3
+  - 185.103.110.68ZjGbIPH1
+  - 213.183.63.60xlQLHJrG
+  - 195.238.126.207i5RHAVQ
+  - 195.238.126.20ceuVh1Ma
+  - bogging-eyeteeth-fly.freesocks.workwdbrCPoQ
+  - Dhos[]_dokng.com_045fb906
+  - Dhos[]_dokng.com_895a114b
+  - Dhos[]_dokng.com_e3642aa7
+  - Dhos[]_dokng.com_6c7ec50c
+  - 未知-75636F57
+  - Dhos[]_dokng.com_06909cc3
+  - Chos[]_dokng.com_f024136d
+  - Dhos[]_dokng.com_ad2e47da
+  - Dhos[]_dokng.com_96145cba
+  - 澳大利亚-43311E6E
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: UK-POOL
   type: url-test
   proxies:
-  - 英国-19EA134B
+  - 英国-045C7267
+  - 英国-920EDAD3
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: US-POOL
   type: url-test
   proxies:
-  - 美国-20488C4F
-  - 美国-2DD9A906
-  - 美国-781DC8A9
-  - 美国-D0E0EABF
-  - 美国-98668394
+  - 美国-C7466887
   - 美国-4A5CF585
   - 美国-2EC114C5
+  - 美国-2844BECE
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: AI-POOL
   type: url-test
   proxies:
-  - 未知-06EBF020
-  - 未知-25F9DE91
-  - 加拿大-3F5FB581
-  - 未知-67CFFED2
-  - 未知-75DBC95C
-  - 未知-F1463FD6
+  - 香港-C6E7A7E9
+  - 美国-2844BECE
+  - 未知-53418137
+  - 未知-6A8A70AE
   - 美国-2EC114C5
-  - 未知-5591547D
+  - 未知-B44F8E82
   - 美国-4A5CF585
+  - 未知-5591547D
+  - 美国-C7466887
   - 未知-D45BC914
-  - 未知-DF922B23
-  - 美国-2DD9A906
-  - 美国-781DC8A9
-  - 未知-892BE4A4
-  - 美国-D0E0EABF
-  - 美国-20488C4F
   - 加拿大-8DAFEF46
-  - 未知-AF16F820
-  - 美国-98668394
-  - 未知-B504CBC6
-  - 加拿大-093F7F75
-  - 未知-535DDB12
-  - 未知-1E4E8879
-  - 未知-F80EE80C
-  - 未知-01E5A486
-  - 西班牙-C2D79A90
-  - 未知-B5EE8E89
-  - 英国-19EA134B
-  - 德国-2565DE59
-  - 未知-0AC37245
+  - 未知-688F3685
+  - 荷兰-E7B00D01
+  - 荷兰-9657BB20
+  - 未知-2368B7BD
+  - 英国-045C7267
+  - 未知-94FA843E
+  - 未知-75636F57
+  - 未知-1B6D48DD
+  - 未知-CB42B351
+  - 以色列-B3D4568A
+  - 未知-A84723A5
+  - 未知-0DA5B829
+  - 荷兰-36FA140B
+  - 英国-920EDAD3
+  - 未知-6B469CBF
+  - 澳大利亚-43311E6E
   - 未知-24BBDC61
-  - 意大利-5BEA361C
-  - 罗马尼亚-31AA0468
+  - Dhos[]_dokng.com_92f43b70
+  - Dhos[]_dokng.com_02619dd0
+  - Dhos[]_dokng.com_1c3c73a3
+  - Chos[]_dokng.com_f024136d
+  - Dhos[]_dokng.com_209eaff6
+  - Dhos[]_dokng.com_b3f4e70a
+  - Dhos[]_dokng.com_e3642aa7
   - Dhos[]_dokng.com_082ea2c9
-  - Dhos[]_dokng.com_a1a03795
-  - Dhos[]_dokng.com_3dfb009e
-  - Bbiz[]_dokng.com_1519a3a0
-  - Dhos[]_dokng.com_bb8fcb90
-  - Dhos[]_dokng.com_c65e2206
-  - Dhos[]_dokng.com_045fb906
-  - Dhos[]_dokng.com_f2b76d2c
+  - Dhos[]_dokng.com_0b3b46c7
+  - Dhos[]_dokng.com_6e9418e8
+  - Dhos[]_dokng.com_c886aaa1
+  - Dhos[]_dokng.com_5e03a401
+  - Dhos[]_dokng.com_59f060e6
+  - Dhos[]_dokng.com_94a57b91
+  - Dhos[]_dokng.com_54341e9d
+  - Dhos[]_dokng.com_895a114b
   - Ares[]_dokng.com_c2a21b53
-  - Ares[]_dokng.com_1647a2a3
-  - Dhos[]_dokng.com_8859f2e5
-  - Dhos[]_dokng.com_09922a37
-  - Dhos[]_dokng.com_9742de7b
-  - Ares[]_dokng.com_59881239
-  - Dhos[]_dokng.com_37a111a9
-  - Dhos[]_dokng.com_340f87cf
-  - Dhos[]_dokng.com_a9220c62
-  - Amob_dokng.com_c8a1e2bf
-  - Dhos[]_dokng.com_312604eb
+  - Dhos[]_dokng.com_ad2e47da
+  - Dhos[]_dokng.com_6c7ec50c
+  - Dhos[]_dokng.com_045fb906
+  - Ares[]_dokng.com_f8627c4f
+  - Dhos[]_dokng.com_96145cba
+  - Dhos[]_dokng.com_3bcb64c0
+  - Uukn_dokng.com_9fff1298
+  - Ares[]_dokng.com_99231848
+  - Dhos[]_dokng.com_06909cc3
+  - Ares[]_dokng.com_173d4af3
   - ðºð HTTP 162.214.159.943128 F
-  - ððª HTTP 103.237.102.19111111 F
+  - 138.197.141.58PXGbmY1F
+  - 82.38.31.170Ry2jDexP
+  - 82.38.31.216Q7fGHVnz
+  - 185.177.229.129NVxzcO5h
   - 216.152.152.187xD8SQC3M
-  - 82.38.31.3afKVkdZR
-  - 82.38.31.26a5OcWvfY
-  - 82.38.31.46IZlbJvG5
-  - 82.38.31.175xJTV091X
-  - 82.38.31.187evsW74wN
-  - 82.38.31.1799lY8vTt2
-  - 82.38.31.180DFJgrHU
+  - 82.38.31.186q5pM6cRF
+  - 169.197.143.116RlEbYVNh
+  - 195.238.126.20ceuVh1Ma
+  - 67.220.72.2370X2j9FcM
+  - 169.197.142.226NAWwpE0
+  - 146.70.61.18Zp4URaE0
+  - 82.38.31.69N7FVZmrM
+  - 82.38.31.1562NDFLvZj
+  - 195.238.126.207i5RHAVQ
+  - 213.183.63.60xlQLHJrG
+  - bogging-eyeteeth-fly.freesocks.workwdbrCPoQ
   - 185.103.110.68ZjGbIPH1
-  - 193.29.139.198GaexCH57
-  - 108.181.57.93MDm0xt6E
-  - 141.164.45.187nJltj6pA
-  - 91.201.65.122Bg3YCb5F
+  - 158.173.20.171OZPJUxVN
+  - 82.38.31.149ohi1q5Sw
   url: http://cp.cloudflare.com/generate_204
   interval: 120
 - name: FALLBACK
@@ -786,7 +863,8 @@ proxy-groups:
   proxies:
   - AUTO-FAST
   - CA-POOL
-  - DE-POOL
+  - HK-POOL
+  - NL-POOL
   - OTHER-POOL
   - UK-POOL
   - US-POOL
@@ -798,7 +876,8 @@ proxy-groups:
   - AUTO-FAST
   - FALLBACK
   - CA-POOL
-  - DE-POOL
+  - HK-POOL
+  - NL-POOL
   - OTHER-POOL
   - UK-POOL
   - US-POOL
