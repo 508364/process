@@ -722,14 +722,6 @@ def main():
             print("\n未测出任何可用节点,不生成输出文件。")
             sys.exit(1)
 
-                # 把真实国家代码写进节点名，清理内部字段
-        for p in available_proxies:
-            real = p.pop('_real_country', None)
-            if real and real != 'OTHER' and not re.match(rf'^\[{real}\]', p['name']):
-                p['name'] = f"[{real}] {p['name']}"
-        for p in untested_proxies:
-            p.pop('_real_country', None)
-        
         all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
@@ -766,6 +758,78 @@ def main():
             yaml.safe_dump(top_20_config, f, allow_unicode=True, sort_keys=False, width=1000)
         print("成功生成 clash.yaml (每个国家仅保留 Top 20)")
 
+        # ==========================================
+        # 步骤 7: 生成 all.yaml (TCP 初筛全量节点,不测速,客户端自行筛选)
+        # ==========================================
+        print("\n步骤 7: 生成 all.yaml (TCP 初筛全量节点)...")
+        
+        # 清理内部字段 + 按国家分组
+        all_alive_groups = {}
+        for p in alive_proxies:
+            country = p.pop('_real_country', None) or get_country_from_name(p['name']) or 'OTHER'
+            if country != 'OTHER' and not re.match(rf'^\[{country}\]', p['name']):
+                p['name'] = f"[{country}] {p['name']}"
+            if country not in all_alive_groups:
+                all_alive_groups[country] = []
+            all_alive_groups[country].append(p['name'])
+        
+        all_alive_pools = {f"{c}-POOL": names for c, names in all_alive_groups.items()}
+        all_alive_pool_names = sorted(all_alive_pools.keys())
+        all_alive_names = [p['name'] for p in alive_proxies]
+        
+        simple_groups = [{
+            'name': 'AUTO-FAST',
+            'type': 'url-test',
+            'proxies': all_alive_names,
+            'url': health_url,
+            'interval': 300,
+            'tolerance': 50
+        }]
+        for pool_name in all_alive_pool_names:
+            simple_groups.append({
+                'name': pool_name,
+                'type': 'url-test',
+                'proxies': all_alive_pools[pool_name],
+                'url': health_url,
+                'interval': 300
+            })
+        simple_groups.extend([
+            {
+                'name': 'FALLBACK',
+                'type': 'fallback',
+                'proxies': ['AUTO-FAST'] + all_alive_pool_names,
+                'url': health_url,
+                'interval': 120
+            },
+            {
+                'name': 'PROXY',
+                'type': 'select',
+                'proxies': ['AUTO-FAST', 'FALLBACK'] + all_alive_pool_names
+            }
+        ])
+        
+        all_yaml_config = {
+            'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
+            'ipv6': True, 'unified-delay': True, 'tcp-concurrent': True,
+            'global-client-fingerprint': 'chrome',
+            'generated-by': 'github-actions-auto-merge-full',
+            'generated-at': datetime.now(timezone.utc).isoformat(),
+            'proxies': alive_proxies,
+            'proxy-groups': simple_groups,
+            'rules': [
+                'DOMAIN-SUFFIX,openai.com,PROXY',
+                'DOMAIN-SUFFIX,chatgpt.com,PROXY',
+                'DOMAIN-SUFFIX,claude.ai,PROXY',
+                'DOMAIN-SUFFIX,anthropic.com,PROXY',
+                'GEOIP,CN,DIRECT',
+                'MATCH,PROXY'
+            ]
+        }
+        
+        with open('all.yaml', 'w', encoding='utf-8') as f:
+            yaml.safe_dump(all_yaml_config, f, allow_unicode=True, sort_keys=False, width=1000)
+        print(f"成功生成 all.yaml ({len(alive_proxies)} 个 TCP 初筛通过节点)")
+    
     except Exception as e:
         print("\n" + "="*50)
         print("脚本执行失败!详细错误信息如下:")
