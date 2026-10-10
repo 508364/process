@@ -700,8 +700,12 @@ def main():
         for p in alive_proxies:
             delay = delay_map.get(p['name'], 99999)
             if 0 < delay < DELAY_THRESHOLD:
+                # 优先用真实国家代码
+                country = p.pop('_real_country', None) or get_country_from_name(p['name']) or 'OTHER'
+                # 就地重命名（同一步完成，避免分组的名字与实际不符）
+                if country != 'OTHER' and not re.match(rf'^\[{country}\]', p['name']):
+                    p['name'] = f"[{country}] {p['name']}"
                 available_proxies.append(p)
-                country = p.get('_real_country') or get_country_from_name(p['name']) or 'OTHER'
                 if country not in available_country_groups:
                     available_country_groups[country] = []
                 available_country_groups[country].append((p, delay))
