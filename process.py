@@ -118,6 +118,39 @@ def get_country_via_ip_api(server):
         time.sleep(1.5)
     return 'OTHER'
 
+def get_countries_batch(servers):
+    """
+    批量查询 IP 地理位置（ip-api.com/batch 接口，一次最多 100 个）
+    返回 {server: countryCode}
+    """
+    result = {}
+    if not servers:
+        return result
+    
+    # 去重
+    unique_servers = list(set(s for s in servers if s))
+    
+    # 分批，每批最多 100 个
+    for i in range(0, len(unique_servers), 100):
+        batch = unique_servers[i:i+100]
+        try:
+            payload = [{"query": s} for s in batch]
+            resp = requests.post(
+                'http://ip-api.com/batch?fields=countryCode,status,query',
+                json=payload, timeout=15
+            )
+            data = resp.json()
+            for item in data:
+                if item.get('status') == 'success':
+                    result[item.get('query')] = item.get('countryCode', 'OTHER').upper()
+            # 批间限速（免费版批量接口 45 次/分钟）
+            time.sleep(1.5)
+        except Exception as e:
+            print(f"    批量查询异常: {str(e)[:100]}")
+            continue
+    
+    return result
+
 def tcp_ping(server, port, timeout=1.5):
     try:
         with socket.create_connection((server, int(port)), timeout=timeout):
@@ -387,7 +420,46 @@ def test_batch(proxies, batch_id, total_batches, health_url, allow_split=True):
         for p in proxies:
             delay_map[p['name']] = 99999
     
+        # ============ 二次验证：对"有效"节点用第二个 URL 复测 ============
+    confirmed = set()
+    first_pass = [p for p in proxies if 0 < delay_map.get(p['name'], 99999) < DELAY_THRESHOLD]
+    if first_pass:
+        second_url = HEALTH_CHECK_URLS[0] if health_url != HEALTH_CHECK_URLS[0] else HEALTH_CHECK_URLS[1]
+        for p in first_pass:
+            name = p['name']
+            try:
+                r = requests.get(
+                    f'http://127.0.0.1:{CONTROLLER_PORT}/proxies/{requests.utils.quote(name)}/delay'
+                    f'?timeout={HEALTH_CHECK_TIMEOUT}&url={second_url}',
+                    timeout=15
+                ).json()
+                if 0 < r.get('delay', 0) < DELAY_THRESHOLD:
+                    confirmed.add(name)
+            except Exception:
+                pass
+        killed = len(first_pass) - len(confirmed)
+        for p in first_pass:
+            if p['name'] not in confirmed:
+                delay_map[p['name']] = 0
+        print(f"    {label} 二次验证: 通过 {len(confirmed)}/{len(first_pass)} (剔除假阳性 {killed})")
+    # ================================================================
+    
     _force_kill_process_group(process)
+    
+    # ============ 用批量 API 查真实地区（只查通过二次验证的节点）============
+    if confirmed:
+        confirmed_proxies = [p for p in first_pass if p['name'] in confirmed]
+        servers_to_check = list(set(p.get('server', '') for p in confirmed_proxies))
+        print(f"    {label} 查询 {len(servers_to_check)} 个 IP 的真实地区...")
+        country_map = get_countries_batch(servers_to_check)
+        for p in confirmed_proxies:
+            real = country_map.get(p.get('server', ''))
+            if real:
+                if real in ('CN', 'KR'):
+                    delay_map[p['name']] = 0   # 二次验证后才发现是中韩，杀掉
+                else:
+                    p['_real_country'] = real
+    # ==================================================================
     
     try:
         if os.path.exists(temp_file):
@@ -629,7 +701,7 @@ def main():
             delay = delay_map.get(p['name'], 99999)
             if 0 < delay < DELAY_THRESHOLD:
                 available_proxies.append(p)
-                country = get_country_from_name(p['name']) or 'OTHER'
+                country = p.get('_real_country') or get_country_from_name(p['name']) or 'OTHER'
                 if country not in available_country_groups:
                     available_country_groups[country] = []
                 available_country_groups[country].append((p, delay))
@@ -646,6 +718,14 @@ def main():
             print("\n未测出任何可用节点,不生成输出文件。")
             sys.exit(1)
 
+                # 把真实国家代码写进节点名，清理内部字段
+        for p in available_proxies:
+            real = p.pop('_real_country', None)
+            if real and real != 'OTHER' and not re.match(rf'^\[{real}\]', p['name']):
+                p['name'] = f"[{real}] {p['name']}"
+        for p in untested_proxies:
+            p.pop('_real_country', None)
+        
         all_proxies_for_yaml = available_proxies + untested_proxies
         all_config = {
             'mixed-port': 7890, 'allow-lan': True, 'mode': 'rule', 'log-level': 'info',
