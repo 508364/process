@@ -7,15 +7,15 @@ unified-delay: true
 tcp-concurrent: true
 global-client-fingerprint: chrome
 generated-by: github-actions-auto-merge-all
-generated-at: '2026-10-17T15:31:02.465726+00:00'
+generated-at: '2026-10-17T20:34:47.229003+00:00'
 proxies:
-- name: '[US] 美国-2844BECE'
+- name: '[HK] 香港-C6E7A7E9'
   type: hysteria2
-  server: hy2.123266.xyz
-  port: 33333
-  password: bce6c821-200d-421f-bf3d-7159e5246ea0
+  server: 202.146.222.174
+  port: 443
+  password: H7mP2xY9kJ4nQ8wR5tF6vB3z
   skip-cert-verify: true
-  sni: hy2.123266.xyz
+  sni: https://t.me/WangCai2🇨🇳
   tfo: false
 - name: '[US] 美国-185EF251'
   type: hysteria2
@@ -27,14 +27,26 @@ proxies:
   skip-cert-verify: true
   sni: hy2-new.aspidnet.xyz
   tfo: false
-- name: '[HK] 香港-C6E7A7E9'
+- name: '[US] 美国-2844BECE'
   type: hysteria2
-  server: 202.146.222.174
-  port: 443
-  password: H7mP2xY9kJ4nQ8wR5tF6vB3z
+  server: hy2.123266.xyz
+  port: 33333
+  password: bce6c821-200d-421f-bf3d-7159e5246ea0
   skip-cert-verify: true
-  sni: https://t.me/WangCai2🇨🇳
+  sni: hy2.123266.xyz
   tfo: false
+- name: 未知-8015D2B7
+  type: tuic
+  server: sg2-8sb.6121999.dpdns.org
+  port: 33738
+  alpn:
+  - h3
+  congestion-controller: bbr
+  password: 2d1ad594-80a4-4bfb-87a6-038e39701f51
+  sni: sg2-8sb.6121999.dpdns.org
+  udp-relay-mode: quic
+  uuid: 2d1ad594-80a4-4bfb-87a6-038e39701f51
+  version: 5
 - name: '[US] 未知-798A29E5'
   type: hysteria2
   server: 155.248.209.237
@@ -43,6 +55,12 @@ proxies:
   skip-cert-verify: true
   sni: hy2.123266.xyz
   tfo: false
+- name: '[JP] 日本-24FE6D00'
+  type: ss
+  server: 149.22.87.240
+  port: 443
+  cipher: aes-128-gcm
+  password: shadowsocks
 - name: '[JP] 日本-6783195D'
   type: ss
   server: 149.22.87.204
@@ -50,12 +68,6 @@ proxies:
   cipher: aes-128-gcm
   password: shadowsocks
   udp: true
-- name: '[JP] 日本-24FE6D00'
-  type: ss
-  server: 149.22.87.240
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
 - name: '[JP] 日本-0A19CAC2'
   type: vless
   server: 172.111.146.64
@@ -68,17 +80,118 @@ proxies:
   uuid: 904f8ffa-4652-4076-8f2f-e586807840ec
   ws-opts:
     path: /vless/
-- name: '[US] 美国-15728D4A'
-  type: ss
-  server: 216.105.168.18
+- name: '[SC] 未知-920029F2'
+  type: trojan
+  server: 45.130.125.18
   port: 443
-  cipher: chacha20-ietf-poly1305
-  password: hCCWOcIsK5wrFz4OX70rWf
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
   skip-cert-verify: false
-  udp: false
+  sni: www.calmlunch.com
+  ws-opts:
+    path: /assignment
+- name: '[CA] 加拿大-9216A510'
+  type: trojan
+  server: 104.18.8.83
+  port: 443
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
+  skip-cert-verify: true
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
+- name: '[CA] 未知-ED24FFFD'
+  type: trojan
+  server: 104.16.71.213
+  port: 443
+  network: ws
+  password: humanity
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
+- name: '[CA] 未知-BFD8B984'
+  type: trojan
+  server: 104.19.64.105
+  port: 443
+  network: ws
+  password: humanity
+  skip-cert-verify: false
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
+- name: '[DE] 未知-9BE79465'
+  type: trojan
+  server: 45.80.111.7
+  port: 443
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
+  sni: www.calmlunch.com
+  ws-opts:
+    path: /assignment
+- name: '[CA] 未知-DE66D468'
+  type: trojan
+  server: 172.67.200.219
+  port: 443
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
+  sni: www.calmlunch.com
+  ws-opts:
+    path: /assignment
+- name: 未知-E7AD2A46
+  type: trojan
+  server: chat.openai.com
+  port: 443
+  alpn:
+  - h2
+  - http/1.1
+  client-fingerprint: chrome
+  network: ws
+  password: humanity
+  skip-cert-verify: false
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
+- name: 未知-3E57BB3B
+  type: trojan
+  server: www.calmlunch.com
+  port: 443
+  network: ws
+  password: humanity
+  sni: www.calmlunch.com
+  ws-opts:
+    headers:
+      Host: www.calmlunch.com
+    path: /assignment
 - name: '[US] 东帝汶-8C0CA6EC'
   type: vless
   server: 15.204.97.198
+  port: 23576
+  client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  network: tcp
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: "01"
+  servername: fuck.rkn
+  skip-cert-verify: false
+  tls: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+- name: '[US] 未知-6CD4D997'
+  type: vless
+  server: 15.204.97.206
   port: 23576
   client-fingerprint: chrome
   encryption: none
@@ -121,36 +234,6 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[US] 未知-6CD4D997'
-  type: vless
-  server: 15.204.97.206
-  port: 23576
-  client-fingerprint: chrome
-  encryption: none
-  flow: xtls-rprx-vision
-  network: tcp
-  reality-opts:
-    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-    short-id: "01"
-  servername: fuck.rkn
-  skip-cert-verify: false
-  tls: true
-  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[US] 美国-EAC25DBB'
-  type: vless
-  server: 15.204.97.197
-  port: 23576
-  client-fingerprint: chrome
-  encryption: none
-  flow: xtls-rprx-vision
-  network: tcp
-  reality-opts:
-    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-    short-id: "01"
-  servername: fuck.rkn
-  skip-cert-verify: false
-  tls: true
-  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
 - name: '[US] 未知-1B5FA045'
   type: vless
   server: 15.204.97.214
@@ -169,6 +252,21 @@ proxies:
   udp: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
   xudp: true
+- name: '[US] 美国-EAC25DBB'
+  type: vless
+  server: 15.204.97.197
+  port: 23576
+  client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  network: tcp
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: "01"
+  servername: fuck.rkn
+  skip-cert-verify: false
+  tls: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
 - name: '[US] 未知-5F244B4A'
   type: vmess
   server: 84.17.41.2
@@ -178,14 +276,6 @@ proxies:
   network: tcp
   udp: true
   uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: '[HK] 未知-67764E14'
-  type: trojan
-  server: 119.246.1.143
-  port: 443
-  network: tcp
-  password: BxceQaOe
-  skip-cert-verify: true
-  sni: t.me/ripaojiedian
 - name: '[US] 美国-50AE4EFA'
   type: vless
   server: 15.204.97.216
@@ -201,21 +291,14 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[US] 未知-C4E47653'
-  type: vless
-  server: 38.107.236.166
-  port: 8443
-  network: ws
-  packet-encoding: xudp
-  servername: 3h-unitedstates3.09vpn.com
+- name: '[HK] 未知-67764E14'
+  type: trojan
+  server: 119.246.1.143
+  port: 443
+  network: tcp
+  password: BxceQaOe
   skip-cert-verify: true
-  tls: true
-  udp: true
-  uuid: 48572af1-d091-457b-a86e-4a457e99927f
-  ws-opts:
-    headers:
-      Host: 3h-unitedstates3.09vpn.com
-    path: /vless/
+  sni: t.me/ripaojiedian
 - name: '[US] 美国-8A4F975E'
   type: ss
   server: 173.244.56.9
@@ -230,12 +313,6 @@ proxies:
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
-- name: '[US] 美国-C7466887'
-  type: ss
-  server: 156.146.38.167
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
 - name: '[US] 未知-5591547D'
   type: ss
   server: 156.146.38.169
@@ -244,6 +321,18 @@ proxies:
   password: shadowsocks
   skip-cert-verify: false
   udp: false
+- name: '[US] 美国-C7466887'
+  type: ss
+  server: 156.146.38.167
+  port: 443
+  cipher: aes-128-gcm
+  password: shadowsocks
+- name: '[US] 美国-D0E0EABF'
+  type: ss
+  server: 156.146.38.170
+  port: 443
+  cipher: aes-128-gcm
+  password: shadowsocks
 - name: '[CA] 未知-B44F8E82'
   type: ss
   server: 149.22.95.183
@@ -264,19 +353,32 @@ proxies:
   ws-opts:
     headers: {}
     path: /cctv13.m3u8
-- name: '[US] 美国-D0E0EABF'
+- name: '[CA] 加拿大-8DAFEF46'
+  type: vmess
+  server: 23.162.200.198
+  port: 18000
+  alterId: 0
+  cipher: auto
+  network: tcp
+  tls: false
+  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
+- name: '[US] 未知-DF922B23'
   type: ss
-  server: 156.146.38.170
+  server: 37.19.198.160
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
-- name: '[US] 美国-54E01726'
-  type: ss
-  server: 173.244.56.6
-  port: 443
+  skip-cert-verify: false
+  udp: false
+- name: '[US] 未知-892BE4A4'
+  type: vmess
+  server: 67.220.85.46
+  port: 18000
+  alterId: 0
   cipher: aes-128-gcm
-  password: shadowsocks
+  network: tcp
   udp: true
+  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
 - name: '[US] 未知-D45BC914'
   type: ss
   server: 37.19.198.244
@@ -298,23 +400,13 @@ proxies:
   cipher: aes-128-gcm
   password: shadowsocks
   udp: true
-- name: '[US] 未知-DF922B23'
+- name: '[US] 美国-54E01726'
   type: ss
-  server: 37.19.198.160
+  server: 173.244.56.6
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
-  skip-cert-verify: false
-  udp: false
-- name: '[CA] 未知-AF16F820'
-  type: vmess
-  server: 134.195.196.211
-  port: 18000
-  alterId: 0
-  cipher: auto
-  network: tcp
   udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
 - name: '[US] 美国-20488C4F'
   type: vmess
   server: 67.220.95.3
@@ -324,41 +416,14 @@ proxies:
   network: tcp
   tls: false
   uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: '[CA] 加拿大-8DAFEF46'
+- name: '[CA] 未知-AF16F820'
   type: vmess
-  server: 23.162.200.198
+  server: 134.195.196.211
   port: 18000
   alterId: 0
   cipher: auto
-  network: tcp
-  tls: false
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: '[US] 未知-892BE4A4'
-  type: vmess
-  server: 67.220.85.46
-  port: 18000
-  alterId: 0
-  cipher: aes-128-gcm
   network: tcp
   udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: '[US] 未知-B3BAA575'
-  type: vmess
-  server: 129.146.143.80
-  port: 48111
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
-  uuid: d4603cc2-e0ee-4651-83f5-1db5b7168177
-- name: '[US] 美国-98668394'
-  type: vmess
-  server: 38.91.107.49
-  port: 18000
-  alterId: 0
-  cipher: auto
-  network: tcp
-  tls: false
   uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
 - name: '[CA] 加拿大-093F7F75'
   type: ss
@@ -376,6 +441,15 @@ proxies:
   password: eDfN7SODQceIOmIAbtJJtK
   skip-cert-verify: false
   udp: false
+- name: '[US] 未知-B3BAA575'
+  type: vmess
+  server: 129.146.143.80
+  port: 48111
+  alterId: 0
+  cipher: auto
+  network: tcp
+  tls: false
+  uuid: d4603cc2-e0ee-4651-83f5-1db5b7168177
 - name: '[US] 未知-A3DD0AD8'
   type: vmess
   server: 38.110.1.246
@@ -403,28 +477,12 @@ proxies:
   udp: true
   uuid: 7b188eea-b08f-42c2-bac7-d3b0e74218b8
   xudp: true
-- name: '[GB] 未知-0ABA60D4'
-  type: ss
-  server: 158.173.24.73
-  port: 443
-  cipher: aes-128-gcm
-  password: shadowsocks
-  skip-cert-verify: false
-  udp: false
 - name: '[JP] 未知-0EAAB7E9'
   type: ss
   server: 149.22.87.241
   port: 443
   cipher: aes-128-gcm
   password: shadowsocks
-  skip-cert-verify: false
-  udp: false
-- name: '[GB] 英国-1DBB5F97'
-  type: ss
-  server: 94.156.250.148
-  port: 7001
-  cipher: aes-256-gcm
-  password: RexnBgU7EV5ADxG
   skip-cert-verify: false
   udp: false
 - name: '[GB] 英国-80BE1157'
@@ -475,33 +533,23 @@ proxies:
   country: 🇬🇧GB
   delay: 479
   password: oZIoA69Q8yhcQV8ka3Pa3A
-- name: '[TW] 未知-1E4E8879'
-  type: vmess
-  server: 165.154.195.38
-  port: 35034
-  alterId: 0
-  cipher: auto
-  client-fingerprint: ''
-  network: tcp
-  tls: false
-  uuid: 959a8caf-4cea-43d0-a548-3628e7ddfafc
 - name: '[NL] 未知-2368B7BD'
   type: ss
   server: 193.29.139.235
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: oZIoA69Q8yhcQV8ka3Pa3A
-- name: '[NL] 英国-045C7267'
+- name: '[NL] 未知-FCD9872A'
   type: ss
-  server: 82.38.31.214
+  server: 82.38.31.192
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 未知-FCD9872A'
+- name: '[NL] 英国-045C7267'
   type: ss
-  server: 82.38.31.192
+  server: 82.38.31.214
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
@@ -515,15 +563,6 @@ proxies:
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[SG] 未知-B4A5647A'
-  type: vmess
-  server: 149.88.23.202
-  port: 18000
-  alterId: 0
-  cipher: auto
-  network: tcp
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
 - name: '[NL] 未知-13B3F7DA'
   type: ss
   server: 82.38.31.211
@@ -549,17 +588,26 @@ proxies:
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 未知-CB42B351'
+- name: '[SG] 未知-B4A5647A'
+  type: vmess
+  server: 149.88.23.202
+  port: 18000
+  alterId: 0
+  cipher: auto
+  network: tcp
+  udp: true
+  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
+- name: '[NL] 未知-75636F57'
   type: ss
-  server: 82.38.31.200
+  server: 82.38.31.208
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 未知-75636F57'
+- name: '[NL] 未知-CB42B351'
   type: ss
-  server: 82.38.31.208
+  server: 82.38.31.200
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
@@ -589,17 +637,17 @@ proxies:
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 英国-920EDAD3'
+- name: '[NL] 荷兰-36FA140B'
   type: ss
-  server: 82.38.31.202
+  server: 82.38.31.184
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 荷兰-36FA140B'
+- name: '[NL] 英国-920EDAD3'
   type: ss
-  server: 82.38.31.184
+  server: 82.38.31.202
   port: 8080
   cipher: chacha20-ietf-poly1305
   password: k1dBOmOB4oqi7Ump37a1bQ
@@ -669,6 +717,14 @@ proxies:
   password: oZIoA69Q8yhcQV8ka3Pa3A
   skip-cert-verify: false
   udp: false
+- name: '[NO] 未知-68F0E91D'
+  type: ss
+  server: 185.213.23.63
+  port: 990
+  cipher: chacha20-ietf-poly1305
+  password: ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44=
+  skip-cert-verify: false
+  udp: false
 - name: '[DE] 德国-D00F02E7'
   type: ss
   server: 209.46.102.22
@@ -685,20 +741,20 @@ proxies:
   password: k1dBOmOB4oqi7Ump37a1bQ
   skip-cert-verify: false
   udp: false
-- name: '[NL] 荷兰-1D63AE36'
-  type: ss
-  server: 82.38.31.176
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  skip-cert-verify: false
-  udp: false
 - name: '[DE] 未知-A393B7C9'
   type: ss
   server: 8.209.74.72
   port: 20001
   cipher: chacha20-ietf-poly1305
   password: PWpjPo3tqhPN4yRZ
+  skip-cert-verify: false
+  udp: false
+- name: '[NL] 英国-FA37F005'
+  type: ss
+  server: 82.38.31.9
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   skip-cert-verify: false
   udp: false
 - name: '[SG] 未知-FCBC5D1C'
@@ -710,14 +766,6 @@ proxies:
   network: tcp
   udp: true
   uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: '[NL] 英国-FA37F005'
-  type: ss
-  server: 82.38.31.9
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  skip-cert-verify: false
-  udp: false
 - name: '[NL] 未知-C5146D9A'
   type: vless
   server: 51.158.206.86
@@ -748,36 +796,6 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 荷兰-FA76F4F2'
-  type: vless
-  server: 51.158.206.26
-  port: 23576
-  client-fingerprint: chrome
-  encryption: none
-  flow: xtls-rprx-vision
-  network: tcp
-  reality-opts:
-    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-    short-id: "01"
-  servername: fuck.rkn
-  skip-cert-verify: false
-  tls: true
-  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 未知-EA93F609'
-  type: vless
-  server: 51.158.206.103
-  port: 23576
-  client-fingerprint: chrome
-  encryption: none
-  flow: xtls-rprx-vision
-  network: tcp
-  reality-opts:
-    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
-    short-id: "01"
-  servername: fuck.rkn
-  skip-cert-verify: false
-  tls: true
-  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
 - name: '[NL] 未知-800CD54A'
   type: vless
   server: 51.158.206.25
@@ -795,9 +813,24 @@ proxies:
   tls: true
   udp: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 东帝汶-68F60510'
+- name: '[NL] 荷兰-FA76F4F2'
   type: vless
-  server: 51.158.206.34
+  server: 51.158.206.26
+  port: 23576
+  client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  network: tcp
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: "01"
+  servername: fuck.rkn
+  skip-cert-verify: false
+  tls: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+- name: '[NL] 未知-4B8C34B6'
+  type: vless
+  server: 51.158.206.80
   port: 23576
   client-fingerprint: chrome
   encryption: none
@@ -825,9 +858,24 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 未知-4B8C34B6'
+- name: '[NL] 未知-EA93F609'
   type: vless
-  server: 51.158.206.80
+  server: 51.158.206.103
+  port: 23576
+  client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  network: tcp
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: "01"
+  servername: fuck.rkn
+  skip-cert-verify: false
+  tls: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+- name: '[NL] 东帝汶-68F60510'
+  type: vless
+  server: 51.158.206.34
   port: 23576
   client-fingerprint: chrome
   encryption: none
@@ -870,21 +918,24 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 未知-67C1FE41'
-  type: vmess
-  server: 45.90.106.24
-  port: 1234
-  alterId: 0
-  cipher: aes-128-gcm
-  network: tcp
-  servername: 45.90.106.24
-  skip-cert-verify: true
-  tls: true
-  udp: true
-  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
 - name: '[NL] 东帝汶-77649CE4'
   type: vless
   server: 51.158.206.20
+  port: 23576
+  client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  network: tcp
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: "01"
+  servername: fuck.rkn
+  skip-cert-verify: false
+  tls: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+- name: '[NL] 未知-217757B3'
+  type: vless
+  server: 51.158.206.93
   port: 23576
   client-fingerprint: chrome
   encryption: none
@@ -912,15 +963,18 @@ proxies:
   skip-cert-verify: false
   tls: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
-- name: '[NL] 未知-F80EE80C'
-  type: ss
-  server: 82.38.31.180
-  port: 8080
-  cipher: chacha20-ietf-poly1305
+- name: '[NL] 未知-67C1FE41'
+  type: vmess
+  server: 45.90.106.24
+  port: 1234
+  alterId: 0
+  cipher: aes-128-gcm
   network: tcp
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  skip-cert-verify: false
-  udp: false
+  servername: 45.90.106.24
+  skip-cert-verify: true
+  tls: true
+  udp: true
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
 - name: '[DE] 未知-01E5A486'
   type: vmess
   server: 141.95.65.9
@@ -980,14 +1034,6 @@ proxies:
   udp: true
   uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
   xudp: true
-- name: '[NL] 未知-B5EE8E89'
-  type: ss
-  server: 82.38.31.181
-  port: 8080
-  cipher: chacha20-ietf-poly1305
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  skip-cert-verify: false
-  udp: false
 - name: '[NL] 英国-19EA134B'
   type: ss
   server: 82.38.31.7
@@ -1027,6 +1073,14 @@ proxies:
   port: 16233
   cipher: chacha20-ietf-poly1305
   password: Xsy8Ox4yOV3xLlpxtjzs3X
+- name: '[NL] 未知-24BBDC61'
+  type: ss
+  server: 82.38.31.213
+  port: 8080
+  cipher: chacha20-ietf-poly1305
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  skip-cert-verify: false
+  udp: false
 - name: '[NL] 未知-61474257'
   type: vless
   server: 163.172.214.188
@@ -1040,33 +1094,39 @@ proxies:
   uuid: 40cc9b52-25b8-4cd5-8b45-715ae26e6baf
   ws-opts:
     path: /vless/
-- name: '[NL] 未知-526DCD7D'
+- name: '[NL] 未知-C8A9D47D'
   type: vless
-  server: 163.172.213.174
+  server: 163.172.214.188
   port: 80
-  encryption: none
   network: ws
   packet-encoding: xudp
   skip-cert-verify: false
   tls: false
   udp: true
-  uuid: e73df646-1f62-41bf-8c50-653497d603d0
+  uuid: 40cc9b52-25b8-4cd5-8b45-715ae26e6baf
   ws-opts:
     path: /vless/
-  xudp: true
-- name: '[CA] ðð æå å  SGP 2'
+- name: '[CA] ðºð ç¾å½  USA 3'
   server: 104.18.35.86
-  port: 8080
+  port: 2082
   type: vless
   uuid: e5cc16a6-ea42-46b2-82ae-ad2157e1641b
   tls: false
   servername: hhlfy.twiladaphne.ndjp.net
   network: ws
   ws-opts:
-    path: /sg-melbi
+    path: /fp
     headers:
       Host: hhlfy.twiladaphne.ndjp.net
   udp: true
+- name: '[RU] ððº äç½æ  RUS 2'
+  server: 189.74.106.162
+  port: 54183
+  type: hysteria2
+  password: 082f5694-9019-4110-b67b-8125dbb9bab8
+  auth: 082f5694-9019-4110-b67b-8125dbb9bab8
+  sni: outh.yandex-cloud.org
+  skip-cert-verify: true
 - name: '[US] ðºðUSç¾å½äyoyapai.com'
   type: trojan
   server: 216.24.57.7
@@ -1079,73 +1139,19 @@ proxies:
   ws-opts:
     path: /assignment
   udp: true
-- name: '[CA] ðºð ç¾å½  USA 13'
-  server: 172.66.203.67
-  port: 443
-  type: vmess
-  uuid: 0cf6d970-3f1d-4aae-a989-92a8f76ae3db
-  alterId: 0
-  cipher: auto
-  tls: true
-  skip-cert-verify: true
-  network: ws
-  ws-opts:
-    path: /ws
-    headers:
-      Host: vmess.lbw666.dpdns.org
-  udp: true
-- name: '[CA] ðºð ç¾å½  USA 6'
-  server: 104.16.10.100
-  port: 443
+- name: '[US] ðºð ç¾å½  USA'
+  server: 208.84.100.209
+  port: 2112
   type: vless
-  uuid: b8d8a5b0-867f-4491-b4e4-30edc04bb10e
+  uuid: 36c3dcc2-17b6-4478-b8a7-3978e6d5afe9
   tls: true
-  servername: u.srilankangrill.online
-  client-fingerprint: chrome
-  network: ws
-  ws-opts:
-    path: /
-    headers:
-      Host: u.srilankangrill.online
-  udp: true
-- name: '[AU] ððº æ¾³ååäº  AUS'
-  server: 152.67.115.203
-  port: 443
-  type: hysteria2
-  password: 633bc3be486b646190661ac2387c150a
-  auth: 633bc3be486b646190661ac2387c150a
-  sni: www.bing.com
-  skip-cert-verify: true
-  obfs: salamander
-  obfs-password: 850a3fb1cd33a28f12d837578ae1a2e7
-- name: '[US] ðºð ç¾å½  USA 9'
-  server: 35.90.209.22
-  port: 443
-  type: vless
-  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
-  tls: false
-  network: http
-  http-opts:
-    method: GET
-    path:
-    - /
-    headers:
-      Host:
-      - play.googleapis.com
-  udp: true
-- name: '[US] ðºð ç¾å½  USA 2'
-  server: 67.209.184.133
-  port: 443
-  type: vless
-  uuid: 96ebc166-565c-474f-9712-7990b55c368a
-  tls: true
-  flow: xtls-rprx-vision
   reality-opts:
-    public-key: Tp015Ga5LodBwKs4z7Wz4hTvqeh8-4q1EQPZqvZfWR0
-    short-id: "ad09494d431b2b92"
-  servername: www.bing.com
+    public-key: p8pUe3hwND5rhAti-yRQ5qMaIkNdhxOV1K1jpbtJlEQ
+    short-id: "125ba3"
+  servername: play.google.com
   client-fingerprint: chrome
   network: tcp
+  udp: true
 - name: '[GB] 未知-7A517A24'
   type: ss
   server: 146.70.61.37
@@ -1154,19 +1160,14 @@ proxies:
   password: 14fFPrbezE3HDZzsMOr6
   skip-cert-verify: false
   udp: false
-- name: ðºðUSç¾å½äyoyapai.com_16
-  type: vless
-  server: tk1.high-speed-test-56424.me
-  port: 443
-  uuid: 37615d66-5467-44a3-bc23-f2c3bef7f761
-  servername: aws.amazon.com
-  tls: true
-  flow: xtls-rprx-vision
-  client-fingerprint: chrome
-  reality-opts:
-    public-key: p8VhFzvFOBAhWAEAeWmwDxT3xBSRsGYixqi0qnLFnBM
-    short-id: "21270a66"
-  skip-cert-verify: false
+- auth: 9cfc9458e48c028ec03ff86ebc71c744
+  name: Dhos[]_dokng.com_45c836e0
+  password: 9cfc9458e48c028ec03ff86ebc71c744
+  port: 50160
+  server: 150-230-252-217.liao.kdns.fr
+  skip-cert-verify: true
+  sni: 150-230-252-217.liao.kdns.fr
+  type: hysteria2
   udp: true
 - name: '[US] ððªDEå¾å½äyoyapai.com_13'
   type: vless
@@ -1182,14 +1183,27 @@ proxies:
     short-id: "c39cc7310a"
   skip-cert-verify: false
   udp: true
-- auth: 9cfc9458e48c028ec03ff86ebc71c744
-  name: Dhos[]_dokng.com_45c836e0
-  password: 9cfc9458e48c028ec03ff86ebc71c744
-  port: 50160
-  server: 150-230-252-217.liao.kdns.fr
-  skip-cert-verify: true
-  sni: 150-230-252-217.liao.kdns.fr
-  type: hysteria2
+- name: '[US] ðºð ç¾å½  USA 9'
+  server: 35.90.209.22
+  port: 443
+  type: vless
+  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
+  tls: false
+  network: http
+  http-opts:
+    method: GET
+    path:
+    - /
+    headers:
+      Host:
+      - play.googleapis.com
+  udp: true
+- cipher: aes-256-cfb
+  name: '[US] Chos[]_dokng.com_443f8750'
+  password: amazonskr05
+  port: 443
+  server: 3.16.81.126
+  type: ss
   udp: true
 - alpn:
   - http/1.1
@@ -1227,7 +1241,61 @@ proxies:
       User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36
     path: /
   xudp: true
-- name: '[IE] ððª çåå  IRL 2'
+- alpn:
+  - h3
+  - h2
+  client-fingerprint: chrome
+  name: Dhos[]_dokng.com_0a18b849
+  network: ws
+  port: 443
+  server: saas.sin.fan
+  servername: snip.edgeoneai.cc.cd
+  tls: true
+  type: vless
+  udp: true
+  uuid: 495c7195-85b8-498a-bf20-2ea9ce9175b5
+  ws-opts:
+    headers:
+      Host: snip.edgeoneai.cc.cd
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36
+    path: /fdip=sstp://vpn:vpn@public-vpn-200.opengw.net:443?ed=2560fp=chrome
+  xudp: true
+- cipher: aes-256-cfb
+  name: '[US] Chos[]_dokng.com_e2cb978e'
+  password: amazonskr05
+  port: 443
+  server: 18.226.185.149
+  type: ss
+  udp: true
+- name: ðºðUSç¾å½äyoyapai.com_16
+  type: vless
+  server: tk1.high-speed-test-56424.me
+  port: 443
+  uuid: 37615d66-5467-44a3-bc23-f2c3bef7f761
+  servername: aws.amazon.com
+  tls: true
+  flow: xtls-rprx-vision
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: p8VhFzvFOBAhWAEAeWmwDxT3xBSRsGYixqi0qnLFnBM
+    short-id: "21270a66"
+  skip-cert-verify: false
+  udp: true
+- name: '[US] ðºð ç¾å½  USA 10'
+  server: t17.qifei.app
+  port: 443
+  type: vless
+  uuid: b98d4c6e-6770-4a31-8256-a4750cdea0e7
+  tls: true
+  flow: xtls-rprx-vision
+  reality-opts:
+    public-key: 0i_xAxYgSNx5NMpK2lOaWGS-CvAiD_LneYPO0MF0owo
+    short-id: "1a"
+  servername: www.amazon.com
+  client-fingerprint: ios
+  network: tcp
+  udp: true
+- name: '[IE] ððª çåå  IRL'
   server: 34.245.208.137
   port: 443
   type: vless
@@ -1242,59 +1310,8 @@ proxies:
       Host:
       - play.googleapis.com
   udp: true
-- name: '[FI] ðð éæ  HKG 2'
-  server: 152.233.71.81
-  port: 443
-  type: vless
-  uuid: 741809be-e44e-000b-b411-bf66f0ae3860
-  tls: true
-  flow: xtls-rprx-vision
-  reality-opts:
-    public-key: 6VMgXXhZdJCiOG05EyK_zTHh00kpFGrZJeZIEPgqhjY
-    short-id: "1c3e8241a8743df9"
-  servername: brointelengence.com
-  client-fingerprint: random
-  network: tcp
-  udp: true
-- cipher: aes-256-cfb
-  name: '[US] Chos[]_dokng.com_443f8750'
-  password: amazonskr05
-  port: 443
-  server: 3.16.81.126
-  type: ss
-  udp: true
-- name: '[IE] ððª çåå  IRL'
-  server: 34.253.212.171
-  port: 443
-  type: vless
-  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
-  tls: false
-  network: http
-  http-opts:
-    method: GET
-    path:
-    - /
-    headers:
-      Host:
-      - play.googleapis.com
-  udp: true
-- name: '[GB] ðð èå½  GBR 2'
-  server: 18.171.245.198
-  port: 443
-  type: vless
-  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
-  tls: false
-  network: http
-  http-opts:
-    method: GET
-    path:
-    - /
-    headers:
-      Host:
-      - play.googleapis.com
-  udp: true
-- name: '[DE] ððª å¾å½  DEU 6'
-  server: 3.124.195.79
+- name: '[ES] ðªð èçç  ESP'
+  server: 18.100.47.39
   port: 443
   type: vless
   uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
@@ -1322,130 +1339,141 @@ proxies:
     short-id: "b28db60d77c50b4f"
   skip-cert-verify: false
   udp: true
-- name: '[ES] ðªð èçç  ESP 2'
-  server: 18.100.47.39
+- name: '[HK] ðð éæ  HKG'
+  server: 47.76.57.83
   port: 443
-  type: vless
-  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
-  tls: false
-  network: http
-  http-opts:
-    method: GET
-    path:
-    - /
-    headers:
-      Host:
-      - play.googleapis.com
-  udp: true
-- name: '[GB] ðð èå½  GBR'
-  server: 3.8.150.222
-  port: 443
-  type: vless
-  uuid: 7060231d-b9ba-495f-a218-bf427940cf3e
-  tls: false
-  network: http
-  http-opts:
-    method: GET
-    path:
-    - /
-    headers:
-      Host:
-      - play.googleapis.com
-  udp: true
-- alpn:
-  - h3
-  - h2
-  client-fingerprint: chrome
-  name: Dhos[]_dokng.com_0a18b849
+  type: vmess
+  uuid: f23bb427-c1f9-4373-876c-2f43e9f790f3
+  alterId: 0
+  cipher: auto
+  tls: true
+  skip-cert-verify: true
+  servername: vah4urdzl3jdx5r2.v.3dns.vip
   network: ws
-  port: 443
-  server: saas.sin.fan
-  servername: snip.edgeoneai.cc.cd
-  tls: true
-  type: vless
-  udp: true
-  uuid: 495c7195-85b8-498a-bf20-2ea9ce9175b5
   ws-opts:
+    path: /ws-vmess
     headers:
-      Host: snip.edgeoneai.cc.cd
-      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36
-    path: /fdip=sstp://vpn:vpn@public-vpn-200.opengw.net:443?ed=2560fp=chrome
-  xudp: true
-- name: '[US] 172.86.108.79UvQ4oh2p'
-  type: ss
-  server: 172.86.108.79
-  port: 30832
-  password: jr+T2RS0sCHBmC4u6aY6Vg==
-  alterId: 2
-  cipher: 2022-blake3-aes-128-gcm
-- name: '[JP] Ares[]_dokng.com_0aee8c03'
-  port: 45087
-  server: 103.85.27.30
+      Host: vah4urdzl3jdx5r2.v.3dns.vip
+  udp: true
+- name: '[SG] ðð æå å  SGP 3'
+  server: 45.132.75.213
+  port: 2053
   type: vless
-  uuid: 5d0f8977-ca64-46b8-d8a4-12cafa375de8
-- client-fingerprint: firefox
-  flow: xtls-rprx-vision
-  name: Chos[]_dokng.com_3be7dc5e
-  port: 33939
-  reality-opts:
-    public-key: IPg65ZC9ZkvXpBZN2GSnICYZaIyGxcj2d8Y406KXA1I
-    short-id: "b20abd16cda27eeb"
-  server: funagfrdfs.alixxplay.com
-  servername: www.otto.de
+  uuid: f46182d1-e13b-47d3-97e2-fa5426a93e7c
   tls: true
-  type: vless
-  uuid: 57beeeb0-03fc-4fc9-94da-7604488a7134
-- client-fingerprint: safari
-  flow: xtls-rprx-vision
-  name: Chos[]_dokng.com_b01d10a9
-  port: 30892
   reality-opts:
-    public-key: YinI5MijeZpRatg6QNDvP0qXEif-6VHC6gV5yoji4i4
-    short-id: "3d31326f95"
-  server: funagfrdfs.alixxplay.com
-  servername: us1p1.xn--ghq880n3na965a.com
-  tls: true
-  type: vless
-  uuid: 57beeeb0-03fc-4fc9-94da-7604488a7134
-- name: '[DE] ððª å¾å½  DEU 10'
-  server: studio.10media.top
+    public-key: TpWeZocgNOygOhMo0l7oJawPu7STkn9D-SOa0UppcyY
+    short-id: "cd7e85995ae2afc9"
+  servername: www.cloudflare.com
+  client-fingerprint: firefox
+  network: tcp
+  udp: true
+- name: '[DE] ððª çå  SWE 2'
+  server: 45.12.63.219
   port: 443
   type: vless
   uuid: 9cb8d71c-fe06-4402-a591-eaa1f173b890
   tls: true
-  servername: studio.10media.top
+  servername: edge-lab-b.10media.top
+  client-fingerprint: firefox
+  network: grpc
+  grpc-opts:
+    grpc-mode: gun
+    grpc-service-name: swedenfeed
+  udp: true
+- name: '[CA] 64.74.163.69Lnlu8Byg'
+  type: ss
+  server: 64.74.163.69
+  port: 18766
+  password: 4efe1af272e7292139b889f6a63ee071
+  alterId: 2
+  cipher: aes-128-gcm
+- name: ðµð æ³å  POL
+  server: api.mediapolyana.cc
+  port: 443
+  type: vless
+  uuid: 082f5694-9019-4110-b67b-8125dbb9bab8
+  tls: true
+  flow: xtls-rprx-vision
+  reality-opts:
+    public-key: r5WB5FnSCt4eeBC1FJMfkWHbzsMuabo0Rc6wuAhlZUs
+    short-id: "a8"
+  servername: api.mediapolyana.cc
+  client-fingerprint: edge
+  network: tcp
+  udp: true
+- name: '[HK] ðð éæ  HKG 4'
+  server: nycqg19zkwacpm1b.v.3dns.vip
+  port: 443
+  type: vmess
+  uuid: f23bb427-c1f9-4373-876c-2f43e9f790f3
+  alterId: 0
+  cipher: auto
+  tls: true
+  skip-cert-verify: true
+  network: ws
+  ws-opts:
+    path: /ws-vmess
+    headers:
+      Host: NYcQg19zkwaCPM1B.v.3dns.vip
+  udp: true
+- name: Chos[]_dokng.com_715452b7
+  network: ws
+  password: e20fd145-65f1-4aa3-96be-da0524bbb16e
+  port: 20230
+  server: us003.421421.xyz
+  skip-cert-verify: true
+  sni: www.alibaba.com
+  type: trojan
+  ws-opts:
+    path: /
+- client-fingerprint: chrome
+  encryption: none
+  flow: xtls-rprx-vision
+  http-opts:
+    headers: {}
+    path:
+    - /
+  name: '[FI] Ares[]_dokng.com_f428f535'
+  network: tcp
+  port: 443
+  reality-opts:
+    public-key: 6VMgXXhZdJCiOG05EyK_zTHh00kpFGrZJeZIEPgqhjY
+    short-id: "1c3e8241a8743df9"
+  server: 152.233.71.81
+  servername: brointelengence.com
+  tls: true
+  type: vless
+  udp: true
+  uuid: 741809be-e44e-000b-b411-bf66f0ae3860
+  xudp: true
+- name: '[US] 107.151.182.253hEnwuQ9p'
+  type: ss
+  server: 107.151.182.253
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[US] 103.11.76.248Ndf5YDRW'
+  type: ss
+  server: 103.11.76.248
+  port: 28679
+  password: NzJlOTQ5NWYtM2ZkYi00Cg==
+  alterId: 2
+  cipher: 2022-blake3-aes-128-gcm
+- name: ððª çå  SWE
+  server: edge-lab-b.10media.top
+  port: 443
+  type: vless
+  uuid: 9cb8d71c-fe06-4402-a591-eaa1f173b890
+  tls: true
+  servername: edge-lab-b.10media.top
   client-fingerprint: chrome
   network: grpc
   grpc-opts:
     grpc-mode: gun
-    grpc-service-name: studiofeed
+    grpc-service-name: swedenfeed
   udp: true
-- name: '[SG] ðð æå å  SGP 3'
-  server: funagfrdfs.alixxplay.com
-  port: 47672
-  type: vless
-  uuid: 57beeeb0-03fc-4fc9-94da-7604488a7134
-  tls: true
-  flow: xtls-rprx-vision
-  reality-opts:
-    public-key: tBvlo8F8hKRXSK-EHRAfzEH-x3e4uvheGloO-9bPKx4
-    short-id: "70ab6d813e"
-  servername: us1p1.xn--ghq880n3na965a.com
-  client-fingerprint: ios
-  network: tcp
-  udp: true
-- client-fingerprint: ios
-  flow: xtls-rprx-vision
-  name: Dhos[]_dokng.com_0e90fe61
-  port: 54528
-  reality-opts:
-    public-key: 7GvJVbR6BRhtrc8-rcZvB8qTFUF1LPeM_MmoZ04mBxo
-    short-id: "54cca3c1c1c7"
-  server: funagfrdfs.alixxplay.com
-  servername: www.apple.com
-  tls: true
-  type: vless
-  uuid: 57beeeb0-03fc-4fc9-94da-7604488a7134
 - client-fingerprint: chrome
   encryption: none
   name: '[SG] Dhos[]_dokng.com_e743af69'
@@ -1463,32 +1491,61 @@ proxies:
       User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36
     path: /fdip=sstp://vpn:vpn@public-vpn-200.opengw.net:443
   xudp: true
-- name: '[NL] 82.38.31.174k9zcRPU6'
-  type: ss
-  server: 82.38.31.174
+- client-fingerprint: ios
+  flow: xtls-rprx-vision
+  http-opts:
+    headers: {}
+    path:
+    - /
+  name: Uukn[]_dokng.com_d3bfec09
+  network: tcp
   port: 443
+  reality-opts:
+    public-key: r5WB5FnSCt4eeBC1FJMfkWHbzsMuabo0Rc6wuAhlZUs
+    short-id: "a8"
+  server: api.videolaguna.cc
+  servername: api.videolaguna.cc
+  tls: true
+  type: vless
+  udp: true
+  uuid: 082f5694-9019-4110-b67b-8125dbb9bab8
+  xudp: true
+- name: '[NL] 82.38.31.10jsO1CSK9'
+  type: ss
+  server: 82.38.31.10
+  port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.219EJuL69g7'
+- name: '[NL] 82.38.31.66kjFSdD37'
   type: ss
-  server: 82.38.31.219
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.34v1p4C2zH'
-  type: ss
-  server: 82.38.31.34
+  server: 82.38.31.66
   port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[CA] 51.222.136.236O0cybK5f'
+- client-fingerprint: firefox
+  encryption: none
+  name: '[NL] Ares[]_dokng.com_34178fe5'
+  network: ws
+  port: 443
+  server: 185.141.227.223
+  servername: z1q3pv4g78.rucdncomp.pro
+  tls: true
+  type: vless
+  udp: true
+  uuid: c720cb74-4c84-4fce-b8ae-637dbaa16199
+  ws-opts:
+    headers:
+      Host: z1q3pv4g78.rucdncomp.pro
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36
+    path: /useraction/events/b892639b7195/
+  xudp: true
+- name: '[US] 15.204.246.132g3kwH95S'
   type: ss
-  server: 51.222.136.236
-  port: 8882
-  password: kDWvXYZoTBcGkC4
+  server: 15.204.246.132
+  port: 7307
+  password: FoOiGlkAA9yPEGP
   alterId: 2
   cipher: aes-256-gcm
 - client-fingerprint: random
@@ -1506,21 +1563,7 @@ proxies:
     headers:
       Host: fm3.pages.dev
     path: /?ed=2560
-- name: '[NL] 82.38.31.174KCbHaPcB'
-  type: ss
-  server: 82.38.31.174
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.156zO6fZw7B'
-  type: ss
-  server: 82.38.31.156
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.3MAsEJxVo'
+- name: '[NL] 82.38.31.3ID3BJELf'
   type: ss
   server: 82.38.31.3
   port: 8080
@@ -1541,315 +1584,28 @@ proxies:
     headers:
       Host: wjofHsQtEuEywxEq.v.3dns.vip
     path: /ws-vmess
-- name: '[NL] 82.38.31.175VeNFU1RY'
+- name: '[NL] 37.148.203.124UI6Jw5qs'
   type: ss
-  server: 82.38.31.175
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.42h5kgumwO'
-  type: ss
-  server: 82.38.31.42
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.199zeu9oOAc'
-  type: ss
-  server: 82.38.31.199
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.1701K5mT3PS'
-  type: ss
-  server: 82.38.31.170
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[DE] 57.129.113.16WTBAIkHa'
-  type: ss
-  server: 57.129.113.16
-  port: 8388
-  password: NcAXc0UZI6yQJE1p8QmOv8
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.218ktoLVM9N'
-  type: ss
-  server: 82.38.31.218
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.187XZTorsua'
-  type: ss
-  server: 82.38.31.187
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.171GCiRbhu1'
-  type: ss
-  server: 82.38.31.171
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.175bjc5MIrL'
-  type: ss
-  server: 82.38.31.175
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.661HK8fVxN'
-  type: ss
-  server: 82.38.31.66
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[CH] 132.243.175.144vF5q9Uxb'
-  type: ss
-  server: 132.243.175.144
-  port: 8388
-  password: e8KgS8fD0yDqYFpgN4G5piCOt9aFyqA3
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 158.173.20.208HzKAbYc6'
-  type: ss
-  server: 158.173.20.208
-  port: 443
-  password: shadowsocks
+  server: 37.148.203.124
+  port: 12238
+  password: 6163d9d532e40f417dd8ebb5f9716495
   alterId: 2
   cipher: aes-128-gcm
-- name: '[NL] 82.38.31.35L4KJ9RVd'
-  type: ss
-  server: 82.38.31.35
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[IT] 185.164.175.81NlepoR7v'
-  type: ss
-  server: 185.164.175.81
-  port: 19999
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 82.38.31.48OfuQLtDd'
-  type: ss
-  server: 82.38.31.48
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.216jcT5nrOX'
-  type: ss
-  server: 82.38.31.216
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[CA] 51.222.200.165PsFCJIuw'
-  type: ss
-  server: 51.222.200.165
-  port: 5000
-  password: Y6R9pAtvxxzmGC
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 178.83.185.156137bJ8QT'
-  type: ss
-  server: 178.83.185.156
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.162spiMjmhO'
-  type: ss
-  server: 82.38.31.162
+- client-fingerprint: firefox
+  encryption: none
+  flow: xtls-rprx-vision
+  name: Dhos[]_dokng.com_2c7b4d12
+  network: tcp
   port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.54KVd4Y2um'
-  type: ss
-  server: 82.38.31.54
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.2341QUJ04vb'
-  type: ss
-  server: 193.29.139.234
-  port: 8080
-  password: 4a2rfixophdjffa8KVA4Aa
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.205J60BOFRK'
-  type: ss
-  server: 82.38.31.205
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.465yNOx987'
-  type: ss
-  server: 82.38.31.46
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.185XKFNevl'
-  type: ss
-  server: 82.38.31.18
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.69WwT9Z7dp'
-  type: ss
-  server: 82.38.31.69
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.49yz5ZqDQ4'
-  type: ss
-  server: 82.38.31.49
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.197s7Xlh9T1'
-  type: ss
-  server: 193.29.139.197
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.220xmsUWCj1'
-  type: ss
-  server: 82.38.31.220
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.198zuSOZAps'
-  type: ss
-  server: 82.38.31.198
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.39ORW9abKp'
-  type: ss
-  server: 82.38.31.39
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[GB] 149.102.132.184K89cDAsR'
-  type: ss
-  server: 149.102.132.184
-  port: 443
-  password: g5h5jleTRSyO3Rk4
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 193.29.139.212Q5P8qFUY'
-  type: ss
-  server: 193.29.139.212
-  port: 8080
-  password: QCXDxuDlTTMD7jtgHUjIoj
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[LT] 195.238.126.20ruzThBCM'
-  type: ss
-  server: 195.238.126.20
-  port: 9078
-  password: JCJpbRbQZNw9XFZG
-  alterId: 2
-  cipher: aes-256-cfb
-- name: '[NL] 82.38.31.179lDPMwjqg'
-  type: ss
-  server: 82.38.31.179
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.223pyQMEhmD'
-  type: ss
-  server: 193.29.139.223
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[US] 79.110.53.169YP3USjkZ'
-  type: ss
-  server: 79.110.53.169
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[JP] 84.247.155.196HSI2nw4a'
-  type: ss
-  server: 84.247.155.196
-  port: 80
-  password: 3eOFeNssde7PYYMv
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 82.38.31.189xMafC9vh'
-  type: ss
-  server: 82.38.31.189
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[IN] 139.84.166.477jv2C3Ua'
-  type: ss
-  server: 139.84.166.47
-  port: 8388
-  password: GEdoeeqLZtkJRgSa
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 82.38.31.10u3KMHflJ'
-  type: ss
-  server: 82.38.31.10
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.28tl6vaxPN'
-  type: ss
-  server: 82.38.31.28
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[BG] 213.183.63.60LTNKWrDB'
-  type: ss
-  server: 213.183.63.60
-  port: 9066
-  password: 2KUaE2a8NWTvuCZ3
-  alterId: 2
-  cipher: aes-256-cfb
-- name: '[NL] 82.38.31.183Mbc9pq3s'
-  type: ss
-  server: 82.38.31.183
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.147S5ynCZVc'
-  type: ss
-  server: 193.29.139.147
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[US] 169.197.142.22aSmH50ye'
+  reality-opts:
+    public-key: r5WB5FnSCt4eeBC1FJMfkWHbzsMuabo0Rc6wuAhlZUs
+    short-id: "a8"
+  server: api.mediakaskad.cc
+  servername: api.mediakaskad.cc
+  tls: true
+  type: vless
+  uuid: 082f5694-9019-4110-b67b-8125dbb9bab8
+- name: '[US] 169.197.142.22A10iaF8L'
   type: vmess
   server: 169.197.142.22
   port: 18000
@@ -1862,369 +1618,413 @@ proxies:
   ws-headers:
     Host: ''
   tls: false
-- name: '[NL] 82.38.31.16FknrPbXf'
+- name: '[NL] 82.38.31.69b5K4MYZg'
   type: ss
-  server: 82.38.31.16
+  server: 82.38.31.69
   port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[GB] 82.110.60.9nYQSduNk'
+- name: '[DE] 213.202.208.199NcGQf5Jz'
   type: ss
-  server: 82.110.60.9
-  port: 19999
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  server: 213.202.208.199
+  port: 5000
+  password: Y6R9pAtvxxzmGC
   alterId: 2
   cipher: aes-256-gcm
-- name: '[US] 138.199.43.159UDvchqd1'
-  type: ss
-  server: 138.199.43.159
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[NL] 82.38.31.171yfIUOBsi'
-  type: ss
-  server: 82.38.31.171
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[GB] 149.102.132.184vnIpPsXL'
-  type: ss
-  server: 149.102.132.184
-  port: 80
-  password: g5h5jleTRSyO3Rk4
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[JP] 154.36.158.197KmOdTos2'
-  type: ss
-  server: 154.36.158.197
-  port: 8388
-  password: BeaUf9c0AEWH40Pu
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[US] 107.155.57.11guWRThSm'
-  type: ss
-  server: 107.155.57.11
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[NL] 82.38.31.82DcYzZnTG'
-  type: ss
-  server: 82.38.31.82
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.36rvBDJZoF'
-  type: ss
-  server: 82.38.31.36
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[PL] 54.36.174.140vSoYzdu4'
-  type: ss
-  server: 54.36.174.140
-  port: 443
-  password: e5c65ph
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.179quhKlAaU'
-  type: ss
-  server: 193.29.139.179
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.61Wfr2SGuI'
-  type: ss
-  server: 82.38.31.61
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.198GoAEPmh9'
-  type: ss
-  server: 193.29.139.198
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.149PbWHL30D'
-  type: ss
-  server: 82.38.31.149
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.62Rvxt5PuS'
-  type: ss
-  server: 82.38.31.62
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[CA] 64.74.163.67ZL4nu8dc'
-  type: ss
-  server: 64.74.163.67
-  port: 18764
-  password: 4efe1af272e7292139b889f6a63ee071
-  alterId: 2
-  cipher: aes-128-gcm
-- name: '[NL] 82.38.31.185f4MtyQSZ'
-  type: ss
-  server: 82.38.31.185
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[SG] 68.183.227.4591IfNvm0'
-  type: ss
-  server: 68.183.227.45
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[NL] 82.38.31.186A2EXcSzy'
-  type: ss
-  server: 82.38.31.186
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 158.173.20.171L87qhkgJ'
-  type: ss
-  server: 158.173.20.171
-  port: 443
-  password: shadowsocks
-  alterId: 2
-  cipher: aes-128-gcm
-- name: '[RO] 194.68.44.42oc5p26Fw'
-  type: ss
-  server: 194.68.44.42
-  port: 64546
-  password: U83u9OGpvSatIUW7LsWffr
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.26uIgT8Gc0'
-  type: ss
-  server: 82.38.31.26
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.188wcPbyQsx'
-  type: ss
-  server: 193.29.139.188
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.1596Nsc42Oi'
-  type: ss
-  server: 82.38.31.159
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[BG] 213.183.63.60B8q05Hov'
-  type: ss
-  server: 213.183.63.60
-  port: 9064
-  password: cp8pRSUAyLhTfVWH
-  alterId: 2
-  cipher: aes-256-cfb
-- name: '[US] 103.11.76.2482PSbxe74'
-  type: ss
-  server: 103.11.76.248
-  port: 28679
-  password: NzJlOTQ5NWYtM2ZkYi00Cg==
-  alterId: 2
-  cipher: 2022-blake3-aes-128-gcm
-- name: '[NL] 82.38.31.155uK7UxB4O'
-  type: ss
-  server: 82.38.31.155
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: pphfree2.mvpnpvpn.de5.net9yItuBGR
-  type: ss
-  server: pphfree2.mvpnpvpn.de5.net
-  port: 52351
-  password: sxajCTwrlK0zl+zmHpX0p0jXIfatnzlLzWlSQ950L1c=
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 193.29.139.235RWgGdqUz'
-  type: ss
-  server: 193.29.139.235
-  port: 443
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[DE] 169.150.210.233Mi63Lp8C'
-  type: ss
-  server: 169.150.210.233
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[NL] 82.38.31.157t2guWQpf'
-  type: ss
-  server: 82.38.31.157
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: bogging-eyeteeth-fly.freesocks.workesoPBS4m
-  type: ss
-  server: bogging-eyeteeth-fly.freesocks.work
-  port: 443
-  password: QFWzCw2uX9B9i6qAYeFBIE
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.202YAXEhGQU'
-  type: ss
-  server: 193.29.139.202
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.2258iktxrsP'
-  type: ss
-  server: 193.29.139.225
-  port: 8080
-  password: oZIoA69Q8yhcQV8ka3Pa3A
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 82.38.31.178GufS7kAU'
-  type: ss
-  server: 82.38.31.178
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[US] 15.204.247.175lUhRW6aS'
-  type: ss
-  server: 15.204.247.175
-  port: 8008
-  password: XKFKl2rULjIp74
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[DE] 31.76.11.83pXem7v12'
-  type: vmess
-  server: 31.76.11.83
-  port: 22366
-  uuid: 632cfa69-ae00-49d1-81e0-554979d1e9fa
-  alterId: 0
-  cipher: auto
-  network: tcp
-  ucp: true
-  ws-path: null
-  ws-headers: null
-  tls: false
-- name: '[NL] 82.38.31.190YILw0N5C'
-  type: ss
-  server: 82.38.31.190
-  port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
-  alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[NL] 193.29.139.168mpElv847'
+- name: '[NL] 193.29.139.168uJmRUkCy'
   type: ss
   server: 193.29.139.168
   port: 8080
   password: QCXDxuDlTTMD7jtgHUjIoj
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[SG] 68.183.227.4l31yQvZw'
+- name: '[NL] 82.38.31.349nAdghDQ'
   type: ss
-  server: 68.183.227.4
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[US] 138.199.42.682Dt0jmqO'
-  type: ss
-  server: 138.199.42.68
-  port: 8080
-  password: 14fFPrbezE3HDZzsMOr6
-  alterId: 2
-  cipher: rc4-md5
-- name: '[US] 15.204.247.206lb4WGrqz'
-  type: ss
-  server: 15.204.247.206
-  port: 4444
-  password: pKEW8JPByTVTLtM
-  alterId: 2
-  cipher: aes-256-gcm
-- name: '[NL] 37.148.203.124bpewrqJu'
-  type: ss
-  server: 37.148.203.124
-  port: 12238
-  password: 6163d9d532e40f417dd8ebb5f9716495
-  alterId: 2
-  cipher: aes-128-gcm
-- name: '[IT] 91.201.65.122dbMjYX1l'
-  type: ss
-  server: 91.201.65.122
-  port: 9097
-  password: Sn5B7jTqr76aCJT8
-  alterId: 2
-  cipher: aes-256-cfb
-- name: '[US] 15.204.247.124FxPHs4Wy'
-  type: ss
-  server: 15.204.247.124
-  port: 2375
-  password: faBAoD54k87UJG7
-  alterId: 2
-  cipher: aes-256-gcm
-- name: p141.panda001.netSqXdJNuD
-  type: ss
-  server: p141.panda001.net
-  port: 4652
-  password: qwerREWQ@@
-  alterId: 2
-  cipher: aes-256-cfb
-- name: '[NL] 82.38.31.47dwSAXbaU'
-  type: ss
-  server: 82.38.31.47
+  server: 82.38.31.34
   port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[US] 15.204.246.132StyxnD2j'
+- name: '[GB] 82.110.60.9ugCcRZ0y'
   type: ss
-  server: 15.204.246.132
-  port: 7307
-  password: FoOiGlkAA9yPEGP
+  server: 82.110.60.9
+  port: 19999
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   alterId: 2
   cipher: aes-256-gcm
-- name: '[LT] 195.238.126.20ns0FrclJ'
+- name: '[NL] 82.38.31.13VO23ebFw'
   type: ss
-  server: 195.238.126.20
-  port: 9008
-  password: y9VURyNzJWNRYEGQ
-  alterId: 2
-  cipher: aes-256-cfb
-- name: pl140.vpnbook.comwa2iBfcH
-  type: ss
-  server: pl140.vpnbook.com
-  port: 443
-  password: e5c65ph
+  server: 82.38.31.13
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[JP] 84.247.155.196Mbo69fej'
+- name: '[CH] 132.243.175.144agyMuqUs'
+  type: ss
+  server: 132.243.175.144
+  port: 8388
+  password: e8KgS8fD0yDqYFpgN4G5piCOt9aFyqA3
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[JP] 84.247.155.196CtvrWgyF'
   type: ss
   server: 84.247.155.196
   port: 443
   password: 3eOFeNssde7PYYMv
   alterId: 2
   cipher: aes-256-gcm
-- name: ww11.levikogjgfdd.irOgJnTAle
+- name: '[NL] 82.38.31.159SzIF8brE'
+  type: ss
+  server: 82.38.31.159
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.46Rv07WzYL'
+  type: ss
+  server: 82.38.31.46
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 193.29.139.179GEsWKvpj'
+  type: ss
+  server: 193.29.139.179
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[GB] 149.102.132.184Mo0tgVK3'
+  type: ss
+  server: 149.102.132.184
+  port: 443
+  password: g5h5jleTRSyO3Rk4
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.205FHixQZr8'
+  type: ss
+  server: 82.38.31.205
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.185pF1N5cCi'
+  type: ss
+  server: 82.38.31.185
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.1758AmsC05z'
+  type: ss
+  server: 82.38.31.175
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.47J8nMj6SN'
+  type: ss
+  server: 82.38.31.47
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.179sjFJoVSi'
+  type: ss
+  server: 82.38.31.179
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[PL] 54.36.174.140cKQub4Bx'
+  type: ss
+  server: 54.36.174.140
+  port: 443
+  password: e5c65ph
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.49RI6Azow0'
+  type: ss
+  server: 82.38.31.49
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.829HdKic17'
+  type: ss
+  server: 82.38.31.82
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.17543dLYXHo'
+  type: ss
+  server: 82.38.31.175
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.168in2kYs7'
+  type: ss
+  server: 82.38.31.16
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.42jnB7IYsL'
+  type: ss
+  server: 82.38.31.42
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.189r8k63nwB'
+  type: ss
+  server: 82.38.31.189
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 193.29.139.225cqWUI9Bp'
+  type: ss
+  server: 193.29.139.225
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[IT] 185.164.175.81Y7xPcayM'
+  type: ss
+  server: 185.164.175.81
+  port: 19999
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[RO] 194.68.44.42qAXlNb6s'
+  type: ss
+  server: 194.68.44.42
+  port: 64546
+  password: U83u9OGpvSatIUW7LsWffr
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[LT] 195.238.126.209vNjzkb4'
+  type: ss
+  server: 195.238.126.20
+  port: 9002
+  password: b8KkNDjEd5QqFyRm
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[NL] 158.173.20.208DreMQz5i'
+  type: ss
+  server: 158.173.20.208
+  port: 443
+  password: shadowsocks
+  alterId: 2
+  cipher: aes-128-gcm
+- name: '[NL] 193.29.139.1328KcCwTql'
+  type: ss
+  server: 193.29.139.132
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 193.29.139.198thwuok7q'
+  type: ss
+  server: 193.29.139.198
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.171BXHnhmS7'
+  type: ss
+  server: 82.38.31.171
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.170hVZGvKUW'
+  type: ss
+  server: 82.38.31.170
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[CA] 64.74.163.67upX1KGEU'
+  type: ss
+  server: 64.74.163.67
+  port: 18764
+  password: 4efe1af272e7292139b889f6a63ee071
+  alterId: 2
+  cipher: aes-128-gcm
+- name: '[SG] 68.183.235.122LeZ3lhOw'
+  type: ss
+  server: 68.183.235.122
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 82.38.31.186cmXBwMNW'
+  type: ss
+  server: 82.38.31.186
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.39BUMF5370'
+  type: ss
+  server: 82.38.31.39
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[JP] 154.36.158.197jfpRbkdP'
+  type: ss
+  server: 154.36.158.197
+  port: 8388
+  password: BeaUf9c0AEWH40Pu
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.61YJAZw3Gx'
+  type: ss
+  server: 82.38.31.61
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.35a8BCd0Jn'
+  type: ss
+  server: 82.38.31.35
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.174eLi1b69s'
+  type: ss
+  server: 82.38.31.174
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 193.29.139.1470R87WACK'
+  type: ss
+  server: 193.29.139.147
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.21996eHrP0J'
+  type: ss
+  server: 82.38.31.219
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 79.110.53.169K1DMJ4l3'
+  type: ss
+  server: 79.110.53.169
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 82.38.31.198koyfNtpr'
+  type: ss
+  server: 82.38.31.198
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[CZ] 67.159.18.345yHEg4oJ'
+  type: ss
+  server: 67.159.18.34
+  port: 17001
+  password: I6o9NnialYLMEjVt28RF4dpjmr9wMvNL
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 193.29.139.197Htqjg5iD'
+  type: ss
+  server: 193.29.139.197
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.162mrqhYoNW'
+  type: ss
+  server: 82.38.31.162
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[DE] 185.226.172.8Uruc6tnL'
+  type: ss
+  server: 185.226.172.8
+  port: 8008
+  password: XKFKl2rULjIp74
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[US] 107.155.57.51XeEfNIpK'
+  type: ss
+  server: 107.155.57.51
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[RU] 176.32.32.108oabQj2sT'
+  type: ss
+  server: 176.32.32.108
+  port: 18443
+  password: cCMJgJTA3BA489YUYrFq7XHXSiSpWlLa
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.199JaN6Sm5e'
+  type: ss
+  server: 82.38.31.199
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.218TumyPY1c'
+  type: ss
+  server: 82.38.31.218
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[DE] 57.129.113.1685JaKzdh'
+  type: ss
+  server: 57.129.113.16
+  port: 8388
+  password: NcAXc0UZI6yQJE1p8QmOv8
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.36Do7ylRYd'
+  type: ss
+  server: 82.38.31.36
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[SG] 68.183.227.4qnCvl0oM'
+  type: ss
+  server: 68.183.227.4
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 82.38.31.178pQU0vm9g'
+  type: ss
+  server: 82.38.31.178
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[CA] 51.222.200.165gSIbkTYc'
+  type: ss
+  server: 51.222.200.165
+  port: 5000
+  password: Y6R9pAtvxxzmGC
+  alterId: 2
+  cipher: aes-256-gcm
+- name: ww11.levikogjgfdd.irJgcYBsS1
   type: vmess
   server: ww11.levikogjgfdd.ir
   port: 18000
@@ -2237,63 +2037,394 @@ proxies:
   ws-headers:
     Host: ''
   tls: false
-- name: '[NL] 193.29.139.1326OMnS491'
+- name: '[US] 138.199.43.159OJXDEI5a'
   type: ss
-  server: 193.29.139.132
+  server: 138.199.43.159
   port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  password: 14fFPrbezE3HDZzsMOr6
   alterId: 2
-  cipher: chacha20-ietf-poly1305
-- name: '[PL] 217.30.10.44MGvf1Yl4'
+  cipher: rc4-md5
+- name: pphfree2.mvpnpvpn.de5.netWQBfbETG
   type: ss
-  server: 217.30.10.44
-  port: 9006
-  password: FAdUvMJUq5vDgKEq
+  server: pphfree2.mvpnpvpn.de5.net
+  port: 52351
+  password: sxajCTwrlK0zl+zmHpX0p0jXIfatnzlLzWlSQ950L1c=
   alterId: 2
-  cipher: aes-256-cfb
-- name: '[NL] 82.38.31.13wrWAvxB0'
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.62zHY20oKd'
   type: ss
-  server: 82.38.31.13
+  server: 82.38.31.62
   port: 8080
   password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[DE] 213.202.208.199HtcivUDI'
+- name: '[GB] 149.102.132.184VECYeads'
   type: ss
-  server: 213.202.208.199
-  port: 7001
-  password: RexnBgU7EV5ADxG
+  server: 149.102.132.184
+  port: 80
+  password: g5h5jleTRSyO3Rk4
   alterId: 2
   cipher: aes-256-gcm
-- name: '[NL] 82.38.31.182vcmw8Ebl'
+- name: '[NL] 193.29.139.2026zv2a5D0'
   type: ss
-  server: 82.38.31.182
+  server: 193.29.139.202
   port: 8080
-  password: k1dBOmOB4oqi7Ump37a1bQ
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
   cipher: chacha20-ietf-poly1305
-- name: '[SG] 128.199.172.224uIKPjqVU'
+- name: '[TH] 103.107.52.106Zc3IuR0d'
+  type: ss
+  server: 103.107.52.106
+  port: 52351
+  password: sxajCTwrlK0zl+zmHpX0p0jXIfatnzlLzWlSQ950L1c=
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.541SxEVvWk'
+  type: ss
+  server: 82.38.31.54
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[SG] 128.199.172.224UHKzkaFQ'
   type: ss
   server: 128.199.172.224
   port: 8080
   password: 14fFPrbezE3HDZzsMOr6
   alterId: 2
   cipher: rc4-md5
-- name: '[HK] 103.149.182.79jMcwQD5F'
+- name: '[DE] 31.76.11.83HFsIygtL'
+  type: vmess
+  server: 31.76.11.83
+  port: 22366
+  uuid: 632cfa69-ae00-49d1-81e0-554979d1e9fa
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: null
+  ws-headers: null
+  tls: false
+- name: '[NL] 82.38.31.174vno4PF3i'
   type: ss
-  server: 103.149.182.79
-  port: 8388
-  password: asd123456
+  server: 82.38.31.174
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
   alterId: 2
-  cipher: chacha20-ietf
-- name: '[SG] 139.180.220.175p1lnqjfD'
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.262GJyQvB7'
   type: ss
-  server: 139.180.220.175
-  port: 8388
-  password: qpSevKaUXYQKvSjp
+  server: 82.38.31.26
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[CA] 51.222.136.236hua6UwJL'
+  type: ss
+  server: 51.222.136.236
+  port: 8882
+  password: kDWvXYZoTBcGkC4
   alterId: 2
   cipher: aes-256-gcm
-- name: '[IN] 152.67.8.205I6VxGuUS'
+- name: '[IT] 57.131.48.457THpOaKu'
+  type: ss
+  server: 57.131.48.45
+  port: 8388
+  password: itzvpn@321
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[US] 107.151.182.197kTmQhZKf'
+  type: ss
+  server: 107.151.182.197
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[US] 15.204.247.124xGN5B8of'
+  type: ss
+  server: 15.204.247.124
+  port: 2375
+  password: faBAoD54k87UJG7
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[HK] 156.245.232.239uQfUraA0'
+  type: vmess
+  server: 156.245.232.239
+  port: 35043
+  uuid: b15e481d-17e4-41a8-84c2-23d4f0514d9a
+  alterId: 0
+  cipher: auto
+  network: ws
+  ucp: true
+  ws-path: /
+  ws-headers:
+    Host: ''
+  tls: false
+- name: '[NL] 82.38.31.187v6MIqYfl'
+  type: ss
+  server: 82.38.31.187
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.182Tk9RNbMo'
+  type: ss
+  server: 82.38.31.182
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[DE] 213.202.208.199TB9OV7ic'
+  type: ss
+  server: 213.202.208.199
+  port: 7001
+  password: RexnBgU7EV5ADxG
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 193.29.139.188gPHWmYTz'
+  type: ss
+  server: 193.29.139.188
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[LV] 185.135.86.175R3zXUTtv'
+  type: ss
+  server: 185.135.86.175
+  port: 9068
+  password: mwgRg9hRq3b4Qnwb
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[NL] 82.38.31.28QVhTHS1j'
+  type: ss
+  server: 82.38.31.28
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.155CUdEolWK'
+  type: ss
+  server: 82.38.31.155
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[PL] 217.30.10.44h96DPK0e'
+  type: ss
+  server: 217.30.10.44
+  port: 9095
+  password: N7j3pdTYkKmsy8CR
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[NL] 82.38.31.190G30kxMtF'
+  type: ss
+  server: 82.38.31.190
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.48tcFwjfiH'
+  type: ss
+  server: 82.38.31.48
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.18I2yXUW7J'
+  type: ss
+  server: 82.38.31.18
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 15.204.247.206rxh1aYyc'
+  type: ss
+  server: 15.204.247.206
+  port: 4444
+  password: pKEW8JPByTVTLtM
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[SG] 68.183.227.45XlJrGfLE'
+  type: ss
+  server: 68.183.227.45
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[GB] 146.70.61.18AnP8V37o'
+  type: ss
+  server: 146.70.61.18
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 82.38.31.157IQD8Z3aY'
+  type: ss
+  server: 82.38.31.157
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[SG] 68.183.227.2366LPWcE0R'
+  type: ss
+  server: 68.183.227.236
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: pl134.vpnbook.com8oAmpbnW
+  type: ss
+  server: pl134.vpnbook.com
+  port: 443
+  password: e5c65ph
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[DE] de.zhou-yufan.comK0IYsq16'
+  type: vmess
+  server: de.zhou-yufan.com
+  port: 443
+  uuid: f38e591d-d13a-4c30-9763-6be3ad65f3ec
+  alterId: 0
+  cipher: auto
+  network: tcp
+  ucp: true
+  ws-path: /
+  ws-headers:
+    Host: de.zhou-yufan.com
+  tls: true
+- name: pl140.vpnbook.comBPH7SEbc
+  type: ss
+  server: pl140.vpnbook.com
+  port: 443
+  password: e5c65ph
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[CA] 138.197.141.585dA9MJXY'
+  type: ss
+  server: 138.197.141.58
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[PL] 217.30.10.44lwctkY0q'
+  type: ss
+  server: 217.30.10.44
+  port: 9006
+  password: FAdUvMJUq5vDgKEq
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[NL] 178.83.185.156Qdy8C0R2'
+  type: ss
+  server: 178.83.185.156
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.149qRDPFTfd'
+  type: ss
+  server: 82.38.31.149
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.201unsjTZ10'
+  type: ss
+  server: 82.38.31.201
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 172.86.108.79YV8bvfsP'
+  type: ss
+  server: 172.86.108.79
+  port: 30832
+  password: jr+T2RS0sCHBmC4u6aY6Vg==
+  alterId: 2
+  cipher: 2022-blake3-aes-128-gcm
+- name: '[DE] 31.76.11.83gmbKjzQY'
+  type: ss
+  server: 31.76.11.83
+  port: 15731
+  password: xAYXtB+XMdfWWOlmL8PWcOZEPfKHKVv7NcTY6jpcL/A=
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[NL] 82.38.31.183KJB0hNA2'
+  type: ss
+  server: 82.38.31.183
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 23.251.121.242y3dMrV7z'
+  type: ss
+  server: 23.251.121.242
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 82.38.31.1563RB7iubd'
+  type: ss
+  server: 82.38.31.156
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 15.204.233.41qvWuA4Fc'
+  type: ss
+  server: 15.204.233.41
+  port: 8882
+  password: kDWvXYZoTBcGkC4
+  alterId: 2
+  cipher: aes-256-gcm
+- name: '[NL] 82.38.31.171D5G16nBe'
+  type: ss
+  server: 82.38.31.171
+  port: 8080
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 107.155.57.11dGWKptrV'
+  type: ss
+  server: 107.155.57.11
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[US] 38.45.66.187ibhg9D8y'
+  type: vmess
+  server: 38.45.66.187
+  port: 12288
+  uuid: ae6672dd-ff20-453f-ed98-47a078bd0cbc
+  alterId: 0
+  cipher: auto
+  network: ws
+  ucp: true
+  ws-path: /
+  ws-headers:
+    Host: ''
+  tls: false
+- name: '[NL] 82.38.31.220QGmYiwp5'
+  type: ss
+  server: 82.38.31.220
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[LT] 195.238.126.84twFxWLYS'
+  type: ss
+  server: 195.238.126.84
+  port: 9039
+  password: qYEN5HX4JKeVCdEC
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[NL] 193.29.139.223fMedNrD5'
+  type: ss
+  server: 193.29.139.223
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[IN] 152.67.8.2055HN8eM46'
   type: vmess
   server: 152.67.8.205
   port: 80
@@ -2306,75 +2437,120 @@ proxies:
   ws-headers:
     Host: ''
   tls: false
+- name: '[NL] 82.38.31.216SH7ZnViK'
+  type: ss
+  server: 82.38.31.216
+  port: 8080
+  password: k1dBOmOB4oqi7Ump37a1bQ
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[US] 138.199.42.68G9JmbZ4O'
+  type: ss
+  server: 138.199.42.68
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
+- name: '[NL] 193.29.139.2358PTnwvdN'
+  type: ss
+  server: 193.29.139.235
+  port: 443
+  password: oZIoA69Q8yhcQV8ka3Pa3A
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[PL] 217.30.10.44o2DWbYih'
+  type: ss
+  server: 217.30.10.44
+  port: 9071
+  password: mENfxTFQpRKKh4As
+  alterId: 2
+  cipher: aes-256-cfb
+- name: '[PL] 54.36.174.134oTAMgNEz'
+  type: ss
+  server: 54.36.174.134
+  port: 443
+  password: e5c65ph
+  alterId: 2
+  cipher: chacha20-ietf-poly1305
+- name: '[DE] 169.150.210.233SbyJrufo'
+  type: ss
+  server: 169.150.210.233
+  port: 8080
+  password: 14fFPrbezE3HDZzsMOr6
+  alterId: 2
+  cipher: rc4-md5
 proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - '[US] 美国-2844BECE'
-  - '[US] 美国-185EF251'
   - '[HK] 香港-C6E7A7E9'
+  - '[US] 美国-185EF251'
+  - '[US] 美国-2844BECE'
+  - 未知-8015D2B7
   - '[US] 未知-798A29E5'
-  - '[JP] 日本-6783195D'
   - '[JP] 日本-24FE6D00'
+  - '[JP] 日本-6783195D'
   - '[JP] 日本-0A19CAC2'
-  - '[US] 美国-15728D4A'
+  - '[SC] 未知-920029F2'
+  - '[CA] 加拿大-9216A510'
+  - '[CA] 未知-ED24FFFD'
+  - '[CA] 未知-BFD8B984'
+  - '[DE] 未知-9BE79465'
+  - '[CA] 未知-DE66D468'
+  - 未知-E7AD2A46
+  - 未知-3E57BB3B
   - '[US] 东帝汶-8C0CA6EC'
+  - '[US] 未知-6CD4D997'
   - '[US] 未知-6BE33E05'
   - '[US] 未知-A5F1C19B'
-  - '[US] 未知-6CD4D997'
-  - '[US] 美国-EAC25DBB'
   - '[US] 未知-1B5FA045'
+  - '[US] 美国-EAC25DBB'
   - '[US] 未知-5F244B4A'
-  - '[HK] 未知-67764E14'
   - '[US] 美国-50AE4EFA'
-  - '[US] 未知-C4E47653'
+  - '[HK] 未知-67764E14'
   - '[US] 美国-8A4F975E'
   - '[US] 美国-4A5CF585'
-  - '[US] 美国-C7466887'
   - '[US] 未知-5591547D'
+  - '[US] 美国-C7466887'
+  - '[US] 美国-D0E0EABF'
   - '[CA] 未知-B44F8E82'
   - '[US] 美国-2EC114C5'
-  - '[US] 美国-D0E0EABF'
-  - '[US] 美国-54E01726'
+  - '[CA] 加拿大-8DAFEF46'
+  - '[US] 未知-DF922B23'
+  - '[US] 未知-892BE4A4'
   - '[US] 未知-D45BC914'
   - '[US] 美国-781DC8A9'
   - '[US] 美国-2DD9A906'
-  - '[US] 未知-DF922B23'
-  - '[CA] 未知-AF16F820'
+  - '[US] 美国-54E01726'
   - '[US] 美国-20488C4F'
-  - '[CA] 加拿大-8DAFEF46'
-  - '[US] 未知-892BE4A4'
-  - '[US] 未知-B3BAA575'
-  - '[US] 美国-98668394'
+  - '[CA] 未知-AF16F820'
   - '[CA] 加拿大-093F7F75'
   - '[US] 未知-B504CBC6'
+  - '[US] 未知-B3BAA575'
   - '[US] 未知-A3DD0AD8'
   - '[US] 未知-7E487B32'
-  - '[GB] 未知-0ABA60D4'
   - '[JP] 未知-0EAAB7E9'
-  - '[GB] 英国-1DBB5F97'
   - '[GB] 英国-80BE1157'
   - '[NL] 未知-BAD995AC'
   - '[NL] 荷兰-1ABDEDCF'
   - '[NL] 未知-688F3685'
   - '[NL] 荷兰-E7B00D01'
   - '[NL] 荷兰-9657BB20'
-  - '[TW] 未知-1E4E8879'
   - '[NL] 未知-2368B7BD'
-  - '[NL] 英国-045C7267'
   - '[NL] 未知-FCD9872A'
+  - '[NL] 英国-045C7267'
   - '[NL] 英国-14CB062C'
-  - '[SG] 未知-B4A5647A'
   - '[NL] 未知-13B3F7DA'
   - '[NL] 未知-94FA843E'
   - '[NL] 未知-1B6D48DD'
-  - '[NL] 未知-CB42B351'
+  - '[SG] 未知-B4A5647A'
   - '[NL] 未知-75636F57'
+  - '[NL] 未知-CB42B351'
   - '[NL] 以色列-B3D4568A'
   - '[NL] 未知-A84723A5'
   - '[NL] 未知-0DA5B829'
-  - '[NL] 英国-920EDAD3'
   - '[NL] 荷兰-36FA140B'
+  - '[NL] 英国-920EDAD3'
   - '[NL] 伊朗-F010A450'
   - '[NL] 未知-6B469CBF'
   - '[NL] 未知-45FFA923'
@@ -2383,247 +2559,261 @@ proxy-groups:
   - '[NL] 未知-31C27972'
   - '[NL] 未知-896B9D41'
   - '[NL] 未知-A63FCB48'
+  - '[NO] 未知-68F0E91D'
   - '[DE] 德国-D00F02E7'
   - '[NL] 未知-D992864B'
-  - '[NL] 荷兰-1D63AE36'
   - '[DE] 未知-A393B7C9'
-  - '[SG] 未知-FCBC5D1C'
   - '[NL] 英国-FA37F005'
+  - '[SG] 未知-FCBC5D1C'
   - '[NL] 未知-C5146D9A'
   - '[FR] 未知-9ABDA738'
-  - '[NL] 荷兰-FA76F4F2'
-  - '[NL] 未知-EA93F609'
   - '[NL] 未知-800CD54A'
-  - '[NL] 东帝汶-68F60510'
-  - '[NL] 东帝汶-2D7EB956'
+  - '[NL] 荷兰-FA76F4F2'
   - '[NL] 未知-4B8C34B6'
+  - '[NL] 东帝汶-2D7EB956'
+  - '[NL] 未知-EA93F609'
+  - '[NL] 东帝汶-68F60510'
   - '[NL] 未知-69B06F19'
   - '[NL] 未知-A3E47C14'
-  - '[NL] 未知-67C1FE41'
   - '[NL] 东帝汶-77649CE4'
+  - '[NL] 未知-217757B3'
   - '[NL] 东帝汶-D436F56D'
-  - '[NL] 未知-F80EE80C'
+  - '[NL] 未知-67C1FE41'
   - '[DE] 未知-01E5A486'
   - '[NL] 荷兰-104FDD7C'
   - '[DE] 未知-39D94852'
   - '[NL] 未知-0F3510CE'
-  - '[NL] 未知-B5EE8E89'
   - '[NL] 英国-19EA134B'
   - '[ES] 未知-FDB55F27'
   - '[NL] 未知-F9B50F9E'
   - '[ZA] 未知-5AAF3C99'
+  - '[NL] 未知-24BBDC61'
   - '[NL] 未知-61474257'
-  - '[NL] 未知-526DCD7D'
-  - '[CA] ðð æå å  SGP 2'
+  - '[NL] 未知-C8A9D47D'
+  - '[CA] ðºð ç¾å½  USA 3'
+  - '[RU] ððº äç½æ  RUS 2'
   - '[US] ðºðUSç¾å½äyoyapai.com'
-  - '[CA] ðºð ç¾å½  USA 13'
-  - '[CA] ðºð ç¾å½  USA 6'
-  - '[AU] ððº æ¾³ååäº  AUS'
-  - '[US] ðºð ç¾å½  USA 9'
-  - '[US] ðºð ç¾å½  USA 2'
+  - '[US] ðºð ç¾å½  USA'
   - '[GB] 未知-7A517A24'
-  - ðºðUSç¾å½äyoyapai.com_16
-  - '[US] ððªDEå¾å½äyoyapai.com_13'
   - Dhos[]_dokng.com_45c836e0
+  - '[US] ððªDEå¾å½äyoyapai.com_13'
+  - '[US] ðºð ç¾å½  USA 9'
+  - '[US] Chos[]_dokng.com_443f8750'
   - '[CA] Dhos[]_dokng.com_7dc2a84d'
   - '[CA] Chos[]_dokng.com_1756644c'
-  - '[IE] ððª çåå  IRL 2'
-  - '[FI] ðð éæ  HKG 2'
-  - '[US] Chos[]_dokng.com_443f8750'
-  - '[IE] ððª çåå  IRL'
-  - '[GB] ðð èå½  GBR 2'
-  - '[DE] ððª å¾å½  DEU 6'
-  - '[RU] ððLVæèçäºäyoyapai.com'
-  - '[ES] ðªð èçç  ESP 2'
-  - '[GB] ðð èå½  GBR'
   - Dhos[]_dokng.com_0a18b849
-  - '[US] 172.86.108.79UvQ4oh2p'
-  - '[JP] Ares[]_dokng.com_0aee8c03'
-  - Chos[]_dokng.com_3be7dc5e
-  - Chos[]_dokng.com_b01d10a9
-  - '[DE] ððª å¾å½  DEU 10'
+  - '[US] Chos[]_dokng.com_e2cb978e'
+  - ðºðUSç¾å½äyoyapai.com_16
+  - '[US] ðºð ç¾å½  USA 10'
+  - '[IE] ððª çåå  IRL'
+  - '[ES] ðªð èçç  ESP'
+  - '[RU] ððLVæèçäºäyoyapai.com'
+  - '[HK] ðð éæ  HKG'
   - '[SG] ðð æå å  SGP 3'
-  - Dhos[]_dokng.com_0e90fe61
+  - '[DE] ððª çå  SWE 2'
+  - '[CA] 64.74.163.69Lnlu8Byg'
+  - ðµð æ³å  POL
+  - '[HK] ðð éæ  HKG 4'
+  - Chos[]_dokng.com_715452b7
+  - '[FI] Ares[]_dokng.com_f428f535'
+  - '[US] 107.151.182.253hEnwuQ9p'
+  - '[US] 103.11.76.248Ndf5YDRW'
+  - ððª çå  SWE
   - '[SG] Dhos[]_dokng.com_e743af69'
-  - '[NL] 82.38.31.174k9zcRPU6'
-  - '[NL] 82.38.31.219EJuL69g7'
-  - '[NL] 82.38.31.34v1p4C2zH'
-  - '[CA] 51.222.136.236O0cybK5f'
+  - Uukn[]_dokng.com_d3bfec09
+  - '[NL] 82.38.31.10jsO1CSK9'
+  - '[NL] 82.38.31.66kjFSdD37'
+  - '[NL] Ares[]_dokng.com_34178fe5'
+  - '[US] 15.204.246.132g3kwH95S'
   - '[SG] Dhos[]_dokng.com_b996207d'
-  - '[NL] 82.38.31.174KCbHaPcB'
-  - '[NL] 82.38.31.156zO6fZw7B'
-  - '[NL] 82.38.31.3MAsEJxVo'
+  - '[NL] 82.38.31.3ID3BJELf'
   - Chos[]_dokng.com_8c8298b3
-  - '[NL] 82.38.31.175VeNFU1RY'
-  - '[NL] 82.38.31.42h5kgumwO'
-  - '[NL] 82.38.31.199zeu9oOAc'
-  - '[NL] 82.38.31.1701K5mT3PS'
-  - '[DE] 57.129.113.16WTBAIkHa'
-  - '[NL] 82.38.31.218ktoLVM9N'
-  - '[NL] 82.38.31.187XZTorsua'
-  - '[NL] 82.38.31.171GCiRbhu1'
-  - '[NL] 82.38.31.175bjc5MIrL'
-  - '[NL] 82.38.31.661HK8fVxN'
-  - '[CH] 132.243.175.144vF5q9Uxb'
-  - '[NL] 158.173.20.208HzKAbYc6'
-  - '[NL] 82.38.31.35L4KJ9RVd'
-  - '[IT] 185.164.175.81NlepoR7v'
-  - '[NL] 82.38.31.48OfuQLtDd'
-  - '[NL] 82.38.31.216jcT5nrOX'
-  - '[CA] 51.222.200.165PsFCJIuw'
-  - '[NL] 178.83.185.156137bJ8QT'
-  - '[NL] 82.38.31.162spiMjmhO'
-  - '[NL] 82.38.31.54KVd4Y2um'
-  - '[NL] 193.29.139.2341QUJ04vb'
-  - '[NL] 82.38.31.205J60BOFRK'
-  - '[NL] 82.38.31.465yNOx987'
-  - '[NL] 82.38.31.185XKFNevl'
-  - '[NL] 82.38.31.69WwT9Z7dp'
-  - '[NL] 82.38.31.49yz5ZqDQ4'
-  - '[NL] 193.29.139.197s7Xlh9T1'
-  - '[NL] 82.38.31.220xmsUWCj1'
-  - '[NL] 82.38.31.198zuSOZAps'
-  - '[NL] 82.38.31.39ORW9abKp'
-  - '[GB] 149.102.132.184K89cDAsR'
-  - '[NL] 193.29.139.212Q5P8qFUY'
-  - '[LT] 195.238.126.20ruzThBCM'
-  - '[NL] 82.38.31.179lDPMwjqg'
-  - '[NL] 193.29.139.223pyQMEhmD'
-  - '[US] 79.110.53.169YP3USjkZ'
-  - '[JP] 84.247.155.196HSI2nw4a'
-  - '[NL] 82.38.31.189xMafC9vh'
-  - '[IN] 139.84.166.477jv2C3Ua'
-  - '[NL] 82.38.31.10u3KMHflJ'
-  - '[NL] 82.38.31.28tl6vaxPN'
-  - '[BG] 213.183.63.60LTNKWrDB'
-  - '[NL] 82.38.31.183Mbc9pq3s'
-  - '[NL] 193.29.139.147S5ynCZVc'
-  - '[US] 169.197.142.22aSmH50ye'
-  - '[NL] 82.38.31.16FknrPbXf'
-  - '[GB] 82.110.60.9nYQSduNk'
-  - '[US] 138.199.43.159UDvchqd1'
-  - '[NL] 82.38.31.171yfIUOBsi'
-  - '[GB] 149.102.132.184vnIpPsXL'
-  - '[JP] 154.36.158.197KmOdTos2'
-  - '[US] 107.155.57.11guWRThSm'
-  - '[NL] 82.38.31.82DcYzZnTG'
-  - '[NL] 82.38.31.36rvBDJZoF'
-  - '[PL] 54.36.174.140vSoYzdu4'
-  - '[NL] 193.29.139.179quhKlAaU'
-  - '[NL] 82.38.31.61Wfr2SGuI'
-  - '[NL] 193.29.139.198GoAEPmh9'
-  - '[NL] 82.38.31.149PbWHL30D'
-  - '[NL] 82.38.31.62Rvxt5PuS'
-  - '[CA] 64.74.163.67ZL4nu8dc'
-  - '[NL] 82.38.31.185f4MtyQSZ'
-  - '[SG] 68.183.227.4591IfNvm0'
-  - '[NL] 82.38.31.186A2EXcSzy'
-  - '[NL] 158.173.20.171L87qhkgJ'
-  - '[RO] 194.68.44.42oc5p26Fw'
-  - '[NL] 82.38.31.26uIgT8Gc0'
-  - '[NL] 193.29.139.188wcPbyQsx'
-  - '[NL] 82.38.31.1596Nsc42Oi'
-  - '[BG] 213.183.63.60B8q05Hov'
-  - '[US] 103.11.76.2482PSbxe74'
-  - '[NL] 82.38.31.155uK7UxB4O'
-  - pphfree2.mvpnpvpn.de5.net9yItuBGR
-  - '[NL] 193.29.139.235RWgGdqUz'
-  - '[DE] 169.150.210.233Mi63Lp8C'
-  - '[NL] 82.38.31.157t2guWQpf'
-  - bogging-eyeteeth-fly.freesocks.workesoPBS4m
-  - '[NL] 193.29.139.202YAXEhGQU'
-  - '[NL] 193.29.139.2258iktxrsP'
-  - '[NL] 82.38.31.178GufS7kAU'
-  - '[US] 15.204.247.175lUhRW6aS'
-  - '[DE] 31.76.11.83pXem7v12'
-  - '[NL] 82.38.31.190YILw0N5C'
-  - '[NL] 193.29.139.168mpElv847'
-  - '[SG] 68.183.227.4l31yQvZw'
-  - '[US] 138.199.42.682Dt0jmqO'
-  - '[US] 15.204.247.206lb4WGrqz'
-  - '[NL] 37.148.203.124bpewrqJu'
-  - '[IT] 91.201.65.122dbMjYX1l'
-  - '[US] 15.204.247.124FxPHs4Wy'
-  - p141.panda001.netSqXdJNuD
-  - '[NL] 82.38.31.47dwSAXbaU'
-  - '[US] 15.204.246.132StyxnD2j'
-  - '[LT] 195.238.126.20ns0FrclJ'
-  - pl140.vpnbook.comwa2iBfcH
-  - '[JP] 84.247.155.196Mbo69fej'
-  - ww11.levikogjgfdd.irOgJnTAle
-  - '[NL] 193.29.139.1326OMnS491'
-  - '[PL] 217.30.10.44MGvf1Yl4'
-  - '[NL] 82.38.31.13wrWAvxB0'
-  - '[DE] 213.202.208.199HtcivUDI'
-  - '[NL] 82.38.31.182vcmw8Ebl'
-  - '[SG] 128.199.172.224uIKPjqVU'
-  - '[HK] 103.149.182.79jMcwQD5F'
-  - '[SG] 139.180.220.175p1lnqjfD'
-  - '[IN] 152.67.8.205I6VxGuUS'
-  url: http://connect.rom.miui.com/generate_204
-  interval: 120
-- name: AU-POOL
-  type: url-test
-  proxies:
-  - '[AU] ððº æ¾³ååäº  AUS'
-  url: http://connect.rom.miui.com/generate_204
-  interval: 120
-- name: BG-POOL
-  type: url-test
-  proxies:
-  - '[BG] 213.183.63.60LTNKWrDB'
-  - '[BG] 213.183.63.60B8q05Hov'
+  - '[NL] 37.148.203.124UI6Jw5qs'
+  - Dhos[]_dokng.com_2c7b4d12
+  - '[US] 169.197.142.22A10iaF8L'
+  - '[NL] 82.38.31.69b5K4MYZg'
+  - '[DE] 213.202.208.199NcGQf5Jz'
+  - '[NL] 193.29.139.168uJmRUkCy'
+  - '[NL] 82.38.31.349nAdghDQ'
+  - '[GB] 82.110.60.9ugCcRZ0y'
+  - '[NL] 82.38.31.13VO23ebFw'
+  - '[CH] 132.243.175.144agyMuqUs'
+  - '[JP] 84.247.155.196CtvrWgyF'
+  - '[NL] 82.38.31.159SzIF8brE'
+  - '[NL] 82.38.31.46Rv07WzYL'
+  - '[NL] 193.29.139.179GEsWKvpj'
+  - '[GB] 149.102.132.184Mo0tgVK3'
+  - '[NL] 82.38.31.205FHixQZr8'
+  - '[NL] 82.38.31.185pF1N5cCi'
+  - '[NL] 82.38.31.1758AmsC05z'
+  - '[NL] 82.38.31.47J8nMj6SN'
+  - '[NL] 82.38.31.179sjFJoVSi'
+  - '[PL] 54.36.174.140cKQub4Bx'
+  - '[NL] 82.38.31.49RI6Azow0'
+  - '[NL] 82.38.31.829HdKic17'
+  - '[NL] 82.38.31.17543dLYXHo'
+  - '[NL] 82.38.31.168in2kYs7'
+  - '[NL] 82.38.31.42jnB7IYsL'
+  - '[NL] 82.38.31.189r8k63nwB'
+  - '[NL] 193.29.139.225cqWUI9Bp'
+  - '[IT] 185.164.175.81Y7xPcayM'
+  - '[RO] 194.68.44.42qAXlNb6s'
+  - '[LT] 195.238.126.209vNjzkb4'
+  - '[NL] 158.173.20.208DreMQz5i'
+  - '[NL] 193.29.139.1328KcCwTql'
+  - '[NL] 193.29.139.198thwuok7q'
+  - '[NL] 82.38.31.171BXHnhmS7'
+  - '[NL] 82.38.31.170hVZGvKUW'
+  - '[CA] 64.74.163.67upX1KGEU'
+  - '[SG] 68.183.235.122LeZ3lhOw'
+  - '[NL] 82.38.31.186cmXBwMNW'
+  - '[NL] 82.38.31.39BUMF5370'
+  - '[JP] 154.36.158.197jfpRbkdP'
+  - '[NL] 82.38.31.61YJAZw3Gx'
+  - '[NL] 82.38.31.35a8BCd0Jn'
+  - '[NL] 82.38.31.174eLi1b69s'
+  - '[NL] 193.29.139.1470R87WACK'
+  - '[NL] 82.38.31.21996eHrP0J'
+  - '[US] 79.110.53.169K1DMJ4l3'
+  - '[NL] 82.38.31.198koyfNtpr'
+  - '[CZ] 67.159.18.345yHEg4oJ'
+  - '[NL] 193.29.139.197Htqjg5iD'
+  - '[NL] 82.38.31.162mrqhYoNW'
+  - '[DE] 185.226.172.8Uruc6tnL'
+  - '[US] 107.155.57.51XeEfNIpK'
+  - '[RU] 176.32.32.108oabQj2sT'
+  - '[NL] 82.38.31.199JaN6Sm5e'
+  - '[NL] 82.38.31.218TumyPY1c'
+  - '[DE] 57.129.113.1685JaKzdh'
+  - '[NL] 82.38.31.36Do7ylRYd'
+  - '[SG] 68.183.227.4qnCvl0oM'
+  - '[NL] 82.38.31.178pQU0vm9g'
+  - '[CA] 51.222.200.165gSIbkTYc'
+  - ww11.levikogjgfdd.irJgcYBsS1
+  - '[US] 138.199.43.159OJXDEI5a'
+  - pphfree2.mvpnpvpn.de5.netWQBfbETG
+  - '[NL] 82.38.31.62zHY20oKd'
+  - '[GB] 149.102.132.184VECYeads'
+  - '[NL] 193.29.139.2026zv2a5D0'
+  - '[TH] 103.107.52.106Zc3IuR0d'
+  - '[NL] 82.38.31.541SxEVvWk'
+  - '[SG] 128.199.172.224UHKzkaFQ'
+  - '[DE] 31.76.11.83HFsIygtL'
+  - '[NL] 82.38.31.174vno4PF3i'
+  - '[NL] 82.38.31.262GJyQvB7'
+  - '[CA] 51.222.136.236hua6UwJL'
+  - '[IT] 57.131.48.457THpOaKu'
+  - '[US] 107.151.182.197kTmQhZKf'
+  - '[US] 15.204.247.124xGN5B8of'
+  - '[HK] 156.245.232.239uQfUraA0'
+  - '[NL] 82.38.31.187v6MIqYfl'
+  - '[NL] 82.38.31.182Tk9RNbMo'
+  - '[DE] 213.202.208.199TB9OV7ic'
+  - '[NL] 193.29.139.188gPHWmYTz'
+  - '[LV] 185.135.86.175R3zXUTtv'
+  - '[NL] 82.38.31.28QVhTHS1j'
+  - '[NL] 82.38.31.155CUdEolWK'
+  - '[PL] 217.30.10.44h96DPK0e'
+  - '[NL] 82.38.31.190G30kxMtF'
+  - '[NL] 82.38.31.48tcFwjfiH'
+  - '[NL] 82.38.31.18I2yXUW7J'
+  - '[US] 15.204.247.206rxh1aYyc'
+  - '[SG] 68.183.227.45XlJrGfLE'
+  - '[GB] 146.70.61.18AnP8V37o'
+  - '[NL] 82.38.31.157IQD8Z3aY'
+  - '[SG] 68.183.227.2366LPWcE0R'
+  - pl134.vpnbook.com8oAmpbnW
+  - '[DE] de.zhou-yufan.comK0IYsq16'
+  - pl140.vpnbook.comBPH7SEbc
+  - '[CA] 138.197.141.585dA9MJXY'
+  - '[PL] 217.30.10.44lwctkY0q'
+  - '[NL] 178.83.185.156Qdy8C0R2'
+  - '[NL] 82.38.31.149qRDPFTfd'
+  - '[NL] 82.38.31.201unsjTZ10'
+  - '[US] 172.86.108.79YV8bvfsP'
+  - '[DE] 31.76.11.83gmbKjzQY'
+  - '[NL] 82.38.31.183KJB0hNA2'
+  - '[US] 23.251.121.242y3dMrV7z'
+  - '[NL] 82.38.31.1563RB7iubd'
+  - '[US] 15.204.233.41qvWuA4Fc'
+  - '[NL] 82.38.31.171D5G16nBe'
+  - '[US] 107.155.57.11dGWKptrV'
+  - '[US] 38.45.66.187ibhg9D8y'
+  - '[NL] 82.38.31.220QGmYiwp5'
+  - '[LT] 195.238.126.84twFxWLYS'
+  - '[NL] 193.29.139.223fMedNrD5'
+  - '[IN] 152.67.8.2055HN8eM46'
+  - '[NL] 82.38.31.216SH7ZnViK'
+  - '[US] 138.199.42.68G9JmbZ4O'
+  - '[NL] 193.29.139.2358PTnwvdN'
+  - '[PL] 217.30.10.44o2DWbYih'
+  - '[PL] 54.36.174.134oTAMgNEz'
+  - '[DE] 169.150.210.233SbyJrufo'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: CA-POOL
   type: url-test
   proxies:
+  - '[CA] 未知-ED24FFFD'
   - '[CA] 未知-B44F8E82'
-  - '[CA] ðºð ç¾å½  USA 13'
+  - '[CA] 138.197.141.585dA9MJXY'
+  - '[CA] Dhos[]_dokng.com_7dc2a84d'
+  - '[CA] ðºð ç¾å½  USA 3'
+  - '[CA] Chos[]_dokng.com_1756644c'
+  - '[CA] 64.74.163.67upX1KGEU'
+  - '[CA] 未知-AF16F820'
   - '[CA] 加拿大-8DAFEF46'
   - '[CA] 加拿大-093F7F75'
-  - '[CA] 51.222.200.165PsFCJIuw'
-  - '[CA] ðð æå å  SGP 2'
-  - '[CA] 64.74.163.67ZL4nu8dc'
-  - '[CA] Chos[]_dokng.com_1756644c'
-  - '[CA] Dhos[]_dokng.com_7dc2a84d'
-  - '[CA] 未知-AF16F820'
-  - '[CA] ðºð ç¾å½  USA 6'
-  - '[CA] 51.222.136.236O0cybK5f'
+  - '[CA] 64.74.163.69Lnlu8Byg'
+  - '[CA] 51.222.136.236hua6UwJL'
+  - '[CA] 加拿大-9216A510'
+  - '[CA] 未知-BFD8B984'
+  - '[CA] 未知-DE66D468'
+  - '[CA] 51.222.200.165gSIbkTYc'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: CH-POOL
   type: url-test
   proxies:
-  - '[CH] 132.243.175.144vF5q9Uxb'
+  - '[CH] 132.243.175.144agyMuqUs'
+  url: http://connect.rom.miui.com/generate_204
+  interval: 120
+- name: CZ-POOL
+  type: url-test
+  proxies:
+  - '[CZ] 67.159.18.345yHEg4oJ'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: DE-POOL
   type: url-test
   proxies:
-  - '[DE] 169.150.210.233Mi63Lp8C'
+  - '[DE] 169.150.210.233SbyJrufo'
   - '[DE] 德国-D00F02E7'
-  - '[DE] 31.76.11.83pXem7v12'
+  - '[DE] 31.76.11.83HFsIygtL'
   - '[DE] 未知-A393B7C9'
-  - '[DE] ððª å¾å½  DEU 6'
+  - '[DE] 213.202.208.199NcGQf5Jz'
+  - '[DE] 31.76.11.83gmbKjzQY'
   - '[DE] 未知-01E5A486'
   - '[DE] 未知-39D94852'
-  - '[DE] 57.129.113.16WTBAIkHa'
-  - '[DE] 213.202.208.199HtcivUDI'
-  - '[DE] ððª å¾å½  DEU 10'
+  - '[DE] 185.226.172.8Uruc6tnL'
+  - '[DE] ððª çå  SWE 2'
+  - '[DE] 57.129.113.1685JaKzdh'
+  - '[DE] de.zhou-yufan.comK0IYsq16'
+  - '[DE] 未知-9BE79465'
+  - '[DE] 213.202.208.199TB9OV7ic'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: ES-POOL
   type: url-test
   proxies:
-  - '[ES] ðªð èçç  ESP 2'
+  - '[ES] ðªð èçç  ESP'
   - '[ES] 未知-FDB55F27'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: FI-POOL
   type: url-test
   proxies:
-  - '[FI] ðð éæ  HKG 2'
+  - '[FI] Ares[]_dokng.com_f428f535'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: FR-POOL
@@ -2635,295 +2825,320 @@ proxy-groups:
 - name: GB-POOL
   type: url-test
   proxies:
-  - '[GB] 149.102.132.184vnIpPsXL'
-  - '[GB] ðð èå½  GBR'
-  - '[GB] 149.102.132.184K89cDAsR'
+  - '[GB] 146.70.61.18AnP8V37o'
   - '[GB] 未知-7A517A24'
-  - '[GB] ðð èå½  GBR 2'
+  - '[GB] 149.102.132.184VECYeads'
+  - '[GB] 149.102.132.184Mo0tgVK3'
   - '[GB] 英国-80BE1157'
-  - '[GB] 未知-0ABA60D4'
-  - '[GB] 英国-1DBB5F97'
-  - '[GB] 82.110.60.9nYQSduNk'
+  - '[GB] 82.110.60.9ugCcRZ0y'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: HK-POOL
   type: url-test
   proxies:
-  - '[HK] 103.149.182.79jMcwQD5F'
-  - '[HK] 香港-C6E7A7E9'
   - '[HK] 未知-67764E14'
+  - '[HK] 香港-C6E7A7E9'
+  - '[HK] 156.245.232.239uQfUraA0'
+  - '[HK] ðð éæ  HKG 4'
+  - '[HK] ðð éæ  HKG'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: IE-POOL
   type: url-test
   proxies:
-  - '[IE] ððª çåå  IRL 2'
   - '[IE] ððª çåå  IRL'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: IN-POOL
   type: url-test
   proxies:
-  - '[IN] 139.84.166.477jv2C3Ua'
-  - '[IN] 152.67.8.205I6VxGuUS'
+  - '[IN] 152.67.8.2055HN8eM46'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: IT-POOL
   type: url-test
   proxies:
-  - '[IT] 185.164.175.81NlepoR7v'
-  - '[IT] 91.201.65.122dbMjYX1l'
+  - '[IT] 57.131.48.457THpOaKu'
+  - '[IT] 185.164.175.81Y7xPcayM'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: JP-POOL
   type: url-test
   proxies:
-  - '[JP] 日本-6783195D'
+  - '[JP] 84.247.155.196CtvrWgyF'
   - '[JP] 日本-24FE6D00'
-  - '[JP] 84.247.155.196HSI2nw4a'
-  - '[JP] 84.247.155.196Mbo69fej'
-  - '[JP] Ares[]_dokng.com_0aee8c03'
+  - '[JP] 日本-6783195D'
   - '[JP] 未知-0EAAB7E9'
-  - '[JP] 154.36.158.197KmOdTos2'
+  - '[JP] 154.36.158.197jfpRbkdP'
   - '[JP] 日本-0A19CAC2'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: LT-POOL
   type: url-test
   proxies:
-  - '[LT] 195.238.126.20ruzThBCM'
-  - '[LT] 195.238.126.20ns0FrclJ'
+  - '[LT] 195.238.126.84twFxWLYS'
+  - '[LT] 195.238.126.209vNjzkb4'
+  url: http://connect.rom.miui.com/generate_204
+  interval: 120
+- name: LV-POOL
+  type: url-test
+  proxies:
+  - '[LV] 185.135.86.175R3zXUTtv'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: NL-POOL
   type: url-test
   proxies:
-  - '[NL] 158.173.20.208HzKAbYc6'
-  - '[NL] 158.173.20.171L87qhkgJ'
-  - '[NL] 未知-BAD995AC'
-  - '[NL] 未知-2368B7BD'
-  - '[NL] 82.38.31.28tl6vaxPN'
-  - '[NL] 193.29.139.2341QUJ04vb'
-  - '[NL] 82.38.31.49yz5ZqDQ4'
-  - '[NL] 82.38.31.13wrWAvxB0'
-  - '[NL] 英国-19EA134B'
-  - '[NL] 82.38.31.3MAsEJxVo'
-  - '[NL] 193.29.139.2258iktxrsP'
-  - '[NL] 荷兰-E7B00D01'
-  - '[NL] 82.38.31.174KCbHaPcB'
-  - '[NL] 82.38.31.175bjc5MIrL'
-  - '[NL] 82.38.31.48OfuQLtDd'
-  - '[NL] 82.38.31.35L4KJ9RVd'
   - '[NL] 荷兰-1ABDEDCF'
-  - '[NL] 82.38.31.199zeu9oOAc'
-  - '[NL] 82.38.31.36rvBDJZoF'
-  - '[NL] 以色列-B3D4568A'
-  - '[NL] 英国-FA37F005'
-  - '[NL] 82.38.31.34v1p4C2zH'
-  - '[NL] 82.38.31.205J60BOFRK'
-  - '[NL] 82.38.31.39ORW9abKp'
-  - '[NL] 82.38.31.186A2EXcSzy'
-  - '[NL] 82.38.31.47dwSAXbaU'
-  - '[NL] 未知-31C27972'
-  - '[NL] 82.38.31.185XKFNevl'
-  - '[NL] 193.29.139.188wcPbyQsx'
-  - '[NL] 178.83.185.156137bJ8QT'
-  - '[NL] 82.38.31.661HK8fVxN'
-  - '[NL] 英国-14CB062C'
-  - '[NL] 82.38.31.187XZTorsua'
-  - '[NL] 193.29.139.179quhKlAaU'
-  - '[NL] 82.38.31.185f4MtyQSZ'
-  - '[NL] 未知-896B9D41'
-  - '[NL] 82.38.31.219EJuL69g7'
-  - '[NL] 193.29.139.212Q5P8qFUY'
-  - '[NL] 荷兰-36FA140B'
-  - '[NL] 未知-45FFA923'
-  - '[NL] 82.38.31.175VeNFU1RY'
-  - '[NL] 82.38.31.42h5kgumwO'
-  - '[NL] 82.38.31.69WwT9Z7dp'
-  - '[NL] 82.38.31.62Rvxt5PuS'
-  - '[NL] 荷兰-1D63AE36'
-  - '[NL] 未知-B5EE8E89'
-  - '[NL] 82.38.31.198zuSOZAps'
-  - '[NL] 82.38.31.179lDPMwjqg'
-  - '[NL] 193.29.139.202YAXEhGQU'
-  - '[NL] 82.38.31.54KVd4Y2um'
-  - '[NL] 82.38.31.61Wfr2SGuI'
-  - '[NL] 82.38.31.1596Nsc42Oi'
-  - '[NL] 未知-688F3685'
-  - '[NL] 未知-D992864B'
-  - '[NL] 82.38.31.174k9zcRPU6'
-  - '[NL] 82.38.31.10u3KMHflJ'
+  - '[NL] 未知-BAD995AC'
+  - '[NL] 158.173.20.208DreMQz5i'
+  - '[NL] 82.38.31.218TumyPY1c'
+  - '[NL] 193.29.139.2026zv2a5D0'
+  - '[NL] 193.29.139.179GEsWKvpj'
+  - '[NL] 荷兰-E7B00D01'
+  - '[NL] 82.38.31.205FHixQZr8'
+  - '[NL] 82.38.31.198koyfNtpr'
   - '[NL] 未知-A63FCB48'
-  - '[NL] 82.38.31.171yfIUOBsi'
-  - '[NL] 未知-75636F57'
-  - '[NL] 82.38.31.26uIgT8Gc0'
-  - '[NL] 82.38.31.1701K5mT3PS'
-  - '[NL] 82.38.31.157t2guWQpf'
+  - '[NL] 82.38.31.66kjFSdD37'
+  - '[NL] 82.38.31.829HdKic17'
+  - '[NL] 82.38.31.201unsjTZ10'
+  - '[NL] 82.38.31.13VO23ebFw'
+  - '[NL] 82.38.31.62zHY20oKd'
+  - '[NL] 82.38.31.220QGmYiwp5'
+  - '[NL] 193.29.139.198thwuok7q'
+  - '[NL] 82.38.31.174eLi1b69s'
+  - '[NL] 193.29.139.197Htqjg5iD'
+  - '[NL] 82.38.31.174vno4PF3i'
+  - '[NL] 未知-688F3685'
+  - '[NL] 英国-FA37F005'
+  - '[NL] 82.38.31.262GJyQvB7'
+  - '[NL] 193.29.139.225cqWUI9Bp'
+  - '[NL] 82.38.31.69b5K4MYZg'
+  - '[NL] 82.38.31.39BUMF5370'
+  - '[NL] 82.38.31.36Do7ylRYd'
+  - '[NL] 未知-24BBDC61'
+  - '[NL] 82.38.31.3ID3BJELf'
+  - '[NL] 82.38.31.349nAdghDQ'
+  - '[NL] 82.38.31.159SzIF8brE'
+  - '[NL] 82.38.31.17543dLYXHo'
+  - '[NL] 82.38.31.61YJAZw3Gx'
+  - '[NL] 82.38.31.48tcFwjfiH'
+  - '[NL] 193.29.139.1470R87WACK'
+  - '[NL] 193.29.139.2358PTnwvdN'
   - '[NL] 荷兰-9657BB20'
-  - '[NL] 82.38.31.162spiMjmhO'
-  - '[NL] 82.38.31.82DcYzZnTG'
-  - '[NL] 82.38.31.190YILw0N5C'
-  - '[NL] 193.29.139.235RWgGdqUz'
-  - '[NL] 193.29.139.197s7Xlh9T1'
-  - '[NL] 193.29.139.198GoAEPmh9'
-  - '[NL] 82.38.31.149PbWHL30D'
-  - '[NL] 193.29.139.168mpElv847'
-  - '[NL] 未知-A84723A5'
-  - '[NL] 37.148.203.124bpewrqJu'
-  - '[NL] 82.38.31.218ktoLVM9N'
-  - '[NL] 82.38.31.171GCiRbhu1'
-  - '[NL] 82.38.31.178GufS7kAU'
-  - '[NL] 193.29.139.223pyQMEhmD'
-  - '[NL] 82.38.31.155uK7UxB4O'
-  - '[NL] 未知-526DCD7D'
-  - '[NL] 荷兰-104FDD7C'
-  - '[NL] 未知-1B6D48DD'
-  - '[NL] 未知-800CD54A'
-  - '[NL] 英国-920EDAD3'
-  - '[NL] 82.38.31.16FknrPbXf'
-  - '[NL] 193.29.139.147S5ynCZVc'
-  - '[NL] 东帝汶-D436F56D'
+  - '[NL] 伊朗-F010A450'
+  - '[NL] 82.38.31.179sjFJoVSi'
+  - '[NL] 82.38.31.162mrqhYoNW'
+  - '[NL] 未知-31C27972'
+  - '[NL] 82.38.31.46Rv07WzYL'
+  - '[NL] 82.38.31.541SxEVvWk'
+  - '[NL] 82.38.31.149qRDPFTfd'
   - '[NL] 未知-6B469CBF'
-  - '[NL] 东帝汶-77649CE4'
-  - '[NL] 未知-67C1FE41'
-  - '[NL] 未知-61474257'
-  - '[NL] 82.38.31.216jcT5nrOX'
+  - '[NL] 英国-19EA134B'
+  - '[NL] 82.38.31.199JaN6Sm5e'
+  - '[NL] 未知-2368B7BD'
+  - '[NL] 82.38.31.28QVhTHS1j'
+  - '[NL] 82.38.31.171D5G16nBe'
+  - '[NL] 82.38.31.10jsO1CSK9'
+  - '[NL] 82.38.31.49RI6Azow0'
+  - '[NL] 82.38.31.182Tk9RNbMo'
+  - '[NL] 82.38.31.183KJB0hNA2'
+  - '[NL] 82.38.31.35a8BCd0Jn'
+  - '[NL] 82.38.31.1758AmsC05z'
+  - '[NL] 82.38.31.178pQU0vm9g'
+  - '[NL] 82.38.31.47J8nMj6SN'
+  - '[NL] 未知-13B3F7DA'
+  - '[NL] 未知-896B9D41'
+  - '[NL] 82.38.31.168in2kYs7'
+  - '[NL] 82.38.31.21996eHrP0J'
+  - '[NL] 193.29.139.188gPHWmYTz'
+  - '[NL] 82.38.31.185pF1N5cCi'
+  - '[NL] 82.38.31.170hVZGvKUW'
+  - '[NL] 82.38.31.171BXHnhmS7'
+  - '[NL] 37.148.203.124UI6Jw5qs'
+  - '[NL] 英国-14CB062C'
+  - '[NL] 193.29.139.168uJmRUkCy'
+  - '[NL] 英国-920EDAD3'
+  - '[NL] 82.38.31.42jnB7IYsL'
+  - '[NL] 未知-0DA5B829'
+  - '[NL] 未知-C8A9D47D'
   - '[NL] 未知-EA93F609'
-  - '[NL] 未知-C5146D9A'
-  - '[NL] 82.38.31.156zO6fZw7B'
+  - '[NL] 未知-94FA843E'
+  - '[NL] 82.38.31.186cmXBwMNW'
+  - '[NL] 82.38.31.18I2yXUW7J'
   - '[NL] 英国-045C7267'
   - '[NL] 未知-CB42B351'
-  - '[NL] 未知-F80EE80C'
-  - '[NL] 82.38.31.220xmsUWCj1'
-  - '[NL] 东帝汶-2D7EB956'
-  - '[NL] 荷兰-FA76F4F2'
-  - '[NL] 82.38.31.465yNOx987'
-  - '[NL] 未知-13B3F7DA'
-  - '[NL] 未知-A3E47C14'
-  - '[NL] 未知-FCD9872A'
-  - '[NL] 未知-0DA5B829'
+  - '[NL] 东帝汶-77649CE4'
+  - '[NL] 未知-61474257'
+  - '[NL] 未知-217757B3'
   - '[NL] 东帝汶-68F60510'
-  - '[NL] 未知-4B8C34B6'
-  - '[NL] 未知-F9B50F9E'
-  - '[NL] 未知-69B06F19'
-  - '[NL] 伊朗-F010A450'
-  - '[NL] 193.29.139.1326OMnS491'
-  - '[NL] 未知-94FA843E'
-  - '[NL] 82.38.31.189xMafC9vh'
-  - '[NL] 82.38.31.182vcmw8Ebl'
-  - '[NL] 82.38.31.183Mbc9pq3s'
+  - '[NL] 以色列-B3D4568A'
   - '[NL] 未知-0F3510CE'
-  - '[NL] 未知-34FC4D51'
+  - '[NL] 荷兰-FA76F4F2'
+  - '[NL] 82.38.31.216SH7ZnViK'
+  - '[NL] 82.38.31.1563RB7iubd'
+  - '[NL] 未知-D992864B'
+  - '[NL] 未知-1B6D48DD'
+  - '[NL] 178.83.185.156Qdy8C0R2'
+  - '[NL] 未知-FCD9872A'
+  - '[NL] 193.29.139.1328KcCwTql'
+  - '[NL] 82.38.31.157IQD8Z3aY'
+  - '[NL] 未知-67C1FE41'
+  - '[NL] 82.38.31.155CUdEolWK'
+  - '[NL] 未知-69B06F19'
+  - '[NL] 荷兰-36FA140B'
+  - '[NL] 82.38.31.190G30kxMtF'
+  - '[NL] 东帝汶-2D7EB956'
+  - '[NL] 未知-C5146D9A'
+  - '[NL] 未知-A3E47C14'
+  - '[NL] 东帝汶-D436F56D'
+  - '[NL] 82.38.31.187v6MIqYfl'
+  - '[NL] 未知-F9B50F9E'
   - '[NL] 未知-7EFAC16B'
+  - '[NL] 未知-34FC4D51'
+  - '[NL] 荷兰-104FDD7C'
+  - '[NL] 未知-4B8C34B6'
+  - '[NL] 82.38.31.189r8k63nwB'
+  - '[NL] 未知-800CD54A'
+  - '[NL] 未知-45FFA923'
+  - '[NL] 未知-A84723A5'
+  - '[NL] 未知-75636F57'
+  - '[NL] Ares[]_dokng.com_34178fe5'
+  - '[NL] 193.29.139.223fMedNrD5'
+  url: http://connect.rom.miui.com/generate_204
+  interval: 120
+- name: NO-POOL
+  type: url-test
+  proxies:
+  - '[NO] 未知-68F0E91D'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: OTHER-POOL
   type: url-test
   proxies:
-  - pl140.vpnbook.comwa2iBfcH
-  - bogging-eyeteeth-fly.freesocks.workesoPBS4m
-  - ww11.levikogjgfdd.irOgJnTAle
-  - Dhos[]_dokng.com_0a18b849
+  - pl134.vpnbook.com8oAmpbnW
+  - pl140.vpnbook.comBPH7SEbc
+  - 未知-3E57BB3B
+  - Uukn[]_dokng.com_d3bfec09
+  - Dhos[]_dokng.com_2c7b4d12
+  - ww11.levikogjgfdd.irJgcYBsS1
+  - ðµð æ³å  POL
+  - ððª çå  SWE
   - ðºðUSç¾å½äyoyapai.com_16
-  - Chos[]_dokng.com_3be7dc5e
-  - Dhos[]_dokng.com_0e90fe61
-  - p141.panda001.netSqXdJNuD
-  - Chos[]_dokng.com_b01d10a9
+  - Dhos[]_dokng.com_0a18b849
   - Chos[]_dokng.com_8c8298b3
+  - pphfree2.mvpnpvpn.de5.netWQBfbETG
   - Dhos[]_dokng.com_45c836e0
-  - pphfree2.mvpnpvpn.de5.net9yItuBGR
+  - 未知-8015D2B7
+  - Chos[]_dokng.com_715452b7
+  - 未知-E7AD2A46
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: PL-POOL
   type: url-test
   proxies:
-  - '[PL] 217.30.10.44MGvf1Yl4'
-  - '[PL] 54.36.174.140vSoYzdu4'
+  - '[PL] 54.36.174.140cKQub4Bx'
+  - '[PL] 217.30.10.44h96DPK0e'
+  - '[PL] 217.30.10.44lwctkY0q'
+  - '[PL] 217.30.10.44o2DWbYih'
+  - '[PL] 54.36.174.134oTAMgNEz'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: RO-POOL
   type: url-test
   proxies:
-  - '[RO] 194.68.44.42oc5p26Fw'
+  - '[RO] 194.68.44.42qAXlNb6s'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: RU-POOL
   type: url-test
   proxies:
+  - '[RU] 176.32.32.108oabQj2sT'
+  - '[RU] ððº äç½æ  RUS 2'
   - '[RU] ððLVæèçäºäyoyapai.com'
+  url: http://connect.rom.miui.com/generate_204
+  interval: 120
+- name: SC-POOL
+  type: url-test
+  proxies:
+  - '[SC] 未知-920029F2'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: SG-POOL
   type: url-test
   proxies:
-  - '[SG] 139.180.220.175p1lnqjfD'
-  - '[SG] 68.183.227.4l31yQvZw'
-  - '[SG] 128.199.172.224uIKPjqVU'
-  - '[SG] 68.183.227.4591IfNvm0'
+  - '[SG] 68.183.227.4qnCvl0oM'
   - '[SG] 未知-FCBC5D1C'
+  - '[SG] 68.183.227.2366LPWcE0R'
   - '[SG] 未知-B4A5647A'
+  - '[SG] 128.199.172.224UHKzkaFQ'
+  - '[SG] 68.183.227.45XlJrGfLE'
+  - '[SG] 68.183.235.122LeZ3lhOw'
   - '[SG] Dhos[]_dokng.com_b996207d'
   - '[SG] Dhos[]_dokng.com_e743af69'
   - '[SG] ðð æå å  SGP 3'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
-- name: TW-POOL
+- name: TH-POOL
   type: url-test
   proxies:
-  - '[TW] 未知-1E4E8879'
+  - '[TH] 103.107.52.106Zc3IuR0d'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: US-POOL
   type: url-test
   proxies:
   - '[US] ðºðUSç¾å½äyoyapai.com'
-  - '[US] 79.110.53.169YP3USjkZ'
-  - '[US] 美国-4A5CF585'
-  - '[US] 美国-54E01726'
-  - '[US] 未知-5591547D'
-  - '[US] 107.155.57.11guWRThSm'
-  - '[US] 美国-8A4F975E'
-  - '[US] 美国-D0E0EABF'
-  - '[US] 美国-15728D4A'
-  - '[US] 138.199.43.159UDvchqd1'
-  - '[US] 103.11.76.2482PSbxe74'
+  - '[US] 138.199.42.68G9JmbZ4O'
+  - '[US] 107.151.182.197kTmQhZKf'
+  - '[US] 107.151.182.253hEnwuQ9p'
+  - '[US] 23.251.121.242y3dMrV7z'
+  - '[US] 138.199.43.159OJXDEI5a'
+  - '[US] 107.155.57.11dGWKptrV'
+  - '[US] 79.110.53.169K1DMJ4l3'
   - '[US] 美国-C7466887'
-  - '[US] 172.86.108.79UvQ4oh2p'
-  - '[US] 未知-B504CBC6'
-  - '[US] 未知-5F244B4A'
-  - '[US] 未知-DF922B23'
-  - '[US] 138.199.42.682Dt0jmqO'
-  - '[US] ðºð ç¾å½  USA 2'
-  - '[US] 美国-781DC8A9'
-  - '[US] 美国-2EC114C5'
-  - '[US] 美国-2DD9A906'
-  - '[US] 美国-20488C4F'
-  - '[US] 未知-D45BC914'
-  - '[US] 未知-A5F1C19B'
+  - '[US] 107.155.57.51XeEfNIpK'
+  - '[US] 美国-D0E0EABF'
+  - '[US] 172.86.108.79YV8bvfsP'
+  - '[US] 美国-8A4F975E'
+  - '[US] 美国-54E01726'
+  - '[US] 103.11.76.248Ndf5YDRW'
   - '[US] Chos[]_dokng.com_443f8750'
-  - '[US] 未知-798A29E5'
-  - '[US] 15.204.247.206lb4WGrqz'
-  - '[US] 美国-2844BECE'
-  - '[US] 未知-892BE4A4'
-  - '[US] 未知-7E487B32'
-  - '[US] 15.204.246.132StyxnD2j'
-  - '[US] 未知-B3BAA575'
-  - '[US] ðºð ç¾å½  USA 9'
-  - '[US] 未知-6BE33E05'
-  - '[US] 169.197.142.22aSmH50ye'
-  - '[US] 未知-6CD4D997'
-  - '[US] 美国-50AE4EFA'
-  - '[US] 未知-C4E47653'
-  - '[US] 未知-1B5FA045'
-  - '[US] ððªDEå¾å½äyoyapai.com_13'
+  - '[US] 美国-781DC8A9'
+  - '[US] 美国-4A5CF585'
+  - '[US] Chos[]_dokng.com_e2cb978e'
+  - '[US] 未知-D45BC914'
+  - '[US] 未知-DF922B23'
+  - '[US] 未知-5591547D'
+  - '[US] 美国-2DD9A906'
+  - '[US] ðºð ç¾å½  USA'
   - '[US] 东帝汶-8C0CA6EC'
-  - '[US] 未知-A3DD0AD8'
-  - '[US] 美国-185EF251'
-  - '[US] 15.204.247.175lUhRW6aS'
+  - '[US] 未知-1B5FA045'
+  - '[US] 未知-6CD4D997'
+  - '[US] 未知-7E487B32'
+  - '[US] 未知-5F244B4A'
   - '[US] 美国-EAC25DBB'
-  - '[US] 美国-98668394'
-  - '[US] 15.204.247.124FxPHs4Wy'
+  - '[US] 未知-6BE33E05'
+  - '[US] 美国-20488C4F'
+  - '[US] 未知-798A29E5'
+  - '[US] 美国-2844BECE'
+  - '[US] ðºð ç¾å½  USA 9'
+  - '[US] 未知-892BE4A4'
+  - '[US] 38.45.66.187ibhg9D8y'
+  - '[US] 美国-185EF251'
+  - '[US] 未知-B504CBC6'
+  - '[US] 15.204.247.206rxh1aYyc'
+  - '[US] 未知-A3DD0AD8'
+  - '[US] 美国-2EC114C5'
+  - '[US] 15.204.233.41qvWuA4Fc'
+  - '[US] 169.197.142.22A10iaF8L'
+  - '[US] ððªDEå¾å½äyoyapai.com_13'
+  - '[US] ðºð ç¾å½  USA 10'
+  - '[US] 美国-50AE4EFA'
+  - '[US] 未知-A5F1C19B'
+  - '[US] 未知-B3BAA575'
+  - '[US] 15.204.247.124xGN5B8of'
+  - '[US] 15.204.246.132g3kwH95S'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: ZA-POOL
@@ -2935,87 +3150,94 @@ proxy-groups:
 - name: AI-POOL
   type: url-test
   proxies:
-  - '[US] 美国-2844BECE'
   - '[US] 美国-185EF251'
+  - '[US] 美国-2844BECE'
   - '[US] 未知-798A29E5'
-  - '[US] 美国-15728D4A'
+  - '[CA] 加拿大-9216A510'
+  - '[CA] 未知-ED24FFFD'
+  - '[CA] 未知-BFD8B984'
+  - '[CA] 未知-DE66D468'
   - '[US] 东帝汶-8C0CA6EC'
+  - '[US] 未知-6CD4D997'
   - '[US] 未知-6BE33E05'
   - '[US] 未知-A5F1C19B'
-  - '[US] 未知-6CD4D997'
-  - '[US] 美国-EAC25DBB'
   - '[US] 未知-1B5FA045'
+  - '[US] 美国-EAC25DBB'
   - '[US] 未知-5F244B4A'
   - '[US] 美国-50AE4EFA'
-  - '[US] 未知-C4E47653'
   - '[US] 美国-8A4F975E'
   - '[US] 美国-4A5CF585'
-  - '[US] 美国-C7466887'
   - '[US] 未知-5591547D'
+  - '[US] 美国-C7466887'
+  - '[US] 美国-D0E0EABF'
   - '[CA] 未知-B44F8E82'
   - '[US] 美国-2EC114C5'
-  - '[US] 美国-D0E0EABF'
-  - '[US] 美国-54E01726'
+  - '[CA] 加拿大-8DAFEF46'
+  - '[US] 未知-DF922B23'
+  - '[US] 未知-892BE4A4'
   - '[US] 未知-D45BC914'
   - '[US] 美国-781DC8A9'
   - '[US] 美国-2DD9A906'
-  - '[US] 未知-DF922B23'
-  - '[CA] 未知-AF16F820'
+  - '[US] 美国-54E01726'
   - '[US] 美国-20488C4F'
-  - '[CA] 加拿大-8DAFEF46'
-  - '[US] 未知-892BE4A4'
-  - '[US] 未知-B3BAA575'
-  - '[US] 美国-98668394'
+  - '[CA] 未知-AF16F820'
   - '[CA] 加拿大-093F7F75'
   - '[US] 未知-B504CBC6'
+  - '[US] 未知-B3BAA575'
   - '[US] 未知-A3DD0AD8'
   - '[US] 未知-7E487B32'
   - '[SG] 未知-B4A5647A'
   - '[SG] 未知-FCBC5D1C'
-  - '[CA] ðð æå å  SGP 2'
+  - '[CA] ðºð ç¾å½  USA 3'
   - '[US] ðºðUSç¾å½äyoyapai.com'
-  - '[CA] ðºð ç¾å½  USA 13'
-  - '[CA] ðºð ç¾å½  USA 6'
-  - '[US] ðºð ç¾å½  USA 9'
-  - '[US] ðºð ç¾å½  USA 2'
-  - ðºðUSç¾å½äyoyapai.com_16
+  - '[US] ðºð ç¾å½  USA'
   - '[US] ððªDEå¾å½äyoyapai.com_13'
+  - '[US] ðºð ç¾å½  USA 9'
+  - '[US] Chos[]_dokng.com_443f8750'
   - '[CA] Dhos[]_dokng.com_7dc2a84d'
   - '[CA] Chos[]_dokng.com_1756644c'
-  - '[US] Chos[]_dokng.com_443f8750'
+  - '[US] Chos[]_dokng.com_e2cb978e'
+  - ðºðUSç¾å½äyoyapai.com_16
+  - '[US] ðºð ç¾å½  USA 10'
   - '[RU] ððLVæèçäºäyoyapai.com'
-  - '[US] 172.86.108.79UvQ4oh2p'
   - '[SG] ðð æå å  SGP 3'
+  - '[CA] 64.74.163.69Lnlu8Byg'
+  - '[US] 107.151.182.253hEnwuQ9p'
+  - '[US] 103.11.76.248Ndf5YDRW'
   - '[SG] Dhos[]_dokng.com_e743af69'
-  - '[CA] 51.222.136.236O0cybK5f'
+  - '[US] 15.204.246.132g3kwH95S'
   - '[SG] Dhos[]_dokng.com_b996207d'
-  - '[DE] 57.129.113.16WTBAIkHa'
-  - '[CA] 51.222.200.165PsFCJIuw'
-  - '[US] 79.110.53.169YP3USjkZ'
-  - '[US] 169.197.142.22aSmH50ye'
-  - '[US] 138.199.43.159UDvchqd1'
-  - '[US] 107.155.57.11guWRThSm'
-  - '[CA] 64.74.163.67ZL4nu8dc'
-  - '[SG] 68.183.227.4591IfNvm0'
-  - '[US] 103.11.76.2482PSbxe74'
-  - '[US] 15.204.247.175lUhRW6aS'
-  - '[SG] 68.183.227.4l31yQvZw'
-  - '[US] 138.199.42.682Dt0jmqO'
-  - '[US] 15.204.247.206lb4WGrqz'
-  - '[US] 15.204.247.124FxPHs4Wy'
-  - '[US] 15.204.246.132StyxnD2j'
-  - '[SG] 128.199.172.224uIKPjqVU'
-  - '[SG] 139.180.220.175p1lnqjfD'
+  - '[US] 169.197.142.22A10iaF8L'
+  - '[CA] 64.74.163.67upX1KGEU'
+  - '[SG] 68.183.235.122LeZ3lhOw'
+  - '[US] 79.110.53.169K1DMJ4l3'
+  - '[US] 107.155.57.51XeEfNIpK'
+  - '[SG] 68.183.227.4qnCvl0oM'
+  - '[CA] 51.222.200.165gSIbkTYc'
+  - '[US] 138.199.43.159OJXDEI5a'
+  - '[SG] 128.199.172.224UHKzkaFQ'
+  - '[CA] 51.222.136.236hua6UwJL'
+  - '[US] 107.151.182.197kTmQhZKf'
+  - '[US] 15.204.247.124xGN5B8of'
+  - '[US] 15.204.247.206rxh1aYyc'
+  - '[SG] 68.183.227.45XlJrGfLE'
+  - '[SG] 68.183.227.2366LPWcE0R'
+  - '[CA] 138.197.141.585dA9MJXY'
+  - '[US] 172.86.108.79YV8bvfsP'
+  - '[US] 23.251.121.242y3dMrV7z'
+  - '[US] 15.204.233.41qvWuA4Fc'
+  - '[US] 107.155.57.11dGWKptrV'
+  - '[US] 38.45.66.187ibhg9D8y'
+  - '[US] 138.199.42.68G9JmbZ4O'
   url: http://connect.rom.miui.com/generate_204
   interval: 120
 - name: FALLBACK
   type: fallback
   proxies:
   - AUTO-FAST
-  - AU-POOL
-  - BG-POOL
   - CA-POOL
   - CH-POOL
+  - CZ-POOL
   - DE-POOL
   - ES-POOL
   - FI-POOL
@@ -3027,13 +3249,16 @@ proxy-groups:
   - IT-POOL
   - JP-POOL
   - LT-POOL
+  - LV-POOL
   - NL-POOL
+  - NO-POOL
   - OTHER-POOL
   - PL-POOL
   - RO-POOL
   - RU-POOL
+  - SC-POOL
   - SG-POOL
-  - TW-POOL
+  - TH-POOL
   - US-POOL
   - ZA-POOL
   url: http://connect.rom.miui.com/generate_204
@@ -3043,10 +3268,9 @@ proxy-groups:
   proxies:
   - AUTO-FAST
   - FALLBACK
-  - AU-POOL
-  - BG-POOL
   - CA-POOL
   - CH-POOL
+  - CZ-POOL
   - DE-POOL
   - ES-POOL
   - FI-POOL
@@ -3058,13 +3282,16 @@ proxy-groups:
   - IT-POOL
   - JP-POOL
   - LT-POOL
+  - LV-POOL
   - NL-POOL
+  - NO-POOL
   - OTHER-POOL
   - PL-POOL
   - RO-POOL
   - RU-POOL
+  - SC-POOL
   - SG-POOL
-  - TW-POOL
+  - TH-POOL
   - US-POOL
   - ZA-POOL
 rules:
